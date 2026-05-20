@@ -31,20 +31,20 @@ export default function TopNav() {
           </button>
 
           {menuOpen ? (
-            <div className="absolute right-0 mt-3 w-52 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/10">
+            <div className="absolute right-0 mt-3 w-32 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/10">
               <Link
                 href="/login-user"
                 onClick={() => setMenuOpen(false)}
                 className="block px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
               >
-                Acesso de Usuário
+                Usuário
               </Link>
               <Link
                 href="/login-admin"
                 onClick={() => setMenuOpen(false)}
                 className="block border-t border-slate-100 px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
               >
-                Acesso do Administrador
+                Administrador
               </Link>
             </div>
           ) : null}

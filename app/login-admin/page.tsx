@@ -33,47 +33,42 @@ export default function LoginAdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
-      <div className="mx-auto max-w-xl rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
-        <div className="space-y-3 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-sky-700">
-            Acesso do Administrador
-          </p>
-          <h1 className="text-3xl font-semibold">Entrar como administrador</h1>
-          <p className="text-slate-600">Use este login para gerenciar notícias e o conteúdo do portal.</p>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <label className="block space-y-2 text-sm">
-            <span className="font-medium text-slate-700">E-mail</span>
+    <main className="min-h-screen bg-slate-950 px-2 py-45 text-slate-100">
+      <div className="mx-auto flex max-w-md flex-col gap-3 rounded-[1.5rem] py-10 border border-white/10 bg-slate-900/95 p-14 shadow-[0_40px_100px_-60px_rgba(15,23,42,0.9)] backdrop-blur-sm">
+        
+        
+        <form className="space-y-3 " onSubmit={handleSubmit}>
+          
+          <label className="block text-sm font-medium text-slate-200">
+            E-mail
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-sky-400 focus:outline-none"
+              className="mt-3 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               required
             />
           </label>
 
-          <label className="block space-y-2 text-sm">
-            <span className="font-medium text-slate-700">Senha</span>
+          <label className="block text-sm font-medium text-slate-200">
+            Senha
             <input
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-sky-400 focus:outline-none"
+              className="mt-3 w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               required
             />
           </label>
 
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-2xl bg-sky-600 px-5 py-3 text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-sky-300"
+            className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 via-orange-500 to-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? "Entrando..." : "Entrar como administrador"}
+            {loading ? "Entrando..." : "Entrar como usuário"}
           </button>
         </form>
       </div>

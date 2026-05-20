@@ -31,13 +31,12 @@ export default function LoginUserPage() {
 
     setError(result.message || "Falha no login. Verifique seus dados.");
   }
-
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100">
-      <div className="mx-auto flex max-w-md flex-col gap-6 rounded-[2rem] border border-white/10 bg-slate-900/95 p-8 shadow-[0_40px_100px_-60px_rgba(15,23,42,0.9)] backdrop-blur-sm">
+    <main className="min-h-screen bg-slate-950 px-2 py-45 text-slate-100">
+      <div className="mx-auto flex max-w-md flex-col gap-3 rounded-[1.5rem] py-10 border border-white/10 bg-slate-900/95 p-14 shadow-[0_40px_100px_-60px_rgba(15,23,42,0.9)] backdrop-blur-sm">
         
         
-        <form className="space-y-5 " onSubmit={handleSubmit}>
+        <form className="space-y-3 " onSubmit={handleSubmit}>
           
           <label className="block text-sm font-medium text-slate-200">
             E-mail
