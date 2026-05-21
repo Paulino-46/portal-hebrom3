@@ -1,0 +1,261 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { SLIDES } from "../../lib/sliderData";
+
+const HIGHLIGHTS = [
+  {
+    icon: "🙏",
+    label: "Azul",
+    title: "Cultos",
+    body: "Momentos de louvor e comunhão em equipe.",
+    accent: "from-sky-500/25 to-sky-950/0",
+  },
+  {
+    icon: "🤲",
+    label: "Vermelha",
+    title: "Ação social",
+    body: "Serviço, cuidado e apoio ao próximo.",
+    accent: "from-red-500/25 to-red-950/0",
+  },
+  {
+    icon: "💛",
+    label: "Amarela",
+    title: "Família",
+    body: "Encontros de famílias com alegria e fé.",
+    accent: "from-yellow-300/25 to-yellow-950/0",
+  },
+  {
+    icon: "🔥",
+    label: "Laranja",
+    title: "Eventos",
+    body: "Celebrações especiais e encontros vibrantes.",
+    accent: "from-orange-500/25 to-orange-950/0",
+  },
+];
+
+const VISIBLE = 3;
+
+export default function HeroSection() {
+  const pauseRef = useRef(false);
+  const [current, setCurrent] = useState(0);
+
+  const selectSlide = (index: number) => {
+    const sanitized = Math.max(0, Math.min(index, SLIDES.length - 1));
+    setCurrent(sanitized);
+  };
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      if (!pauseRef.current) {
+        setCurrent((prev) => (prev + 1) % SLIDES.length);
+      }
+    }, 2800);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const move = (dir: number) => selectSlide(current + dir);
+
+  return (
+    <>
+      {/* ── VIDEO HERO ── */}
+      <section className="relative flex min-h-[88vh] w-full items-end overflow-hidden">
+        {/* Video background */}
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/video/VID.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-navy/10" />
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl items-end justify-between gap-10 px-6 pb-20 sm:px-10">
+          {/* Left: text */}
+          <div className="max-w-2xl">
+            <p className="mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
+              <span className="block h-px w-7 bg-gold" />
+              Bem-vindo ao portal
+            </p>
+
+            <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-6xl">
+              Fé, comunidade<br />
+              e{" "}
+              <em className="not-italic text-gold-light">transformação</em>
+              <br />
+              em Hebrom III
+            </h1>
+
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60">
+              Acompanhe cultos, iniciativas sociais e eventos em um portal moderno
+              feito para toda a comunidade Hebrom III.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="/login-user"
+                className="rounded bg-gold px-7 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-navy transition hover:bg-gold-light hover:-translate-y-0.5"
+              >
+                Entrar como Usuário
+              </a>
+              <a
+                href="#news"
+                className="rounded border border-white/30 px-7 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:border-gold hover:text-gold-light"
+              >
+                Ver Notícias
+              </a>
+            </div>
+          </div>
+
+          {/* Right: stats */}
+          <div className="hidden flex-col items-end gap-5 lg:flex">
+            {[
+              { num: "12+", label: "Anos de ministério" },
+              { num: "500+", label: "Membros ativos" },
+              { num: "48", label: "Eventos por ano" },
+            ].map(({ num, label }, i) => (
+              <div key={i} className="text-right">
+                <p className="font-serif text-3xl font-bold text-gold-light">{num}</p>
+                <p className="mt-0.5 text-[0.65rem] uppercase tracking-[0.18em] text-slate-400">
+                  {label}
+                </p>
+                {i < 2 && (
+                  <div className="ml-auto mt-5 h-px w-6 bg-gold/30" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CAROUSEL ── */}
+      <section className="border-t border-blue-400/10 bg-slate-950 px-6 pb-20 sm:px-10">
+        {/* Header */}
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 pb-8 pt-14 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-sky-300">
+              <span className="block h-px w-5 bg-sky-300" />
+              Galeria
+            </p>
+            <h2 className="font-serif text-3xl font-medium text-white">
+              Momentos da comunidade
+            </h2>
+          </div>
+          <div className="flex gap-2.5">
+            <button
+              onClick={() => move(-1)}
+              disabled={current === 0}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-sky-300 hover:bg-sky-300/10 disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => move(1)}
+              disabled={current >= SLIDES.length - 1}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-orange-300 hover:bg-orange-300/10 disabled:cursor-not-allowed disabled:opacity-30"
+            >
+              →
+            </button>
+          </div>
+        </div>
+
+        {/* Highlights cards */}
+        <div className="mx-auto grid max-w-7xl gap-4 pb-8 md:grid-cols-4">
+          {HIGHLIGHTS.map(({ accent, icon, label, title, body }, index) => (
+            <div
+              key={index}
+              className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/95 p-5 shadow-2xl shadow-slate-950/40"
+            >
+              <div className={`mb-5 h-1.5 rounded-full bg-gradient-to-r ${accent}`} />
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-lg text-white">
+                  {icon}
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">{label}</p>
+                  <h3 className="mt-1 text-lg font-semibold text-white">{title}</h3>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-300">{body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Track */}
+        <div className="mx-auto max-w-7xl overflow-hidden">
+          <div className="relative mb-8">
+            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-950/100 to-transparent" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-950/100 to-transparent" />
+            <div
+              className="overflow-hidden pb-4"
+              onMouseEnter={() => (pauseRef.current = true)}
+              onMouseLeave={() => (pauseRef.current = false)}
+            >
+              <div
+                className="flex gap-6 transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                style={{ transform: `translateX(-${current * 364}px)` }}
+              >
+                {SLIDES.map((slide, i) => (
+                  <Link key={slide.id} href="/news" className="min-w-[340px] flex-shrink-0">
+                    <div
+                      className={`relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out ${
+                        current === i
+                          ? "scale-105 border-sky-300/40"
+                          : "scale-95 opacity-90"
+                      }`}
+                      onClick={() => selectSlide(i)}
+                    >
+                      <img
+                        src={slide.src}
+                        alt={slide.title}
+                        className="h-[22rem] w-full object-cover object-center transition duration-500 ease-out hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 p-6">
+                        <span className="inline-flex rounded-full bg-slate-900/80 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-sky-200 shadow-lg shadow-slate-950/40">
+                          {slide.tag}
+                        </span>
+                        <h3 className="mt-4 text-2xl font-semibold leading-snug text-white">
+                          {slide.title}
+                        </h3>
+                        <p className="mt-2 max-w-[24rem] text-sm leading-relaxed text-slate-200/90">
+                          {slide.desc}
+                        </p>
+                        <div className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-white/70">
+                          <span className="inline-block h-px w-8 bg-sky-300/40" />
+                          Ver notícias relacionadas
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dots */}
+        <div className="mx-auto mt-7 flex max-w-7xl justify-center gap-2">
+          {Array.from({ length: SLIDES.length }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => selectSlide(i)}
+              className={`h-0.5 rounded-full transition-all ${
+                i === current ? "w-10 bg-gold" : "w-6 bg-white/20"
+              }`}
+            />
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}

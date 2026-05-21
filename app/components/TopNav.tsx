@@ -7,49 +7,91 @@ export default function TopNav() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 sm:px-8">
-        <Link href="/" className="text-xl font-semibold tracking-[0.18em] text-slate-900">
-          Hebrom III
+    <header className="sticky top-0 z-50 border-b border-gold/20 bg-navy/90 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-0 sm:px-10 h-[68px]">
+
+        {/* Logo */}
+        <Link href="/" className="font-serif text-xl font-bold tracking-wide text-gold-light">
+          Hebrom <span className="font-normal text-white">III</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-          <a href="#about" className="transition hover:text-slate-900">Sobre</a>
-          <a href="#news" className="transition hover:text-slate-900">Notícias</a>
-          <a href="#events" className="transition hover:text-slate-900">Eventos</a>
-          <a href="#contato" className="transition hover:text-slate-900">Contato</a>
+        {/* Nav links */}
+        <nav className="hidden items-center gap-8 md:flex">
+          {[
+            { href: "#about", label: "Sobre" },
+            { href: "#news", label: "Notícias" },
+            { href: "#events", label: "Eventos" },
+            { href: "#contact", label: "Contato" },
+          ].map(({ href, label }) => (
+            <a
+              key={href}
+              href={href}
+              className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400 transition-colors hover:text-gold-light"
+            >
+              {label}
+            </a>
+          ))}
         </nav>
 
-        <div className="relative">
+        {/* CTA buttons */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login-admin"
+            className="hidden rounded-full border border-gold/30 px-5 py-2 text-xs font-medium uppercase tracking-[0.12em] text-gold-light transition hover:border-gold hover:bg-gold/10 sm:inline-flex"
+          >
+            Admin
+          </Link>
+          <Link
+            href="/login-user"
+            className="rounded-full bg-gold px-5 py-2 text-xs font-medium uppercase tracking-[0.12em] text-navy transition hover:bg-gold-light"
+          >
+            Entrar
+          </Link>
+
+          {/* Mobile hamburger */}
           <button
             type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="ml-1 flex flex-col gap-1.5 md:hidden"
+            aria-label="Menu"
           >
-            Login
-            <span className="text-sm">▾</span>
+            <span className={`block h-px w-6 bg-white transition-all ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
+            <span className={`block h-px w-6 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
+            <span className={`block h-px w-6 bg-white transition-all ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
           </button>
-
-          {menuOpen ? (
-            <div className="absolute right-0 mt-3 w-32 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-900/10">
-              <Link
-                href="/login-user"
-                onClick={() => setMenuOpen(false)}
-                className="block px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
-              >
-                Usuário
-              </Link>
-              <Link
-                href="/login-admin"
-                onClick={() => setMenuOpen(false)}
-                className="block border-t border-slate-100 px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
-              >
-                Administrador
-              </Link>
-            </div>
-          ) : null}
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="border-t border-gold/20 bg-navy px-6 py-4 md:hidden">
+          <nav className="flex flex-col gap-3">
+            {[
+              { href: "#about", label: "Sobre" },
+              { href: "#news", label: "Notícias" },
+              { href: "#events", label: "Eventos" },
+              { href: "#contact", label: "Contato" },
+            ].map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                className="border-b border-gold/10 py-2.5 text-sm font-medium text-slate-300 transition hover:text-gold-light"
+              >
+                {label}
+              </a>
+            ))}
+            <div className="mt-2 flex gap-3">
+              <Link href="/login-user" className="flex-1 rounded-full bg-gold py-2.5 text-center text-xs font-semibold uppercase tracking-widest text-navy">
+                Usuário
+              </Link>
+              <Link href="/login-admin" className="flex-1 rounded-full border border-gold/40 py-2.5 text-center text-xs font-semibold uppercase tracking-widest text-gold-light">
+                Admin
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

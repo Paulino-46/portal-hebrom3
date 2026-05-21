@@ -1,135 +1,220 @@
 import Link from "next/link";
 import Footer from "./components/Footer";
-import HeroCarousel from "./components/HeroCarousel";
+import HeroSection from "./components/HeroSection";
 import TopNav from "./components/TopNav";
 
 export default function Home() {
   return (
-    <main className="bg-white text-slate-900">
+    <main className="bg-gradient-to-br from-sky-950 via-slate-950 to-orange-950 text-white">
       <TopNav />
 
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-100 via-white to-slate-100 py-16">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 sm:grid-cols-[0.9fr_1.1fr] sm:px-8 lg:gap-20">
-          <div className="space-y-8">
-            <div className="max-w-xl rounded-[2rem] border border-blue-200 bg-white p-8 shadow-[0_20px_70px_-45px_rgba(30,64,175,0.35)]">
-              <p className="text-xs uppercase tracking-[0.4em] text-blue-600">Bem-vindo ao Hebrom III</p>
-              <h1 className="mt-4 text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl">
-                Notícias da igreja com estilo e energia para a comunidade
-              </h1>
-              <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg">
-                Acompanhe cultos, iniciativas sociais e eventos em um portal moderno feito para Hebrom III.
+      {/* Video hero + carousel in one component */}
+      <HeroSection />
+
+      {/* ── ABOUT ── */}
+      <section id="about" className="bg-slate-950/95 text-white px-6 py-24 sm:px-10">
+        <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
+
+          {/* Text */}
+          <div>
+            <p className="mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
+              <span className="block h-px w-5 bg-gold" />
+              Sobre o portal
+            </p>
+            <h2 className="font-serif text-4xl font-bold leading-snug text-navy sm:text-5xl">
+              Uma experiência para toda a igreja
+            </h2>
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-600">
+              Um portal com navegação simples, conteúdo destacado e áreas
+              personalizadas para cada membro — tudo com foco em clareza,
+              modernidade e conexão com Hebrom III.
+            </p>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+              {[
+                { icon: "📡", title: "Notícias em tempo real", body: "Fique por dentro de tudo que acontece na igreja instantaneamente." },
+                { icon: "🤝", title: "Projetos sociais", body: "Acompanhe as ações de servir à comunidade ao redor." },
+                { icon: "📅", title: "Agenda de eventos", body: "Todos os cultos e encontros organizados num só lugar." },
+                { icon: "🔐", title: "Área do membro", body: "Acesso exclusivo para membros e administradores." },
+              ].map(({ icon, title, body }) => (
+                <div
+                  key={title}
+                  className="rounded-lg border border-navy/10 bg-white p-5 transition hover:border-gold/50"
+                >
+                  <span className="mb-3 block text-xl">{icon}</span>
+                  <h3 className="mb-1.5 text-sm font-semibold text-navy">{title}</h3>
+                  <p className="text-xs leading-relaxed text-slate-500">{body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visual */}
+          <div className="relative">
+            <div className="flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-lg bg-navy">
+              <span className="font-serif text-8xl font-bold text-gold/20">H3</span>
+            </div>
+            <div className="absolute -bottom-5 -left-5 rounded-lg bg-gold p-5 text-center text-navy shadow-xl">
+              <p className="font-serif text-3xl font-bold leading-none">15+</p>
+              <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-widest">
+                Anos de fé
               </p>
-
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/login-user"
-                  className="inline-flex items-center justify-center rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
-                >
-                  Entrar como Usuário
-                </Link>
-                <Link
-                  href="/login-admin"
-                  className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
-                >
-                  Área do Admin
-                </Link>
-              </div>
             </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-blue-100 bg-blue-50 p-6 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Atualizações</p>
-                <p className="mt-3 text-lg font-semibold text-slate-250">Notícias em tempo real</p>
-              </div>
-              <div className="rounded-[1.5rem] border border-red-100 bg-red-50 p-6 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-red-600">Comunidade</p>
-                <p className="mt-3 text-lg font-semibold text-slate-950">Projetos sociais</p>
-              </div>
-              <div className="rounded-[1.5rem] border border-orange-100 bg-orange-50 p-6 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-orange-600">Eventos</p>
-                <p className="mt-3 text-lg font-semibold text-slate-950">Cultos e encontros</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="order-first lg:order-last">
-            <HeroCarousel />
           </div>
         </div>
       </section>
 
-      <section id="about" className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="space-y-6">
-            <span className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Sobre o portal</span>
-            <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Uma experiência interativa para toda a igreja</h2>
-            <p className="max-w-xl text-base leading-8 text-slate-600">
-              Um portal com navegação simples, conteúdo destacado e áreas de login para cada público. Tudo com foco em clareza, modernidade e conexão com Hebrom III.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <article className="rounded-[2rem] border border-blue-100 bg-white p-6 shadow-sm">
-              <h3 className="text-xl font-semibold text-slate-950">Navegação moderna</h3>
-              <p className="mt-3 text-slate-600">Acesso rápido a notícias, eventos e contatos com um menu ágil e limpo.</p>
-            </article>
-            <article className="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-sm">
-              <h3 className="text-xl font-semibold text-slate-950">Design vibrante</h3>
-              <p className="mt-3 text-slate-600">Paleta de branco, azul, vermelho e laranja para dar emoção e profissionalismo ao site.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="news" className="bg-slate-950 px-6 py-20 text-slate-100 sm:px-8">
+      {/* ── NEWS ── */}
+      <section id="news" className="border-t border-sky-400/10 bg-slate-950/95 px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-10 max-w-2xl">
-            <span className="text-sm font-semibold uppercase tracking-[0.28em] text-orange-300">Notícias</span>
-            <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">Destaques recentes</h2>
-            <p className="mt-4 text-base leading-7 text-slate-300">
-              Acompanhe as últimas publicações e eventos importantes da comunidade Hebrom III em um só lugar.
-            </p>
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
+                <span className="block h-px w-5 bg-gold" />
+                Notícias
+              </p>
+              <h2 className="font-serif text-3xl font-medium text-white sm:text-4xl">
+                Destaques recentes
+              </h2>
+            </div>
+            <Link
+              href="#"
+              className="hidden rounded border border-gold/30 px-5 py-2.5 text-xs font-medium uppercase tracking-[0.12em] text-gold-light transition hover:border-gold hover:bg-gold/10 sm:inline-flex"
+            >
+              Ver todas
+            </Link>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            <article className="rounded-[2rem] border border-white/10 bg-slate-900/90 p-8 transition hover:-translate-y-1 hover:border-blue-300 hover:bg-slate-900">
-              <p className="text-sm uppercase tracking-[0.28em] text-blue-300">Culto</p>
-              <h3 className="mt-4 text-2xl font-semibold">Culto de celebração</h3>
-              <p className="mt-3 text-slate-300">Mensagens inspiradoras, música e comunhão a cada semana.</p>
+          <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr_1fr]">
+            {/* Featured */}
+            <article className="group overflow-hidden rounded-3xl border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer">
+              <div className="aspect-[4/3] overflow-hidden bg-blue-950/10">
+                <div className="h-full w-full bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.22),_transparent_45%),linear-gradient(to_bottom,_rgba(15,23,42,0),_rgba(15,23,42,0.75))]" />
+              </div>
+              <div className="p-6">
+                <span className="inline-block rounded-full bg-blue-500/15 px-3 py-1 text-[0.63rem] font-medium uppercase tracking-[0.18em] text-sky-200 mb-4">
+                  Culto
+                </span>
+                <h3 className="font-serif text-xl font-medium leading-snug text-white mb-2">
+                  Culto de celebração com mensagem especial
+                </h3>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Mensagens inspiradoras, música e comunhão a cada semana na nossa comunidade.
+                </p>
+                <div className="mt-5 flex items-center justify-between border-t border-blue-400/10 pt-4">
+                  <span className="text-xs text-slate-400">16 Maio 2026</span>
+                  <span className="text-sm text-sky-200">→</span>
+                </div>
+              </div>
             </article>
-            <article className="rounded-[2rem] border border-white/10 bg-slate-900/90 p-8 transition hover:-translate-y-1 hover:border-red-300 hover:bg-slate-900">
-              <p className="text-sm uppercase tracking-[0.28em] text-red-300">Ação</p>
-              <h3 className="mt-4 text-2xl font-semibold">Projeto social</h3>
-              <p className="mt-3 text-slate-300">Apoio à comunidade e evangelismo em ações de serviço.</p>
-            </article>
-            <article className="rounded-[2rem] border border-white/10 bg-slate-900/90 p-8 transition hover:-translate-y-1 hover:border-orange-300 hover:bg-slate-900">
-              <p className="text-sm uppercase tracking-[0.28em] text-orange-300">Evento</p>
-              <h3 className="mt-4 text-2xl font-semibold">Semana da família</h3>
-              <p className="mt-3 text-slate-300">Encontros, oficinas e atividades para todas as idades.</p>
-            </article>
+
+            {/* Secondary cards */}
+            {[
+              {
+                tag: "Ação Social",
+                tagClass: "bg-red-900/25 text-red-300",
+                title: "Projeto social na comunidade",
+                body: "Apoio à comunidade e evangelismo em ações de serviço.",
+                date: "14 Maio 2026",
+              },
+              {
+                tag: "Evento",
+                tagClass: "bg-blue-900/25 text-blue-300",
+                title: "Semana da família — Inscrições abertas",
+                body: "Encontros, oficinas e atividades para todas as idades.",
+                date: "25 Maio 2026",
+              },
+            ].map(({ tag, tagClass, title, body, date }) => (
+              <article
+                key={tag}
+                className="group overflow-hidden rounded-3xl border border-white/10 bg-slate-900/95 transition hover:-translate-y-1 hover:border-sky-300/30 cursor-pointer"
+              >
+                <div className="aspect-video bg-gold/5 flex items-center justify-center text-gold/20">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                </div>
+                <div className="p-5">
+                  <span className={`inline-block rounded-full px-3 py-1 text-[0.63rem] font-medium uppercase tracking-[0.18em] mb-3 ${tagClass}`}>
+                    {tag}
+                  </span>
+                  <h3 className="font-serif text-base font-medium leading-snug text-white mb-2">{title}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{body}</p>
+                  <div className="mt-4 flex items-center justify-between border-t border-gold/15 pt-4">
+                    <span className="text-xs text-slate-500">{date}</span>
+                    <span className="text-sm text-gold">→</span>
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="events" className="mx-auto max-w-7xl px-6 py-20 sm:px-8">
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-          <div className="space-y-6">
-            <span className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Eventos em destaque</span>
-            <h2 className="text-3xl font-semibold text-slate-950 sm:text-4xl">Agenda e oportunidades</h2>
-            <p className="max-w-xl text-base leading-8 text-slate-600">
-              Saiba quando serão os próximos encontros, cultos especiais e ações do portal Hebrom III.
+      {/* ── EVENTS ── */}
+      <section id="events" className="bg-slate-950/95 px-6 py-24 sm:px-10">
+        <div className="mx-auto grid max-w-7xl items-start gap-16 lg:grid-cols-2">
+
+          {/* Events list */}
+          <div>
+            <p className="mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
+              <span className="block h-px w-5 bg-gold" />
+              Agenda
             </p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="rounded-[2rem] border border-blue-100 bg-blue-50 p-6 shadow-sm">
-              <p className="text-sm uppercase tracking-[0.28em] text-blue-700">16 Maio</p>
-              <h3 className="mt-4 text-xl font-semibold text-slate-950">Culto de louvor</h3>
-              <p className="mt-3 text-slate-600">Ministração especial de música e palavra de fé.</p>
+            <h2 className="mb-3 font-serif text-4xl font-bold leading-snug text-navy">
+              Próximos eventos
+            </h2>
+            <p className="mb-10 max-w-sm text-sm leading-relaxed text-slate-500">
+              Saiba quando serão os próximos encontros, cultos especiais e ações
+              da comunidade Hebrom III.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              {[
+                { day: "16", month: "Mai", title: "Culto de louvor", body: "Ministração especial de música e palavra de fé com convidados.", time: "Templo principal — 18h00" },
+                { day: "25", month: "Mai", title: "Ação social", body: "Compromisso com a comunidade e cuidado com quem mais precisa.", time: "Sede central — 09h00" },
+                { day: "07", month: "Jun", title: "Semana da família", body: "Uma semana de encontros, reflexão e celebração em família.", time: "Complexo Hebrom — o dia todo" },
+              ].map(({ day, month, title, body, time }) => (
+                <div
+                  key={title}
+                  className="flex gap-5 rounded-3xl border border-white/10 bg-slate-900/95 p-5 transition hover:border-sky-300/30 hover:translate-x-1 cursor-pointer"
+                >
+                  <div className="flex min-w-[52px] flex-col items-center justify-center rounded-2xl bg-blue-950/90 p-2 text-center">
+                    <span className="font-serif text-2xl font-bold leading-none text-gold-light">{day}</span>
+                    <span className="mt-0.5 text-[0.58rem] uppercase tracking-widest text-white/40">{month}</span>
+                  </div>
+                  <div>
+                    <h3 className="mb-1 text-sm font-semibold text-navy">{title}</h3>
+                    <p className="mb-2 text-xs leading-relaxed text-slate-500">{body}</p>
+                    <p className="text-[0.65rem] font-medium uppercase tracking-[0.12em] text-gold">📍 {time}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="rounded-[2rem] border border-orange-100 bg-orange-50 p-6 shadow-sm">
-              <p className="text-sm uppercase tracking-[0.28em] text-orange-700">25 Maio</p>
-              <h3 className="mt-4 text-xl font-semibold text-slate-950">Ação social</h3>
-              <p className="mt-3 text-slate-600">Compromisso com a comunidade e o cuidado com quem mais precisa.</p>
+          </div>
+
+          {/* Newsletter box */}
+          <div className="rounded-3xl bg-blue-950/95 p-8 text-white lg:sticky lg:top-24">
+            <p className="mb-4 text-[0.67rem] font-medium uppercase tracking-[0.22em] text-gold">Newsletter</p>
+            <h3 className="mb-3 font-serif text-2xl font-medium">Fique por dentro dos eventos</h3>
+            <p className="mb-6 text-sm leading-relaxed text-slate-400">
+              Receba alertas de cultos especiais, eventos e novidades diretamente no seu e-mail.
+            </p>
+            <div className="flex flex-col gap-3">
+              <input
+                type="text"
+                placeholder="Seu nome"
+                className="rounded bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold"
+              />
+              <input
+                type="email"
+                placeholder="Seu e-mail"
+                className="rounded bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold"
+              />
+              <button
+                type="button"
+                className="mt-1 rounded bg-gold py-3 text-xs font-semibold uppercase tracking-[0.14em] text-navy transition hover:bg-gold-light"
+              >
+                Assinar newsletter
+              </button>
             </div>
           </div>
         </div>

@@ -1,0 +1,56 @@
+export const SLIDES = [
+  {
+    id: "celebracao-dominical",
+    src: "/img/istockphoto-1144570336-1024x1024.jpg",
+    tag: "Culto",
+    title: "Celebração dominical",
+    desc: "Louvor, palavra e comunhão",
+    summary: "Uma celebração vibrante com mensagem especial e uma atmosfera acolhedora para toda a família.",
+    date: "16 Maio 2026",
+  },
+  {
+    id: "projeto-social",
+    src: "/img/istockphoto-2195095144-1024x1024.jpg",
+    tag: "Comunidade",
+    title: "Projeto social",
+    desc: "Servindo com amor e dedicação",
+    summary: "Ações comunitárias que promovem cuidado, apoio e transformação ao nosso redor.",
+    date: "14 Maio 2026",
+  },
+  {
+    id: "semana-da-familia",
+    src: "/img/istockphoto-2254935809-1024x1024.jpg",
+    tag: "Evento",
+    title: "Semana da família",
+    desc: "Momentos inesquecíveis juntos",
+    summary: "Encontros e atividades especiais para celebrar a união das famílias Hebrom III.",
+    date: "25 Maio 2026",
+  },
+  {
+    id: "noite-de-adoracao",
+    src: "/img/istockphoto-2264133506-1024x1024.jpg",
+    tag: "Louvor",
+    title: "Noite de adoração",
+    desc: "Música que toca a alma",
+    summary: "Uma noite de louvor com música inspiradora e devoção para toda a comunidade.",
+    date: "30 Maio 2026",
+  },
+  {
+    id: "encontro-de-jovens",
+    src: "/img/istockphoto-888836318-1024x1024.jpg",
+    tag: "Jovens",
+    title: "Encontro de jovens",
+    desc: "Nova geração crescendo na fé",
+    summary: "Um encontro animado para jovens com momentos de fé, amizade e propósito.",
+    date: "01 Junho 2026",
+  },
+];
+
+export const NEWS_ITEMS = SLIDES.map((slide) => ({
+  id: slide.id,
+  title: slide.title,
+  tag: slide.tag,
+  date: slide.date,
+  summary: slide.summary,
+  image: slide.src,
+}));
