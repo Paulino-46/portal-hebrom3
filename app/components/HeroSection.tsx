@@ -61,19 +61,20 @@ export default function HeroSection() {
   return (
     <>
       {/* ── VIDEO HERO ── */}
-      <section className="relative flex min-h-[88vh] w-full items-end overflow-hidden">
+      <section className="relative flex min-h-[55vh] w-full items-end overflow-hidden sm:min-h-[60vh]">
         {/* Video background */}
         <video
-          className="absolute inset-0 h-full w-full object-cover"
-          src="/video/VID.mp4"
+          className="absolute inset-0 min-h-full min-w-full object-cover object-center"
+          src="/video/VID1.mp4"
           autoPlay
           muted
           loop
           playsInline
+          style={{ filter: "brightness(0.96) contrast(1.05)" }}
         />
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-navy/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-navy/30 to-transparent" />
 
         {/* Content */}
         <div className="relative z-10 mx-auto flex w-full max-w-7xl items-end justify-between gap-10 px-6 pb-20 sm:px-10">

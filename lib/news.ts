@@ -11,9 +11,9 @@ const sampleNews = [
   },
   {
     id: "2",
-    title: "Culto de Celebração neste Domingo",
-    summary: "Prepare-se para o culto deste domingo com mensagens especiais e louvor.",
-    author: "Pastor João",
+    title: "Culto de Celebração neste Sábado",
+    summary: "Prepare-se para o culto deste Sábado com mensagens especiais e louvor.",
+    author: "Francisco Paulo Dias",
     createdAt: new Date().toISOString(),
   },
 ];
