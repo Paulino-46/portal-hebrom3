@@ -5,6 +5,7 @@ export interface NewsDocument extends mongoose.Document {
   summary: string;
   content: string;
   author: string;
+  image: string;
   createdAt: Date;
 }
 
@@ -14,6 +15,7 @@ const NewsSchema = new Schema<NewsDocument>(
     summary: { type: String, required: true },
     content: { type: String, required: true },
     author: { type: String, required: true },
+    image: { type: String, required: true },
   },
   {
     timestamps: true,

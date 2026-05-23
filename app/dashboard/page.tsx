@@ -10,11 +10,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const news = await getLatestNews();
 
   const sidebarItems = [
-    { href: "#", label: "Visão Geral", active: true },
-    { href: "#", label: "Notícias" },
-    { href: "#", label: "Estatísticas" },
-    { href: "#", label: "Eventos" },
-    { href: "#", label: "Configurações" },
+    { href: "/dashboard", label: "Visão Geral", active: true },
+    { href: "/dashboard/news", label: "Notícias" },
+    { href: "/dashboard/events", label: "Eventos" },
+    { href: "/dashboard", label: "Estatísticas" },
+    { href: "/dashboard", label: "Configurações" },
   ];
 
   const metrics = [
@@ -37,7 +37,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100">
-      <aside className="hidden w-72 flex-col border-r border-slate-800 bg-slate-900 px-5 py-6 md:flex">
+      <aside className="hidden w-65 flex-col border-r border-slate-800 bg-slate-900 px-5 py-6 md:flex">
         <div className="mb-8 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-blue-600 text-white shadow-lg shadow-blue-950/50">
             H3
@@ -70,14 +70,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex flex-col gap-4 border-b border-slate-800 bg-slate-950/95 px-6 py-6 shadow-sm shadow-slate-950/10 md:flex-row md:items-center md:justify-between">
+        <header className="flex flex-row flex-wrap items-center justify-between gap-4 border-b border-slate-800 bg-slate-950/95 px-6 py-6 shadow-sm shadow-slate-950/10">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-400">Painel administrativo</p>
             <h1 className="mt-2 text-3xl font-semibold text-white">Olá, {role === "admin" ? "Administrador" : "Membro"}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Acompanhe as principais métricas, estatísticas e as notícias mais recentes em tempo real.</p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex flex-row items-center gap-3">
             <div className="relative w-full max-w-sm">
               <input
                 type="search"

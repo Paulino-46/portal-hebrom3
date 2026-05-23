@@ -4,6 +4,16 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { SLIDES } from "../../lib/sliderData";
 
+type Slide = {
+  id: string;
+  src: string;
+  tag: string;
+  title: string;
+  desc: string;
+  summary: string;
+  date: string;
+};
+
 const HIGHLIGHTS = [
   {
     icon: "🙏",
@@ -35,26 +45,59 @@ const HIGHLIGHTS = [
   },
 ];
 
-const VISIBLE = 3;
+const VISIBLE = 5;
 
 export default function HeroSection() {
   const pauseRef = useRef(false);
+  const slideCountRef = useRef(SLIDES.length);
   const [current, setCurrent] = useState(0);
+  const [slides, setSlides] = useState<Slide[]>(SLIDES);
 
   const selectSlide = (index: number) => {
-    const sanitized = Math.max(0, Math.min(index, SLIDES.length - 1));
+    const sanitized = Math.max(0, Math.min(index, slides.length - 1));
     setCurrent(sanitized);
   };
 
   useEffect(() => {
+    async function loadEventSlides() {
+      try {
+        const response = await fetch("/api/events");
+        const data = await response.json();
+
+        if (response.ok && Array.isArray(data.events) && data.events.length > 0) {
+          const eventSlides: Slide[] = data.events.map((item: any) => ({
+            id: item.id,
+            src: item.image || "/img/istockphoto-1144570336-1024x1024.jpg",
+            tag: "Evento",
+            title: item.title,
+            desc: item.location || "",
+            summary: item.description || "",
+            date: item.date ? new Date(item.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }) : "",
+          }));
+
+          setSlides(eventSlides);
+          setCurrent((prev) => Math.min(prev, eventSlides.length - 1));
+          return;
+        }
+      } catch (error) {
+        console.error("Erro ao carregar eventos para o carrossel:", error);
+      }
+    }
+
+    loadEventSlides();
+
     const interval = window.setInterval(() => {
       if (!pauseRef.current) {
-        setCurrent((prev) => (prev + 1) % SLIDES.length);
+        setCurrent((prev) => (prev + 1) % Math.max(1, slideCountRef.current));
       }
     }, 2800);
 
     return () => window.clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    slideCountRef.current = slides.length;
+  }, [slides.length]);
 
   const move = (dir: number) => selectSlide(current + dir);
 
@@ -158,7 +201,7 @@ export default function HeroSection() {
             </button>
             <button
               onClick={() => move(1)}
-              disabled={current >= SLIDES.length - 1}
+              disabled={current >= slides.length - 1}
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-orange-300 hover:bg-orange-300/10 disabled:cursor-not-allowed disabled:opacity-30"
             >
               →
@@ -202,7 +245,7 @@ export default function HeroSection() {
                 className="flex gap-6 transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
                 style={{ transform: `translateX(-${current * 364}px)` }}
               >
-                {SLIDES.map((slide, i) => (
+                {slides.map((slide, i) => (
                   <Link key={slide.id} href="/news" className="min-w-[340px] flex-shrink-0">
                     <div
                       className={`relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out ${

@@ -85,7 +85,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr_1fr]">
+          <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
             {/* Featured */}
             <article className="group overflow-hidden rounded-3xl border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer">
               <div className="aspect-[4/3] overflow-hidden bg-blue-950/10">
@@ -116,13 +116,6 @@ export default function Home() {
                 title: "Projeto social na comunidade",
                 body: "Apoio à comunidade e evangelismo em ações de serviço.",
                 date: "14 Maio 2026",
-              },
-              {
-                tag: "Evento",
-                tagClass: "bg-blue-900/25 text-blue-300",
-                title: "Semana da família — Inscrições abertas",
-                body: "Encontros, oficinas e atividades para todas as idades.",
-                date: "25 Maio 2026",
               },
             ].map(({ tag, tagClass, title, body, date }) => (
               <article

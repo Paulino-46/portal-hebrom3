@@ -44,6 +44,36 @@ export const SLIDES = [
     summary: "Um encontro animado para jovens com momentos de fé, amizade e propósito.",
     date: "01 Junho 2026",
   },
+  
+  {
+    id: "semana-da-juventude",
+    src: "/img/IMG-20260308-WA0129.jpg",
+    tag: "Evento",
+    title: "Semana da família",
+    desc: "Momentos inesquecíveis juntos",
+    summary: "Encontros e atividades especiais para celebrar a união das famílias Hebrom III.",
+    date: "25 Maio 2026",
+  },
+  
+  {
+    id: "semana-da-lar-e-família",
+    src: "/img/IMG-20260522-WA0018.jpg",
+    tag: "Evento",
+    title: "Semana da família",
+    desc: "Momentos inesquecíveis juntos",
+    summary: "Encontros e atividades especiais para celebrar a união das famílias Hebrom III.",
+    date: "25 Maio 2026",
+  },
+  
+  {
+    id: "Sábado",
+    src: "/img/IMG-20260523-WA0011.jpg",
+    tag: "Evento",
+    title: "Semana da família",
+    desc: "Momentos inesquecíveis juntos",
+    summary: "Encontros e atividades especiais para celebrar a união das famílias Hebrom III.",
+    date: "25 Maio 2026",
+  },
 ];
 
 export const NEWS_ITEMS = SLIDES.map((slide) => ({
