@@ -17,6 +17,7 @@ type NewsForm = {
   content: string;
   author: string;
   image: string;
+  createdAt: string;
 };
 
 const initialForm: NewsForm = {
@@ -25,6 +26,7 @@ const initialForm: NewsForm = {
   content: "",
   author: "",
   image: "",
+  createdAt: new Date().toISOString().split('T')[0],
 };
 
 function formatDate(value: string) {
@@ -42,6 +44,11 @@ export default function NewsManagementPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<NewsForm>(initialForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [filterAuthor, setFilterAuthor] = useState("");
+  const [filterSearchTitle, setFilterSearchTitle] = useState("");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
 
   useEffect(() => {
     loadNews();
@@ -66,27 +73,59 @@ export default function NewsManagementPage() {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
+  function getFilteredNews() {
+    return news.filter((item) => {
+      const matchesTitle = item.title.toLowerCase().includes(filterSearchTitle.toLowerCase());
+      const matchesAuthor = !filterAuthor || item.author.toLowerCase().includes(filterAuthor.toLowerCase());
+      const itemDate = new Date(item.createdAt).toISOString().split('T')[0];
+      const matchesDateFrom = !filterDateFrom || itemDate >= filterDateFrom;
+      const matchesDateTo = !filterDateTo || itemDate <= filterDateTo;
+      return matchesTitle && matchesAuthor && matchesDateFrom && matchesDateTo;
+    });
+  }
+
   function openCreate() {
     setEditingId(null);
-    setForm(initialForm);
+    setForm({...initialForm, createdAt: new Date().toISOString().split('T')[0]});
+    setImageFile(null);
     setDialogOpen(true);
   }
 
   function openEdit(item: NewsItem & { summary?: string; content?: string }) {
     setEditingId(item.id);
-    setForm({ title: item.title, summary: item.summary || "", content: item.content || "", author: item.author, image: item.image || "" });
+    const itemDate = new Date(item.createdAt).toISOString().split('T')[0];
+    setForm({ title: item.title, summary: item.summary || "", content: item.content || "", author: item.author, image: item.image || "", createdAt: itemDate });
+    setImageFile(null);
     setDialogOpen(true);
   }
 
   async function handleSave() {
     setStatus("Salvando...");
     try {
+      let imagePath = form.image;
+      
+      // Se um novo arquivo foi selecionado, fazer upload
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const uploadData = await uploadResponse.json();
+        if (!uploadResponse.ok) {
+          setStatus(uploadData.error || "Erro ao fazer upload da imagem.");
+          return;
+        }
+        imagePath = uploadData.path;
+      }
+
       const path = editingId ? `/api/news/${editingId}` : "/api/news";
       const method = editingId ? "PUT" : "POST";
       const response = await fetch(path, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, image: imagePath, createdAt: new Date(form.createdAt).toISOString() }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -96,6 +135,7 @@ export default function NewsManagementPage() {
       setStatus(editingId ? "Notícia atualizada." : "Notícia criada.");
       setDialogOpen(false);
       setForm(initialForm);
+      setImageFile(null);
       setEditingId(null);
       await loadNews();
       setTimeout(() => setStatus(""), 2000);
@@ -156,8 +196,28 @@ export default function NewsManagementPage() {
               <p className="mt-1 text-sm text-slate-400">Todas as notícias cadastradas no sistema.</p>
             </div>
             <span className="rounded-full bg-slate-800 px-3 py-2 text-xs uppercase tracking-[0.18em] text-slate-300">
-              {news.length} itens
+              {getFilteredNews().length} itens
             </span>
+          </div>
+
+          {/* Filtros */}
+          <div className="mb-6 grid gap-4 md:grid-cols-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300">Buscar por título</label>
+              <input value={filterSearchTitle} onChange={(e) => setFilterSearchTitle(e.target.value)} placeholder="Título..." className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300">Filtrar por autor</label>
+              <input value={filterAuthor} onChange={(e) => setFilterAuthor(e.target.value)} placeholder="Autor..." className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300">Data de início</label>
+              <input type="date" value={filterDateFrom} onChange={(e) => setFilterDateFrom(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300">Data final</label>
+              <input type="date" value={filterDateTo} onChange={(e) => setFilterDateTo(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
+            </div>
           </div>
 
           <div className="overflow-x-auto rounded-3xl border border-slate-800 bg-slate-950/90">
@@ -165,20 +225,18 @@ export default function NewsManagementPage() {
               <thead className="border-b border-slate-800 bg-slate-900 text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Título</th>
+                  <th className="px-4 py-3">Imagem</th>
                   <th className="px-4 py-3">Resumo</th>
                   <th className="px-4 py-3">Conteúdo</th>
-                  <th className="px-4 py-3">Imagem</th>
                   <th className="px-4 py-3">Autor</th>
                   <th className="px-4 py-3">Criado em</th>
                   <th className="px-4 py-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {news.map((item) => (
+                {getFilteredNews().map((item) => (
                   <tr key={item.id} className="border-b border-slate-800 transition hover:bg-slate-900/80">
                     <td className="px-4 py-4 text-white">{item.title}</td>
-                    <td className="px-4 py-4 text-slate-300">{(item as any).summary ? ((item as any).summary.length > 80 ? (item as any).summary.slice(0, 80) + '...' : (item as any).summary) : <span className="text-slate-500">—</span>}</td>
-                    <td className="px-4 py-4 text-slate-300">{(item as any).content ? ((item as any).content.length > 100 ? (item as any).content.slice(0, 100) + '...' : (item as any).content) : <span className="text-slate-500">—</span>}</td>
                     <td className="px-4 py-4">
                       {item.image ? (
                         <img src={item.image} alt={item.title} className="h-14 w-20 rounded-xl object-cover" />
@@ -186,6 +244,8 @@ export default function NewsManagementPage() {
                         <span className="text-slate-500">Sem imagem</span>
                       )}
                     </td>
+                    <td className="px-4 py-4 text-slate-300">{(item as any).summary ? ((item as any).summary.length > 80 ? (item as any).summary.slice(0, 80) + '...' : (item as any).summary) : <span className="text-slate-500">—</span>}</td>
+                    <td className="px-4 py-4 text-slate-300">{(item as any).content ? ((item as any).content.length > 100 ? (item as any).content.slice(0, 100) + '...' : (item as any).content) : <span className="text-slate-500">—</span>}</td>
                     <td className="px-4 py-4">{item.author}</td>
                     <td className="px-4 py-4">{formatDate(item.createdAt)}</td>
                     <td className="px-4 py-4 space-x-2">
@@ -208,9 +268,9 @@ export default function NewsManagementPage() {
                     </td>
                   </tr>
                 ))}
-                {news.length === 0 && (
+                {getFilteredNews().length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
                       Nenhuma notícia encontrada.
                     </td>
                   </tr>
@@ -282,9 +342,14 @@ export default function NewsManagementPage() {
                   <input value={form.author} onChange={(e) => updateField("author", e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-200">Imagem (URL)</label>
-                  <input value={form.image} onChange={(e) => updateField("image", e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white" />
+                  <label className="block text-sm font-semibold text-slate-200">Data de criação</label>
+                  <input type="date" value={form.createdAt} onChange={(e) => updateField("createdAt", e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white" />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-200">Imagem</label>
+                <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-white" />
               </div>
 
               <div className="flex items-center justify-end gap-3">
