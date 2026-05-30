@@ -27,7 +27,7 @@ export default function Home() {
             <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-600">
               Um portal com navegação simples, conteúdo destacado e áreas
               personalizadas para cada membro — tudo com foco em clareza,
-              modernidade e conexão com Hebrom III.
+              modernidade e conexão com Distrito de Hebrom.
             </p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
