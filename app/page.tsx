@@ -33,11 +33,13 @@ export default async function Home() {
     date: item.date,
   }));
 
-  // Combina as notícias estáticas (SLIDES) com as dinâmicas e eventos
+  const carouselNews = dynamicNews.length > 0
+    ? dynamicNews
+    : SLIDES.map((s) => ({ ...s, id: `static-${s.id}` }));
+
   const carouselItems = [
-    ...SLIDES.map(s => ({ ...s, id: `static-${s.id}` })),
-    ...dynamicNews,
-    ...dynamicEvents
+    ...carouselNews,
+    ...dynamicEvents,
   ];
 
   return (

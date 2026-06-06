@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { NEWS_ITEMS } from "../../lib/sliderData";
+import { getLatestNews } from "../../services/news";
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const newsItems = await getLatestNews();
+
   return (
     <main className="bg-slate-950 text-white min-h-screen">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10">
@@ -22,7 +24,7 @@ export default function NewsPage() {
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Total de notícias</p>
-                <p className="mt-3 text-3xl font-semibold text-white">{NEWS_ITEMS.length}</p>
+                <p className="mt-3 text-3xl font-semibold text-white">{newsItems.length}</p>
               </div>
               <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Design</p>
@@ -53,7 +55,7 @@ export default function NewsPage() {
         </div>
 
         <div className="space-y-6">
-          {NEWS_ITEMS.map((news) => (
+          {newsItems.map((news) => (
             <article
               key={news.id}
               className="overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/95 shadow-2xl shadow-slate-950/30 transition duration-300 hover:-translate-y-1 hover:border-sky-300/20 lg:grid lg:grid-cols-[360px_minmax(0,1fr)]"
@@ -68,16 +70,16 @@ export default function NewsPage() {
               </div>
               <div className="p-8">
                 <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.18em] text-slate-400">
-                  <span>{news.date}</span>
+                  <span>{new Date(news.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</span>
                   <span className="inline-flex h-1.5 w-1.5 rounded-full bg-slate-600" />
-                  <span>{news.tag}</span>
+                  <span>Notícia</span>
                 </div>
                 <h2 className="mt-6 text-3xl font-semibold text-white">{news.title}</h2>
                 <p className="mt-5 text-sm leading-7 text-slate-300">{news.summary}</p>
                 <div className="mt-8 flex flex-col gap-4 border-t border-slate-800 pt-6 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Autor</p>
-                    <p className="mt-1 text-sm font-semibold text-white">Equipe Hebrom III</p>
+                    <p className="mt-1 text-sm font-semibold text-white">{news.author}</p>
                   </div>
                   <button className="rounded-full bg-slate-900/90 px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-slate-100 transition hover:bg-slate-800">
                     Ver detalhes

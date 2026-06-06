@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
-import { getLatestNews, getPrismaClient } from "../../../services/news";
+import { getAllNews, getLatestNews, getPrismaClient } from "../../../services/news";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const news = await getLatestNews();
+    const url = new URL(request.url);
+    const limitParam = url.searchParams.get("limit");
+    const limit = limitParam ? Number(limitParam) : undefined;
+
+    const news = limit ? await getLatestNews(limit) : await getAllNews();
     return NextResponse.json({ news });
   } catch (error) {
     console.error("Erro ao buscar notícias:", error);

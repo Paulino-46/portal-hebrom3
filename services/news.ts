@@ -31,7 +31,7 @@ export async function getPrismaClient() {
   }
 }
 
-export async function getLatestNews() {
+export async function getLatestNews(limit = 6) {
   try {
     const prisma = await getPrismaClient();
     if (!prisma) {
@@ -40,7 +40,7 @@ export async function getLatestNews() {
 
     const news = await prisma.news.findMany({
       orderBy: { createdAt: "desc" },
-      take: 6,
+      take: limit,
     });
     if (!news || news.length === 0) {
       return sampleNews;
@@ -57,6 +57,39 @@ export async function getLatestNews() {
     }));
   } catch (error) {
     // Check if error is a Prisma error (table does not exist)
+    if (error && typeof error === 'object' && 'code' in error) {
+      console.warn("Erro ao buscar notícias do banco. Usando dados de exemplo.", (error as any).code);
+      return sampleNews;
+    }
+    console.error("Erro ao buscar notícias:", error);
+    return sampleNews;
+  }
+}
+
+export async function getAllNews() {
+  try {
+    const prisma = await getPrismaClient();
+    if (!prisma) {
+      return sampleNews;
+    }
+
+    const news = await prisma.news.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    if (!news || news.length === 0) {
+      return sampleNews;
+    }
+
+    return news.map((item) => ({
+      id: item.id.toString(),
+      title: item.title,
+      summary: item.summary,
+      content: item.content,
+      author: item.author,
+      image: item.image,
+      createdAt: item.createdAt.toISOString(),
+    }));
+  } catch (error) {
     if (error && typeof error === 'object' && 'code' in error) {
       console.warn("Erro ao buscar notícias do banco. Usando dados de exemplo.", (error as any).code);
       return sampleNews;
