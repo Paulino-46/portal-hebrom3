@@ -1,4 +1,4 @@
-﻿import { getLatestNews } from "../../lib/news";
+﻿import { getLatestNews } from "../../services/news";
 import Link from "next/link";
 
 interface DashboardPageProps {
@@ -37,7 +37,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100">
-      <aside className="hidden w-65 flex-col border-r border-slate-800 bg-slate-900 px-5 py-6 md:flex">
+      <aside className="hidden w-64 flex-col border-r border-slate-800 bg-slate-900 px-5 py-6 md:flex">
         <div className="mb-8 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-blue-600 text-white shadow-lg shadow-blue-950/50">
             H3

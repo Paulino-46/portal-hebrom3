@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getLatestEvents } from "../../../lib/events";
-import dbConnect from "../../../lib/mongodb";
-import Event from "../../../lib/models/Event";
+import { getLatestEvents } from "../../../services/events";
+import prisma from "../../../repositories/prisma";
 
 export async function GET() {
   try {
@@ -22,10 +21,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
     }
 
-    const db = await dbConnect();
-    if (!db) {
-      // Fallback: retornar sucesso com mock ID quando DB não está configurado
-      console.warn("MongoDB não configurado. Retornando mock de evento criado.");
+    if (!process.env.DATABASE_URL) {
+      console.warn("MySQL não configurado. Retornando mock de evento criado.");
       return NextResponse.json({ event: {
         id: Math.random().toString(36).substring(2, 11),
         title,
@@ -37,9 +34,25 @@ export async function POST(request: Request) {
       } }, { status: 201 });
     }
 
-    const createdEvent = await Event.create({ title, description, location, date: new Date(date), time, image });
+    const prismaClient = prisma;
+    if (!prismaClient) {
+      console.error("Prisma não disponível em events/route.ts");
+      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
+    }
+
+    const createdEvent = await prismaClient.event.create({
+      data: {
+        title,
+        description,
+        location,
+        date: new Date(date),
+        time,
+        image,
+      },
+    });
+
     return NextResponse.json({ event: {
-      id: createdEvent._id.toString(),
+      id: createdEvent.id.toString(),
       title: createdEvent.title,
       description: createdEvent.description,
       location: createdEvent.location,

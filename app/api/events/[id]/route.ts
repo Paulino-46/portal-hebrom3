@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
-import dbConnect from "../../../../lib/mongodb";
-import Event from "../../../../lib/models/Event";
+import prisma from "../../../../repositories/prisma";
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
+    const eventId = Number(id);
+    if (Number.isNaN(eventId)) {
+      return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+    }
+
     const body = await request.json();
     const { title, description, location, date, time, image } = body;
 
@@ -11,12 +16,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
     }
 
-    const db = await dbConnect();
-    if (!db) {
-      // Fallback: retornar sucesso com mock quando DB não está configurado
-      console.warn("MongoDB não configurado. Retornando mock de evento atualizado.");
+    if (!process.env.DATABASE_URL) {
+      console.warn("MySQL não configurado. Retornando mock de evento atualizado.");
       return NextResponse.json({ event: {
-        id: params.id,
+        id,
         title,
         description,
         location,
@@ -26,18 +29,26 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       } });
     }
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      params.id,
-      { title, description, location, date: new Date(date), time, image },
-      { new: true }
-    ).lean();
-
-    if (!updatedEvent) {
-      return NextResponse.json({ error: "Evento não encontrado." }, { status: 404 });
+    const prismaClient = prisma;
+    if (!prismaClient) {
+      console.error("Prisma não disponível em events/[id]/route.ts");
+      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
 
+    const updatedEvent = await prismaClient.event.update({
+      where: { id: eventId },
+      data: {
+        title,
+        description,
+        location,
+        date: new Date(date),
+        time,
+        image,
+      },
+    });
+
     return NextResponse.json({ event: {
-      id: updatedEvent._id.toString(),
+      id: updatedEvent.id.toString(),
       title: updatedEvent.title,
       description: updatedEvent.description,
       location: updatedEvent.location,
@@ -51,19 +62,28 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const db = await dbConnect();
-    if (!db) {
-      // Fallback: retornar sucesso com mock quando DB não está configurado
-      console.warn("MongoDB não configurado. Retornando mock de exclusão.");
+    const { id } = await params;
+    const eventId = Number(id);
+    if (Number.isNaN(eventId)) {
+      return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+    }
+
+    if (!process.env.DATABASE_URL) {
+      console.warn("MySQL não configurado. Retornando mock de exclusão.");
       return NextResponse.json({ success: true });
     }
 
-    const deleted = await Event.findByIdAndDelete(params.id).lean();
-    if (!deleted) {
-      return NextResponse.json({ error: "Evento não encontrado." }, { status: 404 });
+    const prismaClient = prisma;
+    if (!prismaClient) {
+      console.error("Prisma não disponível em events/[id]/route.ts");
+      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
+
+    await prismaClient.event.delete({
+      where: { id: eventId },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

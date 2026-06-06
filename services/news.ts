@@ -1,6 +1,3 @@
-import dbConnect from "./mongodb";
-import News from "./models/News";
-
 const sampleNews = [
   {
     id: "1",
@@ -22,20 +19,35 @@ const sampleNews = [
   },
 ];
 
+export async function getPrismaClient() {
+  if (!process.env.DATABASE_URL) return null;
+
+  try {
+    const module = await import("../repositories/prisma");
+    return module.default;
+  } catch (error) {
+    console.error("Falha ao importar Prisma:", error);
+    return null;
+  }
+}
+
 export async function getLatestNews() {
   try {
-    const db = await dbConnect();
-    if (!db) {
+    const prisma = await getPrismaClient();
+    if (!prisma) {
       return sampleNews;
     }
 
-    const news = await News.find().sort({ createdAt: -1 }).limit(6).lean();
+    const news = await prisma.news.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
     if (!news || news.length === 0) {
       return sampleNews;
     }
 
     return news.map((item) => ({
-      id: item._id.toString(),
+      id: item.id.toString(),
       title: item.title,
       summary: item.summary,
       content: item.content,
@@ -44,6 +56,11 @@ export async function getLatestNews() {
       createdAt: item.createdAt.toISOString(),
     }));
   } catch (error) {
+    // Check if error is a Prisma error (table does not exist)
+    if (error && typeof error === 'object' && 'code' in error) {
+      console.warn("Erro ao buscar notícias do banco. Usando dados de exemplo.", (error as any).code);
+      return sampleNews;
+    }
     console.error("Erro ao buscar notícias:", error);
     return sampleNews;
   }

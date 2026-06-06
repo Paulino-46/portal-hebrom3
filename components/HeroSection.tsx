@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { SLIDES } from "../../lib/sliderData";
+import { SLIDES } from "../lib/sliderData";
 
 type Slide = {
   id: string;
@@ -12,6 +12,10 @@ type Slide = {
   desc: string;
   summary: string;
   date: string;
+};
+
+type HeroSectionProps = {
+  items?: Slide[];
 };
 
 const HIGHLIGHTS = [
@@ -47,11 +51,12 @@ const HIGHLIGHTS = [
 
 const VISIBLE = 5;
 
-export default function HeroSection() {
+export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
+  const initialSlides = items.length ? items : SLIDES;
   const pauseRef = useRef(false);
-  const slideCountRef = useRef(SLIDES.length);
+  const slideCountRef = useRef(initialSlides.length);
   const [current, setCurrent] = useState(0);
-  const [slides, setSlides] = useState<Slide[]>(SLIDES);
+  const [slides, setSlides] = useState<Slide[]>(initialSlides);
 
   const selectSlide = (index: number) => {
     const sanitized = Math.max(0, Math.min(index, slides.length - 1));
@@ -59,33 +64,17 @@ export default function HeroSection() {
   };
 
   useEffect(() => {
-    async function loadEventSlides() {
-      try {
-        const response = await fetch("/api/events");
-        const data = await response.json();
+    slideCountRef.current = slides.length;
+  }, [slides.length]);
 
-        if (response.ok && Array.isArray(data.events) && data.events.length > 0) {
-          const eventSlides: Slide[] = data.events.map((item: any) => ({
-            id: item.id,
-            src: item.image || "/img/istockphoto-1144570336-1024x1024.jpg",
-            tag: "Evento",
-            title: item.title,
-            desc: item.location || "",
-            summary: item.description || "",
-            date: item.date ? new Date(item.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }) : "",
-          }));
-
-          setSlides(eventSlides);
-          setCurrent((prev) => Math.min(prev, eventSlides.length - 1));
-          return;
-        }
-      } catch (error) {
-        console.error("Erro ao carregar eventos para o carrossel:", error);
-      }
+  useEffect(() => {
+    if (items.length) {
+      setSlides(items);
+      setCurrent((prev) => Math.min(prev, items.length - 1));
     }
+  }, [items]);
 
-    loadEventSlides();
-
+  useEffect(() => {
     const interval = window.setInterval(() => {
       if (!pauseRef.current) {
         setCurrent((prev) => (prev + 1) % Math.max(1, slideCountRef.current));
@@ -94,10 +83,6 @@ export default function HeroSection() {
 
     return () => window.clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    slideCountRef.current = slides.length;
-  }, [slides.length]);
 
   const move = (dir: number) => selectSlide(current + dir);
 
@@ -289,7 +274,7 @@ export default function HeroSection() {
 
         {/* Dots */}
         <div className="mx-auto mt-7 flex max-w-7xl justify-center gap-2">
-          {Array.from({ length: SLIDES.length }).map((_, i) => (
+          {Array.from({ length: slides.length }).map((_, i) => (
             <button
               key={i}
               onClick={() => selectSlide(i)}

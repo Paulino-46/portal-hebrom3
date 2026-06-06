@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { getLatestNews } from "../../../lib/news";
-import dbConnect from "../../../lib/mongodb";
-import News from "../../../lib/models/News";
+import { getLatestNews, getPrismaClient } from "../../../services/news";
 
 export async function GET() {
   try {
@@ -22,10 +20,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
     }
 
-    const db = await dbConnect();
-    if (!db) {
-      // Fallback: retornar sucesso com mock ID quando DB não está configurado
-      console.warn("MongoDB não configurado. Retornando mock de notícia criada.");
+    if (!process.env.DATABASE_URL) {
+      console.warn("MySQL não configurado. Retornando mock de notícia criada.");
       return NextResponse.json({ news: {
         id: Math.random().toString(36).substring(2, 11),
         title,
@@ -37,9 +33,24 @@ export async function POST(request: Request) {
       } }, { status: 201 });
     }
 
-    const createdNews = await News.create({ title, summary, content, author, image });
+    const prismaClient = await getPrismaClient();
+    if (!prismaClient) {
+      console.error("Prisma não disponível em news/route.ts");
+      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
+    }
+
+    const createdNews = await prismaClient.news.create({
+      data: {
+        title,
+        summary,
+        content,
+        author,
+        image,
+      },
+    });
+
     return NextResponse.json({ news: {
-      id: createdNews._id.toString(),
+      id: createdNews.id.toString(),
       title: createdNews.title,
       summary: createdNews.summary,
       content: createdNews.content,
@@ -49,6 +60,13 @@ export async function POST(request: Request) {
     } }, { status: 201 });
   } catch (error) {
     console.error("Erro ao criar notícia:", error);
+    const code = (error as any)?.code;
+    if (code) {
+      console.error("Prisma error code:", code);
+      if (code === "P2021") {
+        return NextResponse.json({ error: "Tabela 'News' não encontrada no banco de dados. Rode `npm run prisma:migrate`." }, { status: 500 });
+      }
+    }
     return NextResponse.json({ error: "Não foi possível criar a notícia." }, { status: 500 });
   }
 }

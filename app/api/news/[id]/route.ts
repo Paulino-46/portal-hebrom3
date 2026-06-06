@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
-import dbConnect from "../../../../lib/mongodb";
-import News from "../../../../lib/models/News";
+import prisma from "../../../../repositories/prisma";
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
+    const newsId = Number(id);
+    if (Number.isNaN(newsId)) {
+      return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+    }
+
     const body = await request.json();
     const { title, summary, content, author, image } = body;
 
@@ -11,12 +16,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
     }
 
-    const db = await dbConnect();
-    if (!db) {
-      // Fallback: retornar sucesso com mock quando DB não está configurado
-      console.warn("MongoDB não configurado. Retornando mock de notícia atualizada.");
+    if (!process.env.DATABASE_URL) {
+      console.warn("MySQL não configurado. Retornando mock de notícia atualizada.");
       return NextResponse.json({ news: {
-        id: params.id,
+        id,
         title,
         summary,
         content,
@@ -26,18 +29,25 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       } });
     }
 
-    const updatedNews = await News.findByIdAndUpdate(
-      params.id,
-      { title, summary, content, author, image },
-      { new: true }
-    ).lean();
-
-    if (!updatedNews) {
-      return NextResponse.json({ error: "Notícia não encontrada." }, { status: 404 });
+    const prismaClient = prisma;
+    if (!prismaClient) {
+      console.error("Prisma não disponível em news/[id]/route.ts");
+      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
 
+    const updatedNews = await prismaClient.news.update({
+      where: { id: newsId },
+      data: {
+        title,
+        summary,
+        content,
+        author,
+        image,
+      },
+    });
+
     return NextResponse.json({ news: {
-      id: updatedNews._id.toString(),
+      id: updatedNews.id.toString(),
       title: updatedNews.title,
       summary: updatedNews.summary,
       content: updatedNews.content,
@@ -51,19 +61,28 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const db = await dbConnect();
-    if (!db) {
-      // Fallback: retornar sucesso com mock quando DB não está configurado
-      console.warn("MongoDB não configurado. Retornando mock de exclusão.");
+    const { id } = await params;
+    const newsId = Number(id);
+    if (Number.isNaN(newsId)) {
+      return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+    }
+
+    if (!process.env.DATABASE_URL) {
+      console.warn("MySQL não configurado. Retornando mock de exclusão.");
       return NextResponse.json({ success: true });
     }
 
-    const deleted = await News.findByIdAndDelete(params.id).lean();
-    if (!deleted) {
-      return NextResponse.json({ error: "Notícia não encontrada." }, { status: 404 });
+    const prismaClient = prisma;
+    if (!prismaClient) {
+      console.error("Prisma não disponível em news/[id]/route.ts");
+      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
+
+    await prismaClient.news.delete({
+      where: { id: newsId },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

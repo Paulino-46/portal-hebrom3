@@ -1,65 +1,135 @@
 import Link from "next/link";
-import Footer from "./components/Footer";
-import HeroSection from "./components/HeroSection";
-import TopNav from "./components/TopNav";
+import Footer from "../components/Footer";
+import HeroSection from "../components/HeroSection";
+import TopNav from "../components/TopNav";
+import { getLatestNews } from "../services/news";
+import { getLatestEvents } from "../services/events";
+import { SLIDES } from "../lib/sliderData";
 
-export default function Home() {
+export default async function Home() {
+  // Busca dados dinâmicos do banco
+  const newsFromDb = await getLatestNews();
+  const eventsFromDb = await getLatestEvents();
+
+  // Formata as notícias do banco para o formato do slider
+  const dynamicNews = newsFromDb.map((item: any) => ({
+    id: `db-news-${item.id || item._id}`,
+    src: item.image || "/img/istockphoto-1144570336-1024x1024.jpg",
+    tag: "Notícia",
+    title: item.title,
+    desc: item.author || "Equipe Hebrom",
+    summary: item.summary,
+    date: item.createdAt,
+  }));
+
+  // Formata os eventos do banco para o formato do slider
+  const dynamicEvents = eventsFromDb.map((item: any) => ({
+    id: `db-event-${item.id || item._id}`,
+    src: item.image || "/img/istockphoto-1144570336-1024x1024.jpg",
+    tag: "Evento",
+    title: item.title,
+    desc: item.location || "",
+    summary: item.description,
+    date: item.date,
+  }));
+
+  // Combina as notícias estáticas (SLIDES) com as dinâmicas e eventos
+  const carouselItems = [
+    ...SLIDES.map(s => ({ ...s, id: `static-${s.id}` })),
+    ...dynamicNews,
+    ...dynamicEvents
+  ];
+
   return (
     <main className="bg-gradient-to-br from-sky-950 via-slate-950 to-orange-950 text-white">
       <TopNav />
 
       {/* Video hero + carousel in one component */}
-      <HeroSection />
+      <HeroSection items={carouselItems} />
 
       {/* ── ABOUT ── */}
-      <section id="about" className="bg-slate-950/95 text-white px-6 py-24 sm:px-10">
-        <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
-
-          {/* Text */}
-          <div>
+      <section id="about" className="bg-slate-950/95 text-white px-6 sm:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 max-w-3xl">
             <p className="mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
               <span className="block h-px w-5 bg-gold" />
               Sobre o portal
             </p>
             <h2 className="font-serif text-4xl font-bold leading-snug text-navy sm:text-5xl">
-              Uma experiência para toda a igreja
+              O portal da comunidade Hebrom III
             </h2>
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-600">
-              Um portal com navegação simples, conteúdo destacado e áreas
-              personalizadas para cada membro — tudo com foco em clareza,
-              modernidade e conexão com Distrito de Hebrom.
+            <p className="mt-6 text-base leading-relaxed text-slate-400">
+              Um espaço pensado para fortalecer a união entre membros, partilhar notícias,
+              divulgar eventos e lembrar a história da Igreja Adventista do Sétimo Dia.
+              Fé, serviço e informação juntos numa experiência acolhedora para toda a igreja.
             </p>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              {[
-                { icon: "📡", title: "Notícias em tempo real", body: "Fique por dentro de tudo que acontece na igreja instantaneamente." },
-                { icon: "🤝", title: "Projetos sociais", body: "Acompanhe as ações de servir à comunidade ao redor." },
-                { icon: "📅", title: "Agenda de eventos", body: "Todos os cultos e encontros organizados num só lugar." },
-                { icon: "🔐", title: "Área do membro", body: "Acesso exclusivo para membros e administradores." },
-              ].map(({ icon, title, body }) => (
-                <div
-                  key={title}
-                  className="rounded-lg border border-navy/10 bg-white p-5 transition hover:border-gold/50"
-                >
-                  <span className="mb-3 block text-xl">{icon}</span>
-                  <h3 className="mb-1.5 text-sm font-semibold text-navy">{title}</h3>
-                  <p className="text-xs leading-relaxed text-slate-500">{body}</p>
-                </div>
-              ))}
-            </div>
           </div>
 
-          {/* Visual */}
-          <div className="relative">
-            <div className="flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-lg bg-navy">
-              <span className="font-serif text-8xl font-bold text-gold/20">H3</span>
-            </div>
-            <div className="absolute -bottom-5 -left-5 rounded-lg bg-gold p-5 text-center text-navy shadow-xl">
-              <p className="font-serif text-3xl font-bold leading-none">15+</p>
-              <p className="mt-1 text-[0.62rem] font-semibold uppercase tracking-widest">
-                Anos de fé
-              </p>
-            </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            {[
+              {
+                icon: "📖",
+                title: "História da Igreja Adventista",
+                body: "Do movimento do século XIX até a presença atual em nossa comunidade, essa história sustenta nossa fé e compromisso em Hebrom III.",
+                points: [
+                  "A mensagem adventista valoriza o sábado, a saúde e o serviço ao próximo.",
+                  "Essa herança inspira culto, educação e apoio comunitário entre os irmãos.",
+                ],
+                accent: "from-sky-500/25 via-blue-500/15 to-slate-950/0",
+              },
+              {
+                icon: "🏛️",
+                title: "História de Hebrom III",
+                body: "Nossa igreja evoluiu no calor da união, do culto e do serviço social, transformando vidas com amor e presença constante.",
+                points: [
+                  "Hebrom III nasceu do desejo de servir e acolher cada família da região.",
+                  "Cultos, estudos bíblicos e ações sociais marcaram nosso crescimento.",
+                ],
+                accent: "from-red-500/25 via-rose-500/15 to-slate-950/0",
+              },
+              {
+                icon: "🌟",
+                title: "Missão, Valor e Visão",
+                body: "Servir com amor e respeito, valorizar a família e anunciar a esperança, com foco em ação social e transformação espiritual.",
+                points: [
+                  "Missão: levar a palavra e o cuidado cristão a todos que precisam.",
+                  "Valor: fé, família, compaixão e integridade em cada atividade.",
+                ],
+                accent: "from-yellow-300/30 via-orange-400/20 to-orange-950/0",
+              },
+            ].map(({ icon, title, body, points, accent }, idx) => (
+              <article
+                key={`about-card-${idx}`}
+                className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-slate-900/95 p-8 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-gold/40 min-h-[26rem]"
+              >
+                <div className={`pointer-events-none absolute inset-x-8 top-8 h-1.5 rounded-full bg-gradient-to-r ${accent}`} />
+                <div className="relative">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-3xl bg-slate-900/80 text-3xl text-white shadow-inner shadow-slate-900/40">
+                    {icon}
+                  </div>
+                  <h3 className="mb-4 text-2xl font-semibold text-white">{title}</h3>
+                  <p className="text-base leading-relaxed text-slate-300">{body}</p>
+
+                  <ul className="mt-6 space-y-3 text-sm text-slate-400">
+                    {points.map((point, pointIdx) => (
+                      <li key={pointIdx} className="flex items-start gap-3">
+                        <span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white/80" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="mt-8">
+                  <Link
+                    href="/sobre"
+                    className="inline-flex rounded-full bg-gold px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-navy transition hover:bg-gold-light"
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -67,7 +137,7 @@ export default function Home() {
       {/* ── NEWS ── */}
       <section id="news" className="border-t border-sky-400/10 bg-slate-950/95 px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-12 flex items-end justify-between">
+          <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
                 <span className="block h-px w-5 bg-gold" />
@@ -85,59 +155,78 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-            {/* Featured */}
-            <article className="group overflow-hidden rounded-3xl border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer">
-              <div className="aspect-[4/3] overflow-hidden bg-blue-950/10">
-                <div className="h-full w-full bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.22),_transparent_45%),linear-gradient(to_bottom,_rgba(15,23,42,0),_rgba(15,23,42,0.75))]" />
-              </div>
-              <div className="p-6">
-                <span className="inline-block rounded-full bg-blue-500/15 px-3 py-1 text-[0.63rem] font-medium uppercase tracking-[0.18em] text-sky-200 mb-4">
-                  Culto
-                </span>
-                <h3 className="font-serif text-xl font-medium leading-snug text-white mb-2">
-                  Culto de celebração com mensagem especial
-                </h3>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  Mensagens inspiradoras, música e comunhão a cada semana na nossa comunidade.
-                </p>
-                <div className="mt-5 flex items-center justify-between border-t border-blue-400/10 pt-4">
-                  <span className="text-xs text-slate-400">16 Maio 2026</span>
-                  <span className="text-sm text-sky-200">→</span>
+          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+            <article className="group overflow-hidden rounded-[2rem] border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer">
+              <div className="relative overflow-hidden bg-slate-900/60">
+                <img
+                  src={dynamicNews[0]?.src || "/img/istockphoto-1144570336-1024x1024.jpg"}
+                  alt={dynamicNews[0]?.title || "Notícia em destaque"}
+                  className="h-72 w-full object-cover transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/10 to-transparent" />
+                <div className="absolute left-6 bottom-6 right-6">
+                  <span className="inline-flex items-center rounded-full bg-sky-500/15 px-3 py-1 text-[0.63rem] font-medium uppercase tracking-[0.18em] text-sky-200">
+                    {dynamicNews[0]?.tag || "Notícia"}
+                  </span>
+                  <h3 className="mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">
+                    {dynamicNews[0]?.title || "Veja as últimas notícias da comunidade"}
+                  </h3>
+                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
+                    {dynamicNews[0]?.summary || "As principais notícias em destaque para você acompanhar o que acontece na Hebrom III."}
+                  </p>
+                  <div className="mt-6 flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.16em] text-slate-300">
+                    <span>{dynamicNews[0]?.desc || "Equipe Hebrom"}</span>
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-slate-400" />
+                    <span>
+                      {dynamicNews[0]?.date
+                        ? new Date(dynamicNews[0].date).toLocaleDateString("pt-BR", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "Data não disponível"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </article>
 
-            {/* Secondary cards */}
-            {[
-              {
-                tag: "Ação Social",
-                tagClass: "bg-red-900/25 text-red-300",
-                title: "Projeto social na comunidade",
-                body: "Apoio à comunidade e evangelismo em ações de serviço.",
-                date: "14 Maio 2026",
-              },
-            ].map(({ tag, tagClass, title, body, date }) => (
-              <article
-                key={tag}
-                className="group overflow-hidden rounded-3xl border border-white/10 bg-slate-900/95 transition hover:-translate-y-1 hover:border-sky-300/30 cursor-pointer"
-              >
-                <div className="aspect-video bg-gold/5 flex items-center justify-center text-gold/20">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-                </div>
-                <div className="p-5">
-                  <span className={`inline-block rounded-full px-3 py-1 text-[0.63rem] font-medium uppercase tracking-[0.18em] mb-3 ${tagClass}`}>
-                    {tag}
-                  </span>
-                  <h3 className="font-serif text-base font-medium leading-snug text-white mb-2">{title}</h3>
-                  <p className="text-sm leading-relaxed text-slate-400">{body}</p>
-                  <div className="mt-4 flex items-center justify-between border-t border-gold/15 pt-4">
-                    <span className="text-xs text-slate-500">{date}</span>
-                    <span className="text-sm text-gold">→</span>
+            <div className="grid gap-5">
+              {dynamicNews.slice(1, 4).map((item, idx) => (
+                <article
+                  key={`news-card-${idx}`}
+                  className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/95 shadow-lg shadow-slate-950/20 transition hover:-translate-y-1 hover:border-sky-300/30 cursor-pointer"
+                >
+                  <div className="relative h-44 overflow-hidden bg-slate-800">
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
                   </div>
-                </div>
-              </article>
-            ))}
+                  <div className="p-5 sm:p-6">
+                    <span className="mb-3 inline-flex rounded-full bg-slate-700/70 px-3 py-1 text-[0.63rem] font-medium uppercase tracking-[0.18em] text-slate-200">
+                      {item.tag}
+                    </span>
+                    <h3 className="text-base font-semibold leading-snug text-white sm:text-lg">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-400">{item.summary}</p>
+                    <div className="mt-5 flex items-center justify-between border-t border-slate-700/80 pt-4 text-xs text-slate-400">
+                      <span>{item.desc || "Equipe Hebrom"}</span>
+                      <span>
+                        {item.date
+                          ? new Date(item.date).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : ""}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -165,9 +254,9 @@ export default function Home() {
                 { day: "16", month: "Mai", title: "Culto de louvor", body: "Ministração especial de música e palavra de fé com convidados.", time: "Templo principal — 18h00" },
                 { day: "25", month: "Mai", title: "Ação social", body: "Compromisso com a comunidade e cuidado com quem mais precisa.", time: "Sede central — 09h00" },
                 { day: "07", month: "Jun", title: "Semana da família", body: "Uma semana de encontros, reflexão e celebração em família.", time: "Complexo Hebrom — o dia todo" },
-              ].map(({ day, month, title, body, time }) => (
+              ].map(({ day, month, title, body, time }, idx) => (
                 <div
-                  key={title}
+                  key={`event-list-${idx}`}
                   className="flex gap-5 rounded-3xl border border-white/10 bg-slate-900/95 p-5 transition hover:border-sky-300/30 hover:translate-x-1 cursor-pointer"
                 >
                   <div className="flex min-w-[52px] flex-col items-center justify-center rounded-2xl bg-blue-950/90 p-2 text-center">
