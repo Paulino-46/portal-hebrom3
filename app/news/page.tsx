@@ -14,7 +14,7 @@ export default async function NewsPage() {
               Notícias oficiais
             </span>
             <div className="space-y-4">
-              <h1 className="font-serif text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
                 Notícias em cards com imagem à esquerda e conteúdo à direita
               </h1>
               <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">

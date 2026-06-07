@@ -35,18 +35,18 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {[
                 { href: "#about", label: "Sobre nós" },
-                { href: "#news", label: "Notícias" },
-                { href: "#events", label: "Eventos" },
+                { href: "/news", label: "Notícias" },
+                { href: "/events", label: "Eventos" },
                 { href: "#", label: "Galeria" },
                 { href: "/login-admin", label: "Administração" },
               ].map(({ href, label }) => (
                 <li key={href}>
-                  <a
+                  <Link
                     href={href}
                     className="text-sm text-slate-400 transition hover:text-white"
                   >
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

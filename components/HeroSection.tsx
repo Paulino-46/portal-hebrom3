@@ -12,6 +12,7 @@ type Slide = {
   desc: string;
   summary: string;
   date: string;
+  href?: string;
 };
 
 type HeroSectionProps = {
@@ -231,7 +232,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
                 style={{ transform: `translateX(-${current * 364}px)` }}
               >
                 {slides.map((slide, i) => (
-                  <Link key={slide.id} href="/news" className="min-w-[340px] flex-shrink-0">
+                  <Link key={slide.id} href={slide.href || "/news"} className="min-w-[340px] flex-shrink-0">
                     <div
                       className={`relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out ${
                         current === i
@@ -261,7 +262,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
                         </p>
                         <div className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-white/70">
                           <span className="inline-block h-px w-8 bg-sky-300/40" />
-                          Ver notícias relacionadas
+                          {slide.tag === "Evento" ? "Ver detalhes do evento" : "Ver notícias relacionadas"}
                         </div>
                       </div>
                     </div>

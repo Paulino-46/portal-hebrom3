@@ -20,6 +20,7 @@ export default async function Home() {
     desc: item.author || "Equipe Hebrom",
     summary: item.summary,
     date: item.createdAt,
+    href: "/news",
   }));
 
   // Formata os eventos do banco para o formato do slider
@@ -31,6 +32,7 @@ export default async function Home() {
     desc: item.location || "",
     summary: item.description,
     date: item.date,
+    href: "/events",
   }));
 
   const carouselNews = dynamicNews.length > 0
@@ -57,7 +59,7 @@ export default async function Home() {
               <span className="block h-px w-5 bg-gold" />
               Sobre o portal
             </p>
-            <h2 className="font-serif text-4xl font-bold leading-snug text-navy sm:text-5xl">
+            <h2 className="text-4xl font-bold leading-snug text-navy sm:text-5xl">
               O portal da comunidade Hebrom III
             </h2>
             <p className="mt-6 text-base leading-relaxed text-slate-400">
@@ -145,12 +147,12 @@ export default async function Home() {
                 <span className="block h-px w-5 bg-gold" />
                 Notícias
               </p>
-              <h2 className="font-serif text-3xl font-medium text-white sm:text-4xl">
+              <h2 className="text-3xl font-medium text-white sm:text-4xl">
                 Destaques recentes
               </h2>
             </div>
             <Link
-              href="#"
+              href="/news"
               className="hidden rounded border border-gold/30 px-5 py-2.5 text-xs font-medium uppercase tracking-[0.12em] text-gold-light transition hover:border-gold hover:bg-gold/10 sm:inline-flex"
             >
               Ver todas
@@ -243,7 +245,7 @@ export default async function Home() {
               <span className="block h-px w-5 bg-gold" />
               Agenda
             </p>
-            <h2 className="mb-3 font-serif text-4xl font-bold leading-snug text-navy">
+            <h2 className="mb-3 text-4xl font-bold leading-snug text-navy">
               Próximos eventos
             </h2>
             <p className="mb-10 max-w-sm text-sm leading-relaxed text-slate-500">
@@ -252,33 +254,39 @@ export default async function Home() {
             </p>
 
             <div className="flex flex-col gap-3">
-              {[
-                { day: "16", month: "Mai", title: "Culto de louvor", body: "Ministração especial de música e palavra de fé com convidados.", time: "Templo principal — 18h00" },
-                { day: "25", month: "Mai", title: "Ação social", body: "Compromisso com a comunidade e cuidado com quem mais precisa.", time: "Sede central — 09h00" },
-                { day: "07", month: "Jun", title: "Semana da família", body: "Uma semana de encontros, reflexão e celebração em família.", time: "Complexo Hebrom — o dia todo" },
-              ].map(({ day, month, title, body, time }, idx) => (
-                <div
-                  key={`event-list-${idx}`}
+              {dynamicEvents.slice(0, 3).map((event: any) => {
+                return (
+                <Link
+                  href={event.href}
+                  key={event.id}
                   className="flex gap-5 rounded-3xl border border-white/10 bg-slate-900/95 p-5 transition hover:border-sky-300/30 hover:translate-x-1 cursor-pointer"
                 >
-                  <div className="flex min-w-[52px] flex-col items-center justify-center rounded-2xl bg-blue-950/90 p-2 text-center">
-                    <span className="font-serif text-2xl font-bold leading-none text-gold-light">{day}</span>
-                    <span className="mt-0.5 text-[0.58rem] uppercase tracking-widest text-white/40">{month}</span>
+                  <div className="flex-shrink-0">
+                    <img
+                      src={event.src || "/img/istockphoto-1144570336-1024x1024.jpg"} // Use event.src para a imagem
+                      alt={event.title}
+                      className="h-14 w-14 rounded-xl object-cover" // Ajuste o tamanho e estilo conforme necessário
+                    />
                   </div>
-                  <div>
-                    <h3 className="mb-1 text-sm font-semibold text-navy">{title}</h3>
-                    <p className="mb-2 text-xs leading-relaxed text-slate-500">{body}</p>
-                    <p className="text-[0.65rem] font-medium uppercase tracking-[0.12em] text-gold">📍 {time}</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="mb-1 text-sm font-semibold text-navy truncate">{event.title}</h3>
+                    <p className="mb-2 text-xs leading-relaxed text-slate-500 line-clamp-2">{event.summary}</p>
+                    <p className="text-[0.65rem] font-medium uppercase tracking-[0.12em] text-gold truncate">📍 {event.desc}</p>
                   </div>
-                </div>
-              ))}
+                </Link>
+                );
+              })}
+
+              <Link href="/events" className="mt-4 text-center text-xs font-medium uppercase tracking-widest text-gold hover:text-gold-light transition-colors">
+                Ver toda a agenda →
+              </Link>
             </div>
           </div>
 
           {/* Newsletter box */}
           <div className="rounded-3xl bg-blue-950/95 p-8 text-white lg:sticky lg:top-24">
             <p className="mb-4 text-[0.67rem] font-medium uppercase tracking-[0.22em] text-gold">Newsletter</p>
-            <h3 className="mb-3 font-serif text-2xl font-medium">Fique por dentro dos eventos</h3>
+            <h3 className="mb-3 text-2xl font-medium">Fique por dentro dos eventos</h3>
             <p className="mb-6 text-sm leading-relaxed text-slate-400">
               Receba alertas de cultos especiais, eventos e novidades diretamente no seu e-mail.
             </p>
@@ -295,9 +303,9 @@ export default async function Home() {
               />
               <button
                 type="button"
-                className="mt-1 rounded bg-gold py-3 text-xs font-semibold uppercase tracking-[0.14em] text-navy transition hover:bg-gold-light"
+                className="mt-2 rounded-xl bg-gradient-to-r from-gold to-amber-500 py-4 text-xs font-bold uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95"
               >
-                Assinar newsletter
+                ASSINAR Newsletter
               </button>
             </div>
           </div>

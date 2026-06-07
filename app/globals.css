@@ -20,7 +20,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: AdventSans-Logo, sans-serif;
 }
 
 .no-scrollbar {
