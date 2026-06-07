@@ -17,16 +17,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     if (!process.env.DATABASE_URL) {
-      console.warn("MySQL não configurado. Retornando mock de notícia atualizada.");
-      return NextResponse.json({ news: {
-        id,
-        title,
-        summary,
-        content,
-        author,
-        image,
-        createdAt: new Date().toISOString(),
-      } });
+      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
     }
 
     const prismaClient = prisma;
@@ -70,8 +61,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     }
 
     if (!process.env.DATABASE_URL) {
-      console.warn("MySQL não configurado. Retornando mock de exclusão.");
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
     }
 
     const prismaClient = prisma;

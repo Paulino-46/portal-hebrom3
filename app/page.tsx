@@ -60,7 +60,7 @@ export default async function Home() {
               Sobre o portal
             </p>
             <h2 className="text-4xl font-bold leading-snug text-navy sm:text-5xl">
-              O portal da comunidade Hebrom III
+              O portal da comunidade do Distrito de Hebrom 
             </h2>
             <p className="mt-6 text-base leading-relaxed text-slate-400">
               Um espaço pensado para fortalecer a união entre membros, partilhar notícias,

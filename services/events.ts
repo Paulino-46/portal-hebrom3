@@ -1,24 +1,3 @@
-const sampleEvents = [
-  {
-    id: "1",
-    title: "Culto de Louvor",
-    description: "Ministração especial de música, pregação e comunhão para toda a família.",
-    location: "Templo principal",
-    date: new Date().toISOString(),
-    time: "18:00",
-    image: "/img/istockphoto-1144570336-1024x1024.jpg",
-  },
-  {
-    id: "2",
-    title: "Ação Social Hebrom III",
-    description: "Atendimento à comunidade com distribuição de mantimentos e apoio pastoral.",
-    location: "Sede central",
-    date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(),
-    time: "09:00",
-    image: "/img/istockphoto-2195095144-1024x1024.jpg",
-  },
-];
-
 async function getPrismaClient() {
   if (!process.env.DATABASE_URL) return null;
 
@@ -35,14 +14,14 @@ export async function getLatestEvents() {
   try {
     const prisma = await getPrismaClient();
     if (!prisma) {
-      return sampleEvents;
+      return [];
     }
 
     const events = await prisma.event.findMany({
       orderBy: { date: "asc" },
     });
     if (!events || events.length === 0) {
-      return sampleEvents;
+      return [];
     }
 
     return events.map((item) => ({
@@ -58,9 +37,9 @@ export async function getLatestEvents() {
     // Check if error is a Prisma error (table does not exist)
     if (error && typeof error === 'object' && 'code' in error) {
       console.warn("Erro ao buscar eventos do banco. Usando dados de exemplo.", (error as any).code);
-      return sampleEvents;
+      return [];
     }
     console.error("Erro ao buscar eventos:", error);
-    return sampleEvents;
+    return [];
   }
 }

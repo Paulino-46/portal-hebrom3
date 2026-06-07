@@ -25,16 +25,7 @@ export async function POST(request: Request) {
     }
 
     if (!process.env.DATABASE_URL) {
-      console.warn("MySQL não configurado. Retornando mock de notícia criada.");
-      return NextResponse.json({ news: {
-        id: Math.random().toString(36).substring(2, 11),
-        title,
-        summary,
-        content,
-        author,
-        image,
-        createdAt: new Date().toISOString(),
-      } }, { status: 201 });
+      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
     }
 
     const prismaClient = await getPrismaClient();

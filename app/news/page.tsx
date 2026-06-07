@@ -21,7 +21,7 @@ export default async function NewsPage() {
                 Um formato editorial moderno que destaca as imagens do carrossel e apresenta cada publicação com clareza e autoridade.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Total de notícias</p>
                 <p className="mt-3 text-3xl font-semibold text-white">{newsItems.length}</p>
@@ -29,10 +29,6 @@ export default async function NewsPage() {
               <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Design</p>
                 <p className="mt-3 text-3xl font-semibold text-white">Editorial</p>
-              </div>
-              <div className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Imagens</p>
-                <p className="mt-3 text-3xl font-semibold text-white">Carrossel</p>
               </div>
             </div>
           </div>

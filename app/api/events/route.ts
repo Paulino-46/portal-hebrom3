@@ -22,16 +22,7 @@ export async function POST(request: Request) {
     }
 
     if (!process.env.DATABASE_URL) {
-      console.warn("MySQL não configurado. Retornando mock de evento criado.");
-      return NextResponse.json({ event: {
-        id: Math.random().toString(36).substring(2, 11),
-        title,
-        description,
-        location,
-        date: new Date(date).toISOString(),
-        time,
-        image,
-      } }, { status: 201 });
+      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
     }
 
     const prismaClient = prisma;
