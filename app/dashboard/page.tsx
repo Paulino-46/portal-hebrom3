@@ -1,4 +1,4 @@
-﻿// import { getLatestNews } from "../../services/news";
+﻿﻿// import { getLatestNews } from "../../services/news";
 import Link from "next/link";
 
 interface DashboardPageProps {
@@ -126,12 +126,63 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto px-6 py-8 
+        <main className="flex-1 overflow-y-auto px-6 py-8
           [&::-webkit-scrollbar]:w-1.5 
           [&::-webkit-scrollbar-track]:bg-slate-950 
           [&::-webkit-scrollbar-thumb]:bg-slate-800 
           [&::-webkit-scrollbar-thumb]:rounded-full 
-          hover:[&::-webkit-scrollbar-thumb]:bg-slate-700" />
+          hover:[&::-webkit-scrollbar-thumb]:bg-slate-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* Card 1: Notícias */}
+            <div className="rounded-2xl bg-slate-900 p-5 shadow-lg shadow-slate-950/30 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-400">Notícias</p>
+                <p className="text-2xl font-bold text-white mt-1">120</p> {/* Placeholder */}
+                <p className="text-xs text-slate-500">Novas Notícias</p>
+              </div>
+              <div className="text-blue-400 text-3xl">
+                <NewsIcon />
+              </div>
+            </div>
+
+            {/* Card 2: Eventos */}
+            <div className="rounded-2xl bg-slate-900 p-5 shadow-lg shadow-slate-950/30 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-400">Eventos</p>
+                <p className="text-2xl font-bold text-white mt-1">15</p> {/* Placeholder */}
+                <p className="text-xs text-slate-500">Próximos Eventos</p>
+              </div>
+              <div className="text-orange-400 text-3xl">
+                <TicketIcon />
+              </div>
+            </div>
+
+            {/* Card 3: Cronograma */}
+            <div className="rounded-2xl bg-slate-900 p-5 shadow-lg shadow-slate-950/30 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-400">Cronograma</p>
+                <p className="text-2xl font-bold text-white mt-1">7</p> {/* Placeholder */}
+                <p className="text-xs text-slate-500">Atividades da Semana</p>
+              </div>
+              <div className="text-green-400 text-3xl">
+                <CalendarIcon />
+              </div>
+            </div>
+
+            {/* Card 4: Vitrine */}
+            <div className="rounded-2xl bg-slate-900 p-5 shadow-lg shadow-slate-950/30 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-400">Vitrine</p>
+                <p className="text-2xl font-bold text-white mt-1">25</p> {/* Placeholder */}
+                <p className="text-xs text-slate-500">Produtos em Destaque</p>
+              </div>
+              <div className="text-purple-400 text-3xl">
+                <ShopIcon />
+              </div>
+            </div>
+          </div>
+          {/* Other dashboard content will go here */}
+        </main>
       </div>
     </div>
   );
