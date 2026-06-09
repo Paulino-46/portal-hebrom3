@@ -1,13 +1,53 @@
-﻿﻿// import { getLatestNews } from "../../services/news";
+﻿﻿﻿﻿// import { getLatestNews } from "../../services/news";
 import Link from "next/link";
+import prisma from "../../repositories/prisma";
+
+declare const main: any; // Adicionado para resolver o erro "Cannot find name 'main'"
+
+interface BibleVerse {
+  reference: string;
+  text: string;
+}
 
 interface DashboardPageProps {
   searchParams?: { role?: string };
 }
 
+async function getRandomBibleVerse(): Promise<BibleVerse | null> {
+  try {
+    // A API bible-api.com não possui um endpoint nativo para versículos aleatórios.
+    // Usamos uma lista de passagens selecionadas para garantir qualidade e evitar erros 404.
+    const passages = [
+      "João 3:16", "Salmos 23:1", "Filipenses 4:13", "Isaías 41:10",
+      "Josué 1:9", "Mateus 11:28", "Romanos 8:28", "Jeremias 29:11",
+      "Salmos 46:1", "Mateus 6:33", "1 Coríntios 13:4", "Provérbios 3:5"
+    ];
+    const randomPassage = passages[Math.floor(Math.random() * passages.length)];
+
+    // A API utiliza 'almeida' como slug para português.
+    const response = await fetch(`https://bible-api.com/${encodeURIComponent(randomPassage)}?translation=almeida`);
+
+    if (!response.ok) {
+      console.error(`Erro ao buscar versículo bíblico: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const data: any = await response.json();
+    return { reference: data.reference, text: data.text.trim() };
+  } catch (error) {
+    console.error("Erro ao buscar versículo bíblico:", error);
+    return null;
+  }
+}
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const role = searchParams?.role === "admin" ? "admin" : "user";
-  // const news = await getLatestNews();
+  const bibleVerse = await getRandomBibleVerse();
+
+  const [newsCount, eventsCount] = await Promise.all([
+    prisma!.news.count().catch(() => 0),
+    prisma!.event.count().catch(() => 0),
+  ]);
 
   const sidebarItems = [
     { href: "/dashboard", label: "Painel", icon: <GridIcon />, active: true },
@@ -137,7 +177,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <div className="rounded-2xl bg-slate-900 p-5 shadow-lg shadow-slate-950/30 flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-400">Notícias</p>
-                <p className="text-2xl font-bold text-white mt-1">120</p> {/* Placeholder */}
+                <p className="text-2xl font-bold text-white mt-1">{newsCount}</p>
                 <p className="text-xs text-slate-500">Novas Notícias</p>
               </div>
               <div className="text-blue-400 text-3xl">
@@ -149,7 +189,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <div className="rounded-2xl bg-slate-900 p-5 shadow-lg shadow-slate-950/30 flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-400">Eventos</p>
-                <p className="text-2xl font-bold text-white mt-1">15</p> {/* Placeholder */}
+                <p className="text-2xl font-bold text-white mt-1">{eventsCount}</p>
                 <p className="text-xs text-slate-500">Próximos Eventos</p>
               </div>
               <div className="text-orange-400 text-3xl">
@@ -179,6 +219,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               <div className="text-purple-400 text-3xl">
                 <ShopIcon />
               </div>
+            </div>
+          </div>
+
+          {/* Card: Versículo Bíblico Dinâmico */}
+          <div className="grid grid-cols-1">
+            <div className="rounded-2xl bg-slate-900 p-8 shadow-lg shadow-slate-950/30 text-center flex flex-col justify-center items-center">
+              {bibleVerse ? (
+                <>
+                  <p className="text-xl font-semibold text-white leading-relaxed mb-4">"{bibleVerse.text}"</p>
+                  <p className="text-sm text-purple-200 font-medium">- {bibleVerse.reference}</p>
+                </>
+              ) : (
+                <p className="text-lg text-red-300">Não foi possível carregar o versículo bíblico. Tente novamente mais tarde.</p>
+              )}
             </div>
           </div>
           {/* Other dashboard content will go here */}

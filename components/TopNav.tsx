@@ -1,97 +1,115 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function TopNav() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o dropdown ao clicar fora dele para melhorar a UX
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gold/20 bg-navy/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-0 sm:px-10 h-[68px]">
-
-        {/* Logo */}
-        <Link href="/" className="font-serif text-xl font-bold tracking-wide text-gold-light">
-          Hebrom <span className="font-normal text-white">III</span>
-        </Link>
-
-        {/* Nav links */}
-        <nav className="hidden items-center gap-8 md:flex">
-          {[
-            { href: "#about", label: "Sobre" },
-            { href: "#news", label: "Notícias" },
-            { href: "#events", label: "Eventos" },
-            { href: "#contact", label: "Contato" },
-          ].map(({ href, label }) => (
-            <a
-              key={href}
-              href={href}
-              className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400 transition-colors hover:text-gold-light"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        {/* CTA buttons */}
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login-admin"
-            className="hidden rounded-full border border-gold/30 px-5 py-2 text-xs font-medium uppercase tracking-[0.12em] text-gold-light transition hover:border-gold hover:bg-gold/10 sm:inline-flex"
-          >
-            Admin
-          </Link>
-          <Link
-            href="/login-user"
-            className="rounded-full bg-gold px-5 py-2 text-xs font-medium uppercase tracking-[0.12em] text-navy transition hover:bg-gold-light"
-          >
-            Entrar
+    <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-6 sm:px-10">
+        <div className="flex h-20 items-center justify-between">
+          {/* Logo e Branding */}
+          <Link href="/" className="group flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold text-navy font-black shadow-[0_0_20px_rgba(212,175,55,0.3)] transition group-hover:scale-110">
+              H3
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="text-lg font-bold tracking-tighter text-white">HEBROM</span>
+              <span className="text-[9px] font-medium uppercase tracking-[0.3em] text-gold/80">Portal Comunitário</span>
+            </div>
           </Link>
 
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
-            className="ml-1 flex flex-col gap-1.5 md:hidden"
-            aria-label="Menu"
-          >
-            <span className={`block h-px w-6 bg-white transition-all ${menuOpen ? "translate-y-2 rotate-45" : ""}`} />
-            <span className={`block h-px w-6 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block h-px w-6 bg-white transition-all ${menuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
-          </button>
+          {/* Navegação Principal */}
+          <div className="hidden items-center gap-10 md:flex">
+            <Link href="/#about" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition">Sobre</Link>
+            <Link href="/news" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition">Notícias</Link>
+            <Link href="/events" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition">Eventos</Link>
+            
+            {/* Botão de Entrada com Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-3 rounded-full bg-gold px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/10 transition-all hover:shadow-gold/20 hover:brightness-110 active:scale-95"
+              >
+                Entrar
+                <svg 
+                  className={`h-3 w-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="4"
+                >
+                  <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {/* Dropdown Card Estilizado */}
+              {isOpen && (
+                <div className="absolute right-0 mt-4 w-72 origin-top-right overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="px-5 py-4 border-b border-white/5 mb-2">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold">Área de Acesso</h4>
+                    <p className="text-[11px] text-slate-500 mt-1">Bem-vindo à comunidade Hebrom III</p>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Link
+                      href="/login-user"
+                      onClick={() => setIsOpen(false)}
+                      className="group flex items-center gap-4 rounded-[1.5rem] px-5 py-4 transition hover:bg-gold hover:text-navy"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 transition group-hover:bg-navy/10 group-hover:text-navy">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold">Login</span>
+                        <span className="text-[10px] opacity-60">Acesse sua conta</span>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="group flex items-center gap-4 rounded-[1.5rem] px-5 py-4 transition hover:bg-white/5"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 transition group-hover:bg-slate-700">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-white transition group-hover:text-gold">Register</span>
+                        <span className="text-[10px] text-slate-500">Crie seu perfil</span>
+                      </div>
+                    </Link>
+                  </div>
+                  
+                  <div className="mt-4 bg-slate-950/50 p-4 rounded-[1.75rem]">
+                    <p className="text-[9px] text-center leading-relaxed text-slate-500 uppercase tracking-[0.15em]">
+                      Distrito de Hebrom III
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="border-t border-gold/20 bg-navy px-6 py-4 md:hidden">
-          <nav className="flex flex-col gap-3">
-            {[
-              { href: "#about", label: "Sobre" },
-              { href: "#news", label: "Notícias" },
-              { href: "#events", label: "Eventos" },
-              { href: "#contact", label: "Contato" },
-            ].map(({ href, label }) => (
-              <a
-                key={href}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="border-b border-gold/10 py-2.5 text-sm font-medium text-slate-300 transition hover:text-gold-light"
-              >
-                {label}
-              </a>
-            ))}
-            <div className="mt-2 flex gap-3">
-              <Link href="/login-user" className="flex-1 rounded-full bg-gold py-2.5 text-center text-xs font-semibold uppercase tracking-widest text-navy">
-                Usuário
-              </Link>
-              <Link href="/login-admin" className="flex-1 rounded-full border border-gold/40 py-2.5 text-center text-xs font-semibold uppercase tracking-widest text-gold-light">
-                Admin
-              </Link>
-            </div>
-          </nav>
-        </div>
-      )}
-    </header>
+    </nav>
   );
 }

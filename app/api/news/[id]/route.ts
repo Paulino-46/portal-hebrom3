@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "../../../../repositories/prisma";
+import { getPrismaClient } from "../../../../services/news";
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -16,11 +16,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
     }
 
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
-    }
-
-    const prismaClient = prisma;
+    const prismaClient = await getPrismaClient();
     if (!prismaClient) {
       console.error("Prisma não disponível em news/[id]/route.ts");
       return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
@@ -60,11 +56,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "ID inválido." }, { status: 400 });
     }
 
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
-    }
-
-    const prismaClient = prisma;
+    const prismaClient = await getPrismaClient();
     if (!prismaClient) {
       console.error("Prisma não disponível em news/[id]/route.ts");
       return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });

@@ -5,9 +5,9 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const limitParam = url.searchParams.get("limit");
-    const limit = limitParam ? Number(limitParam) : undefined;
+    const limit = limitParam && !isNaN(Number(limitParam)) ? Number(limitParam) : undefined;
 
-    const news = limit ? await getLatestNews(limit) : await getAllNews();
+    const news = limit !== undefined ? await getLatestNews(limit) : await getAllNews();
     return NextResponse.json({ news });
   } catch (error) {
     console.error("Erro ao buscar notícias:", error);

@@ -1,31 +1,48 @@
 import { NextResponse } from "next/server";
-
-const validCredentials = {
-  user: {
-    email: process.env.USER_EMAIL || "user@hebrom3.com",
-    password: process.env.USER_PASSWORD || "user123",
-  },
-  admin: {
-    email: process.env.ADMIN_EMAIL || "admin@hebrom3.com",
-    password: process.env.ADMIN_PASSWORD || "admin123",
-  },
-};
+import bcrypt from "bcryptjs";
+import prisma from "../../../../repositories/prisma";
 
 export async function POST(request: Request) {
-  const query = new URL(request.url).searchParams;
-  const role = query.get("role") === "admin" ? "admin" : "user";
-
   try {
     const body = await request.json();
     const { email, password } = body;
-    const target = validCredentials[role];
 
-    if (email === target.email && password === target.password) {
-      return NextResponse.json({ ok: true, redirect: `/dashboard?role=${role}` });
+    // Validação básica dos campos obrigatórios
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: "E-mail e senha são obrigatórios." },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ ok: false, message: "Credenciais inválidas." }, { status: 401 });
+    // Verificação de segurança para o Prisma
+    if (!prisma || !prisma.user) {
+      console.error("Modelo 'user' não encontrado no Prisma Client. Execute 'npx prisma generate'.");
+      return NextResponse.json(
+        { message: "Configuração do banco de dados incompleta." },
+        { status: 500 }
+      );
+    }
+
+    // Buscar o usuário pelo e-mail
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    // Se o usuário não for encontrado ou a senha não corresponder
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return NextResponse.json(
+        { message: "Credenciais inválidas." },
+        { status: 401 }
+      );
+    }
+
+    // Login bem-sucedido
+    // Aqui você pode gerar um token JWT, configurar uma sessão, etc.
+    // Por enquanto, vamos apenas redirecionar para o dashboard.
+    return NextResponse.json({ ok: true, redirect: "/dashboard" }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ ok: false, message: "Erro ao processar login." }, { status: 500 });
+    console.error("Erro ao tentar fazer login:", error);
+    return NextResponse.json({ message: "Ocorreu um erro ao tentar fazer login." }, { status: 500 });
   }
 }

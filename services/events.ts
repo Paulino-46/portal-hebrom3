@@ -1,22 +1,7 @@
-async function getPrismaClient() {
-  if (!process.env.DATABASE_URL) return null;
-
-  try {
-    const module = await import("../repositories/prisma");
-    return module.default;
-  } catch (error) {
-    console.error("Falha ao importar Prisma:", error);
-    return null;
-  }
-}
+import prisma from "../repositories/prisma";
 
 export async function getLatestEvents() {
   try {
-    const prisma = await getPrismaClient();
-    if (!prisma) {
-      return [];
-    }
-
     const events = await prisma.event.findMany({
       orderBy: { date: "asc" },
     });

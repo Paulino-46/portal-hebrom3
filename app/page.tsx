@@ -57,7 +57,7 @@ export default async function Home() {
           <div className="mb-16 max-w-3xl">
             <p className="mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
               <span className="block h-px w-5 bg-gold" />
-              Sobre o portal
+              Sobre o portal 
             </p>
             <h2 className="text-4xl font-bold leading-snug text-navy sm:text-5xl">
               O portal da comunidade do Distrito de Hebrom 
@@ -146,7 +146,7 @@ export default async function Home() {
               <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
                 <span className="block h-px w-5 bg-gold" />
                 Notícias
-              </p>
+            </p>
               <h2 className="text-3xl font-medium text-white sm:text-4xl">
                 Destaques recentes
               </h2>
