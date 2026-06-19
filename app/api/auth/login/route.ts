@@ -3,46 +3,55 @@ import bcrypt from "bcryptjs";
 import prisma from "../../../../repositories/prisma";
 
 export async function POST(request: Request) {
+  const query = new URL(request.url).searchParams;
+  const role = query.get("role") === "admin" ? "admin" : "user";
+
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { password } = body;
+    const email = body.email?.toLowerCase().trim();
 
-    // Validação básica dos campos obrigatórios
     if (!email || !password) {
       return NextResponse.json(
-        { message: "E-mail e senha são obrigatórios." },
+        { ok: false, message: "E-mail e senha são obrigatórios." },
         { status: 400 }
       );
     }
 
-    // Verificação de segurança para o Prisma
-    if (!prisma || !prisma.user) {
-      console.error("Modelo 'user' não encontrado no Prisma Client. Execute 'npx prisma generate'.");
-      return NextResponse.json(
-        { message: "Configuração do banco de dados incompleta." },
-        { status: 500 }
-      );
-    }
-
-    // Buscar o usuário pelo e-mail
+    // 1. Buscar o usuário no banco de dados pelo e-mail
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    // Se o usuário não for encontrado ou a senha não corresponder
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
       return NextResponse.json(
-        { message: "Credenciais inválidas." },
+        { ok: false, message: "Credenciais inválidas." },
         { status: 401 }
       );
     }
 
-    // Login bem-sucedido
-    // Aqui você pode gerar um token JWT, configurar uma sessão, etc.
-    // Por enquanto, vamos apenas redirecionar para o dashboard.
-    return NextResponse.json({ ok: true, redirect: "/dashboard" }, { status: 200 });
+    // 2. Verificar se a senha está correta usando bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { ok: false, message: "Credenciais inválidas." },
+        { status: 401 }
+      );
+    }
+
+    // Sucesso no login
+    return NextResponse.json({
+      ok: true,
+      redirect: `/dashboard?role=${role}`,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (error) {
-    console.error("Erro ao tentar fazer login:", error);
-    return NextResponse.json({ message: "Ocorreu um erro ao tentar fazer login." }, { status: 500 });
+    console.error("Erro ao processar login:", error);
+    return NextResponse.json({ ok: false, message: "Erro ao processar login." }, { status: 500 });
   }
 }

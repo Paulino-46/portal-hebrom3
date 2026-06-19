@@ -5,58 +5,65 @@ import prisma from "../../../repositories/prisma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, church, email, password } = body;
+    const { password } = body;
+    const email = body.email?.toLowerCase().trim();
 
-    // Validação básica dos campos obrigatórios
-    if (!name || !church || !email || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "Campos obrigatórios ausentes: nome, igreja, e-mail e senha são necessários." },
+        { error: "E-mail e senha são obrigatórios." },
         { status: 400 }
       );
     }
 
-    // Verificação de segurança para o Prisma
-    if (!prisma || !prisma.user) {
-      console.error("Modelo 'user' não encontrado no Prisma Client. Execute 'npx prisma generate'.");
+    // 1. Verificar se o usuário existe
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      // Retornamos 401 mas com mensagem genérica por segurança
       return NextResponse.json(
-        { error: "Configuração do banco de dados incompleta." },
+        { error: "Credenciais inválidas." },
+        { status: 401 }
+      );
+    }
+
+    // 2. Comparar a senha digitada com o hash do banco
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: "Credenciais inválidas." },
+        { status: 401 }
+      );
+    }
+
+    // Aqui você normalmente criaria uma sessão ou um JWT.
+    // Por enquanto, retornamos o sucesso e os dados básicos.
+    return NextResponse.json(
+      {
+        message: "Login realizado com sucesso!",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Erro no login:", error);
+
+    // Caso o erro P2021 ocorra aqui também (tabela não existe)
+    if (error.code === 'P2021') {
+      return NextResponse.json(
+        { error: "Erro de banco de dados. Tabela 'users' não encontrada." },
         { status: 500 }
       );
     }
 
-    // Verificar se o usuário já existe
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "Este endereço de e-mail já está em uso." },
-        { status: 400 }
-      );
-    }
-
-    // Hash da senha antes de salvar
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 é o número de 'salt rounds'
-
-    // Criar o novo usuário com a senha hashada
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        church,
-        email,
-        password: hashedPassword, // Salva a senha hashada
-      },
-    });
-
     return NextResponse.json(
-      { message: "Usuário cadastrado com sucesso!", userId: newUser.id },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Erro ao registrar usuário:", error);
-    return NextResponse.json(
-      { error: "Ocorreu um erro ao processar o seu cadastro." },
+      { error: "Ocorreu um erro interno no servidor." },
       { status: 500 }
     );
   }
