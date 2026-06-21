@@ -1,5 +1,26 @@
+// app/api/news/route.ts
 import { NextResponse } from "next/server";
-import { getAllNews, getLatestNews, getPrismaClient } from "../../../services/news";
+import { getAllNews, getPrismaClient } from "../../../services/news";
+import { writeFile, mkdir } from "fs/promises";
+import { existsSync } from "fs";
+import path from "path";
+
+async function saveImage(file: File): Promise<string> {
+  const uploadDir = path.join(process.cwd(), "public", "news_images");
+  if (!existsSync(uploadDir)) {
+    await mkdir(uploadDir, { recursive: true });
+  }
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filePath = path.join(uploadDir, fileName);
+
+  await writeFile(filePath, buffer);
+  return `/news_images/${fileName}`;
+}
 
 export async function GET(request: Request) {
   try {
@@ -7,7 +28,10 @@ export async function GET(request: Request) {
     const limitParam = url.searchParams.get("limit");
     const limit = limitParam && !isNaN(Number(limitParam)) ? Number(limitParam) : undefined;
 
-    const news = limit !== undefined ? await getLatestNews(limit) : await getAllNews();
+    const news = limit !== undefined
+      ? await (await import("../../../services/news")).getLatestNews(limit)
+      : await getAllNews();
+
     return NextResponse.json({ news });
   } catch (error) {
     console.error("Erro ao buscar notícias:", error);
@@ -17,11 +41,18 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { title, summary, content, author, image } = body;
+    const formData = await request.formData();
+    const title   = formData.get("title")   as string | null;
+    const summary = formData.get("summary") as string | null;
+    const content = formData.get("content") as string | null;
+    const author  = formData.get("author")  as string | null;
+    const imageFile = formData.get("image") as File | null;
 
-    if (!title || !summary || !content || !author || !image) {
-      return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
+    if (!title || !summary || !content || !author) {
+      return NextResponse.json({ error: "Todos os campos de texto são obrigatórios." }, { status: 400 });
+    }
+    if (!imageFile || imageFile.size === 0) {
+      return NextResponse.json({ error: "A imagem é obrigatória para criar uma notícia." }, { status: 400 });
     }
 
     if (!process.env.DATABASE_URL) {
@@ -30,37 +61,35 @@ export async function POST(request: Request) {
 
     const prismaClient = await getPrismaClient();
     if (!prismaClient) {
-      console.error("Prisma não disponível em news/route.ts");
       return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
 
-    const createdNews = await prismaClient.news.create({
-      data: {
-        title,
-        summary,
-        content,
-        author,
-        image,
-      },
+    const imagePath = await saveImage(imageFile);
+
+    const created = await prismaClient.news.create({
+      data: { title, summary, content, author, image: imagePath },
     });
 
-    return NextResponse.json({ news: {
-      id: createdNews.id.toString(),
-      title: createdNews.title,
-      summary: createdNews.summary,
-      content: createdNews.content,
-      author: createdNews.author,
-      image: createdNews.image,
-      createdAt: createdNews.createdAt.toISOString(),
-    } }, { status: 201 });
+    return NextResponse.json({
+      news: {
+        id:        created.id.toString(),
+        title:     created.title,
+        summary:   created.summary,
+        content:   created.content,
+        author:    created.author,
+        image:     created.image,
+        createdAt: created.createdAt.toISOString(),
+      },
+    }, { status: 201 });
+
   } catch (error) {
     console.error("Erro ao criar notícia:", error);
     const code = (error as any)?.code;
-    if (code) {
-      console.error("Prisma error code:", code);
-      if (code === "P2021") {
-        return NextResponse.json({ error: "Tabela 'News' não encontrada no banco de dados. Rode `npm run prisma:migrate`." }, { status: 500 });
-      }
+    if (code === "P2021") {
+      return NextResponse.json(
+        { error: "Tabela 'News' não encontrada. Rode `npm run prisma:migrate`." },
+        { status: 500 }
+      );
     }
     return NextResponse.json({ error: "Não foi possível criar a notícia." }, { status: 500 });
   }

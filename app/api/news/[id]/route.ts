@@ -1,7 +1,42 @@
+// app/api/news/[id]/route.ts
 import { NextResponse } from "next/server";
 import { getPrismaClient } from "../../../../services/news";
+import { writeFile, mkdir, unlink } from "fs/promises";
+import { existsSync } from "fs";
+import path from "path";
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+async function saveImage(file: File): Promise<string> {
+  const uploadDir = path.join(process.cwd(), "public", "news_images");
+  if (!existsSync(uploadDir)) {
+    await mkdir(uploadDir, { recursive: true });
+  }
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filePath = path.join(uploadDir, fileName);
+
+  await writeFile(filePath, buffer);
+  return `/news_images/${fileName}`;
+}
+
+async function deleteImageFile(imagePath: string | null) {
+  if (!imagePath) return;
+  try {
+    const fullPath = path.join(process.cwd(), "public", imagePath);
+    if (existsSync(fullPath)) await unlink(fullPath);
+  } catch {
+    // não crítico — apenas loga
+    console.warn("Não foi possível remover o arquivo de imagem:", imagePath);
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params;
     const newsId = Number(id);
@@ -9,46 +44,66 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "ID inválido." }, { status: 400 });
     }
 
-    const body = await request.json();
-    const { title, summary, content, author, image } = body;
+    const formData   = await request.formData();
+    const title      = formData.get("title")        as string | null;
+    const summary    = formData.get("summary")      as string | null;
+    const content    = formData.get("content")      as string | null;
+    const author     = formData.get("author")       as string | null;
+    const imageFile  = formData.get("image")        as File | null;
+    const keepOld    = formData.get("keepOldImage") as string | null;
 
-    if (!title || !summary || !content || !author || !image) {
-      return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
+    if (!title || !summary || !content || !author) {
+      return NextResponse.json({ error: "Todos os campos de texto são obrigatórios." }, { status: 400 });
     }
 
     const prismaClient = await getPrismaClient();
     if (!prismaClient) {
-      console.error("Prisma não disponível em news/[id]/route.ts");
       return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
 
-    const updatedNews = await prismaClient.news.update({
+    // Busca o registo atual para saber a imagem existente
+    const existing = await prismaClient.news.findUnique({ where: { id: newsId } });
+    if (!existing) {
+      return NextResponse.json({ error: "Notícia não encontrada." }, { status: 404 });
+    }
+
+    let imagePath: string = existing.image ?? "";
+
+    // Se enviou nova imagem, salva e apaga a antiga
+    if (imageFile && imageFile.size > 0) {
+      imagePath = await saveImage(imageFile);
+      await deleteImageFile(existing.image);
+    } else if (!keepOld) {
+      // Sem nova imagem e sem flag de manter — obrigatório para criação mas opcional em edição
+      // Mantém a imagem existente silenciosamente
+    }
+
+    const updated = await prismaClient.news.update({
       where: { id: newsId },
-      data: {
-        title,
-        summary,
-        content,
-        author,
-        image,
-      },
+      data: { title, summary, content, author, image: imagePath },
     });
 
-    return NextResponse.json({ news: {
-      id: updatedNews.id.toString(),
-      title: updatedNews.title,
-      summary: updatedNews.summary,
-      content: updatedNews.content,
-      author: updatedNews.author,
-      image: updatedNews.image,
-      createdAt: updatedNews.createdAt.toISOString(),
-    } });
+    return NextResponse.json({
+      news: {
+        id:        updated.id.toString(),
+        title:     updated.title,
+        summary:   updated.summary,
+        content:   updated.content,
+        author:    updated.author,
+        image:     updated.image,
+        createdAt: updated.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Erro ao atualizar notícia:", error);
     return NextResponse.json({ error: "Não foi possível atualizar a notícia." }, { status: 500 });
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params;
     const newsId = Number(id);
@@ -58,13 +113,16 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 
     const prismaClient = await getPrismaClient();
     if (!prismaClient) {
-      console.error("Prisma não disponível em news/[id]/route.ts");
       return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
 
-    await prismaClient.news.delete({
-      where: { id: newsId },
-    });
+    const existing = await prismaClient.news.findUnique({ where: { id: newsId } });
+    if (!existing) {
+      return NextResponse.json({ error: "Notícia não encontrada." }, { status: 404 });
+    }
+
+    await prismaClient.news.delete({ where: { id: newsId } });
+    await deleteImageFile(existing.image);
 
     return NextResponse.json({ success: true });
   } catch (error) {

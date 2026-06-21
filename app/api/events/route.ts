@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getLatestEvents } from "../../../services/events";
 import prisma from "../../../repositories/prisma";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function GET() {
   try {
@@ -8,51 +10,74 @@ export async function GET() {
     return NextResponse.json({ events });
   } catch (error) {
     console.error("Erro ao buscar eventos:", error);
-    return NextResponse.json({ error: "Não foi possível carregar os eventos." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Não foi possível carregar os eventos." },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { title, description, location, date, time, image } = body;
+    const formData = await request.formData();
 
-    if (!title || !description || !location || !date || !time || !image) {
-      return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
+    const title       = formData.get("title") as string | null;
+    const description = formData.get("description") as string | null;
+    const location    = formData.get("location") as string | null;
+    const date        = formData.get("date") as string | null;
+    const time        = formData.get("time") as string | null;
+    const imageFile   = formData.get("image") as File | null;
+
+    if (!title || !description || !location || !date || !time || !imageFile) {
+      return NextResponse.json(
+        { error: "Todos os campos são obrigatórios, incluindo a imagem." },
+        { status: 400 }
+      );
     }
 
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: "Banco de dados não configurado." }, { status: 500 });
-    }
+    // Salvar imagem em /public/uploads/events/
+    const bytes  = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    const prismaClient = prisma;
-    if (!prismaClient) {
-      console.error("Prisma não disponível em events/route.ts");
-      return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
-    }
+    const uploadsDir = path.join(process.cwd(), "public", "uploads", "events");
+    await mkdir(uploadsDir, { recursive: true });
 
-    const createdEvent = await prismaClient.event.create({
+    const uniqueName = `${Date.now()}-${imageFile.name.replace(/\s+/g, "_")}`;
+    const filePath   = path.join(uploadsDir, uniqueName);
+    await writeFile(filePath, buffer);
+
+    const imageUrl = `/uploads/events/${uniqueName}`;
+
+    const createdEvent = await prisma.event.create({
       data: {
         title,
         description,
         location,
         date: new Date(date),
         time,
-        image,
+        image: imageUrl,
       },
     });
 
-    return NextResponse.json({ event: {
-      id: createdEvent.id.toString(),
-      title: createdEvent.title,
-      description: createdEvent.description,
-      location: createdEvent.location,
-      date: createdEvent.date.toISOString(),
-      time: createdEvent.time,
-      image: createdEvent.image,
-    } }, { status: 201 });
+    return NextResponse.json(
+      {
+        event: {
+          id:          createdEvent.id.toString(),
+          title:       createdEvent.title,
+          description: createdEvent.description,
+          location:    createdEvent.location,
+          date:        createdEvent.date.toISOString(),
+          time:        createdEvent.time,
+          image:       createdEvent.image,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Erro ao criar evento:", error);
-    return NextResponse.json({ error: "Não foi possível criar o evento." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Não foi possível criar o evento." },
+      { status: 500 }
+    );
   }
 }
