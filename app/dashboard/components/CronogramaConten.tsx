@@ -11,7 +11,7 @@ import {
   BsGeoAltFill
 } from 'react-icons/bs';
 
-export default function MapContent() {
+export default function CronogramaContent() {
   const activeMarkers = [
     { id: 1, name: 'Luanda Central', status: 'Online', color: 'bg-emerald-500' },
     { id: 2, name: 'Benguela Hub', status: 'Online', color: 'bg-emerald-500' },

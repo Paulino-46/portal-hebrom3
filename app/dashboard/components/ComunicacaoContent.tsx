@@ -11,7 +11,7 @@ import {
   BsTerminal
 } from 'react-icons/bs';
 
-export default function AIQueryContent() {
+export default function ComunicacaoContent() {
   const [query, setQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
