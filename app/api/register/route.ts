@@ -5,56 +5,61 @@ import prisma from "../../../repositories/prisma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { password } = body;
+    // Pegando também o 'name' e 'church' que o Prisma exigiu no push anterior
+    const { password, name, church } = body;
     const email = body.email?.toLowerCase().trim();
 
-    if (!email || !password) {
+    // Validação dos campos obrigatórios para cadastro
+    if (!email || !password || !name || !church) {
       return NextResponse.json(
-        { error: "E-mail e senha são obrigatórios." },
+        { error: "Nome, e-mail, igreja e senha são obrigatórios." },
         { status: 400 }
       );
     }
 
-    // 1. Verificar se o usuário existe
-    const user = await prisma.user.findUnique({
+    // 1. Verificar se o usuário já existe no banco
+    const userExists = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user) {
-      // Retornamos 401 mas com mensagem genérica por segurança
+    if (userExists) {
       return NextResponse.json(
-        { error: "Credenciais inválidas." },
-        { status: 401 }
+        { error: "Este e-mail já está cadastrado." },
+        { status: 400 }
       );
     }
 
-    // 2. Comparar a senha digitada com o hash do banco
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // 2. Criptografar a senha do usuário usando bcrypt
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: "Credenciais inválidas." },
-        { status: 401 }
-      );
-    }
+    // 3. Criar e salvar o novo usuário na Aiven Cloud usando o Prisma
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        church, // Coluna obrigatória identificada no reset do banco
+        password: hashedPassword,
+      },
+    });
 
-    // Aqui você normalmente criaria uma sessão ou um JWT.
-    // Por enquanto, retornamos o sucesso e os dados básicos.
+    // Retorna o sucesso do cadastro sem expor a senha criptografada
     return NextResponse.json(
       {
-        message: "Login realizado com sucesso!",
+        message: "Usuário registrado com sucesso!",
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          church: newUser.church,
         },
       },
-      { status: 200 }
+      { status: 201 } // Status 201: Created (Criado com sucesso)
     );
-  } catch (error: any) {
-    console.error("Erro no login:", error);
 
-    // Caso o erro P2021 ocorra aqui também (tabela não existe)
+  } catch (error: any) {
+    console.error("Erro no registro:", error);
+
     if (error.code === 'P2021') {
       return NextResponse.json(
         { error: "Erro de banco de dados. Tabela 'users' não encontrada." },
@@ -63,7 +68,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: "Ocorreu um erro interno no servidor." },
+      { error: "Ocorreu um erro interno no servidor ao tentar registrar." },
       { status: 500 }
     );
   }
