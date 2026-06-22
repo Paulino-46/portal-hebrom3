@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getLatestEvents } from "../../../services/events";
 import prisma from "../../../repositories/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { put, del } from "@vercel/blob";
 
 export async function GET() {
   try {
@@ -35,18 +34,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Salvar imagem em /public/uploads/events/
-    const bytes  = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const uniqueName = `events/${Date.now()}-${imageFile.name.replace(/\s+/g, "_")}`;
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "events");
-    await mkdir(uploadsDir, { recursive: true });
-
-    const uniqueName = `${Date.now()}-${imageFile.name.replace(/\s+/g, "_")}`;
-    const filePath   = path.join(uploadsDir, uniqueName);
-    await writeFile(filePath, buffer);
-
-    const imageUrl = `/uploads/events/${uniqueName}`;
+    const blob = await put(uniqueName, imageFile, {
+      access: "public",
+    });
 
     const createdEvent = await prisma.event.create({
       data: {
@@ -55,7 +47,7 @@ export async function POST(request: Request) {
         location,
         date: new Date(date),
         time,
-        image: imageUrl,
+        image: blob.url,
       },
     });
 

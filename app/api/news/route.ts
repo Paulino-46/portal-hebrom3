@@ -1,25 +1,14 @@
 // app/api/news/route.ts
 import { NextResponse } from "next/server";
 import { getAllNews, getPrismaClient } from "../../../services/news";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import { put } from "@vercel/blob";
 
 async function saveImage(file: File): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "public", "news_images");
-  if (!existsSync(uploadDir)) {
-    await mkdir(uploadDir, { recursive: true });
-  }
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
   const ext = file.name.split(".").pop() ?? "jpg";
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const filePath = path.join(uploadDir, fileName);
+  const fileName = `news_images/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  await writeFile(filePath, buffer);
-  return `/news_images/${fileName}`;
+  const blob = await put(fileName, file, { access: "public" });
+  return blob.url;
 }
 
 export async function GET(request: Request) {

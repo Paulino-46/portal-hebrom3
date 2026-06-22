@@ -1,35 +1,23 @@
 // app/api/news/[id]/route.ts
 import { NextResponse } from "next/server";
 import { getPrismaClient } from "../../../../services/news";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import { put, del } from "@vercel/blob";
 
 async function saveImage(file: File): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "public", "news_images");
-  if (!existsSync(uploadDir)) {
-    await mkdir(uploadDir, { recursive: true });
-  }
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
   const ext = file.name.split(".").pop() ?? "jpg";
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const filePath = path.join(uploadDir, fileName);
+  const fileName = `news_images/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  await writeFile(filePath, buffer);
-  return `/news_images/${fileName}`;
+  const blob = await put(fileName, file, { access: "public" });
+  return blob.url;
 }
 
-async function deleteImageFile(imagePath: string | null) {
-  if (!imagePath) return;
+async function deleteImageFile(imageUrl: string | null) {
+  if (!imageUrl) return;
   try {
-    const fullPath = path.join(process.cwd(), "public", imagePath);
-    if (existsSync(fullPath)) await unlink(fullPath);
+    await del(imageUrl);
   } catch {
     // não crítico — apenas loga
-    console.warn("Não foi possível remover o arquivo de imagem:", imagePath);
+    console.warn("Não foi possível remover o arquivo de imagem:", imageUrl);
   }
 }
 
@@ -61,7 +49,6 @@ export async function PUT(
       return NextResponse.json({ error: "Erro de configuração do banco de dados." }, { status: 500 });
     }
 
-    // Busca o registo atual para saber a imagem existente
     const existing = await prismaClient.news.findUnique({ where: { id: newsId } });
     if (!existing) {
       return NextResponse.json({ error: "Notícia não encontrada." }, { status: 404 });
@@ -69,13 +56,11 @@ export async function PUT(
 
     let imagePath: string = existing.image ?? "";
 
-    // Se enviou nova imagem, salva e apaga a antiga
     if (imageFile && imageFile.size > 0) {
       imagePath = await saveImage(imageFile);
       await deleteImageFile(existing.image);
     } else if (!keepOld) {
-      // Sem nova imagem e sem flag de manter — obrigatório para criação mas opcional em edição
-      // Mantém a imagem existente silenciosamente
+      // Sem nova imagem e sem flag de manter — mantém a imagem existente silenciosamente
     }
 
     const updated = await prismaClient.news.update({
