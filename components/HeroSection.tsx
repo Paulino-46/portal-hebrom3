@@ -126,21 +126,6 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
               Acompanhe cultos, iniciativas sociais e eventos em um portal moderno
               feito para toda a comunidade Hebrom III.
             </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="/login-user"
-                className="rounded bg-gold px-7 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-navy transition hover:bg-gold-light hover:-translate-y-0.5"
-              >
-                Entrar como Usuário
-              </a>
-              <a
-                href="#news"
-                className="rounded border border-white/30 px-7 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:border-gold hover:text-gold-light"
-              >
-                Ver Notícias
-              </a>
-            </div>
           </div>
 
           {/* Right: stats */}
