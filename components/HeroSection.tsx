@@ -50,8 +50,6 @@ const HIGHLIGHTS = [
   },
 ];
 
-const VISIBLE = 5;
-
 export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
   const initialSlides = items.length ? items : SLIDES;
   const pauseRef = useRef(false);
@@ -109,7 +107,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
         <div className="relative z-10 mx-auto flex w-full max-w-7xl items-end justify-between gap-10 px-6 pb-20 sm:px-10">
           {/* Left: text */}
           <div className="max-w-2xl">
-            <p className="mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
+            <p className="mt-5 mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
               <span className="block h-px w-7 bg-gold" />
               Bem-vindo ao portal
             </p>
@@ -123,7 +121,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60">
-              Acompanhe cultos, iniciativas sociais e eventos em um portal moderno
+              Acompanhe cultos, initiatives sociais e eventos em um portal moderno
               feito para toda a comunidade Hebrom III.
             </p>
           </div>
@@ -164,15 +162,21 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
           </div>
           <div className="flex gap-2.5">
             <button
+              type="button"
               onClick={() => move(-1)}
               disabled={current === 0}
+              aria-label="Slide anterior"
+              title="Slide anterior"
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-sky-300 hover:bg-sky-300/10 disabled:cursor-not-allowed disabled:opacity-30"
             >
               ←
             </button>
             <button
+              type="button"
               onClick={() => move(1)}
               disabled={current >= slides.length - 1}
+              aria-label="Próximo slide"
+              title="Próximo slide"
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-orange-300 hover:bg-orange-300/10 disabled:cursor-not-allowed disabled:opacity-30"
             >
               →
@@ -263,7 +267,10 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
           {Array.from({ length: slides.length }).map((_, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => selectSlide(i)}
+              aria-label={`Ir para o slide ${i + 1}`}
+              title={`Ir para o slide ${i + 1}`}
               className={`h-0.5 rounded-full transition-all ${
                 i === current ? "w-10 bg-gold" : "w-6 bg-white/20"
               }`}
