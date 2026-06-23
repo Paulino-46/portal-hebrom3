@@ -1,7 +1,8 @@
+// app/api/events/route.ts
 import { NextResponse } from "next/server";
 import { getLatestEvents } from "../../../services/events";
 import prisma from "../../../repositories/prisma";
-import { put, del } from "@vercel/blob";
+import { uploadBlob } from "@/lib/blob";
 
 export async function GET() {
   try {
@@ -20,12 +21,12 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
-    const title       = formData.get("title") as string | null;
+    const title       = formData.get("title")       as string | null;
     const description = formData.get("description") as string | null;
-    const location    = formData.get("location") as string | null;
-    const date        = formData.get("date") as string | null;
-    const time        = formData.get("time") as string | null;
-    const imageFile   = formData.get("image") as File | null;
+    const location    = formData.get("location")    as string | null;
+    const date        = formData.get("date")        as string | null;
+    const time        = formData.get("time")        as string | null;
+    const imageFile   = formData.get("image")       as File | null;
 
     if (!title || !description || !location || !date || !time || !imageFile) {
       return NextResponse.json(
@@ -35,10 +36,7 @@ export async function POST(request: Request) {
     }
 
     const uniqueName = `events/${Date.now()}-${imageFile.name.replace(/\s+/g, "_")}`;
-
-    const blob = await put(uniqueName, imageFile, {
-      access: "public",
-    });
+    const imageUrl   = await uploadBlob(uniqueName, imageFile);
 
     const createdEvent = await prisma.event.create({
       data: {
@@ -47,7 +45,7 @@ export async function POST(request: Request) {
         location,
         date: new Date(date),
         time,
-        image: blob.url,
+        image: imageUrl,
       },
     });
 

@@ -1,6 +1,7 @@
+// app/api/events/[id]/route.ts
 import { NextResponse } from "next/server";
 import prisma from "../../../../repositories/prisma";
-import { put, del } from "@vercel/blob";
+import { uploadBlob, deleteBlob } from "@/lib/blob";
 
 export async function PUT(
   request: Request,
@@ -15,12 +16,12 @@ export async function PUT(
 
     const formData = await request.formData();
 
-    const title        = formData.get("title") as string | null;
-    const description  = formData.get("description") as string | null;
-    const location     = formData.get("location") as string | null;
-    const date         = formData.get("date") as string | null;
-    const time         = formData.get("time") as string | null;
-    const imageFile    = formData.get("image") as File | null;
+    const title        = formData.get("title")        as string | null;
+    const description  = formData.get("description")  as string | null;
+    const location     = formData.get("location")     as string | null;
+    const date         = formData.get("date")         as string | null;
+    const time         = formData.get("time")         as string | null;
+    const imageFile    = formData.get("image")        as File | null;
     const currentImage = formData.get("currentImage") as string | null;
 
     if (!title || !description || !location || !date || !time) {
@@ -34,12 +35,8 @@ export async function PUT(
 
     if (imageFile && imageFile.size > 0) {
       const uniqueName = `events/${Date.now()}-${imageFile.name.replace(/\s+/g, "_")}`;
-      const blob = await put(uniqueName, imageFile, { access: "public" });
-      imageUrl = blob.url;
-
-      if (currentImage) {
-        await del(currentImage).catch(() => null);
-      }
+      imageUrl = await uploadBlob(uniqueName, imageFile);
+      await deleteBlob(currentImage);
     }
 
     const updatedEvent = await prisma.event.update({
@@ -86,12 +83,8 @@ export async function DELETE(
     }
 
     const event = await prisma.event.findUnique({ where: { id: eventId } });
-
     await prisma.event.delete({ where: { id: eventId } });
-
-    if (event?.image) {
-      await del(event.image).catch(() => null);
-    }
+    await deleteBlob(event?.image);
 
     return NextResponse.json({ success: true });
   } catch (error) {
