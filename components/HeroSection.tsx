@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -50,6 +50,11 @@ const HIGHLIGHTS = [
   },
 ];
 
+// Card width + gap used by the carousel (px)
+const CARD_WIDTH = 340;
+const CARD_GAP = 24;
+const STEP = CARD_WIDTH + CARD_GAP;
+
 export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
   const initialSlides = items.length ? items : SLIDES;
   const pauseRef = useRef(false);
@@ -79,7 +84,6 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
         setCurrent((prev) => (prev + 1) % Math.max(1, slideCountRef.current));
       }
     }, 2800);
-
     return () => window.clearInterval(interval);
   }, []);
 
@@ -88,7 +92,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
   return (
     <>
       {/* ── VIDEO HERO ── */}
-      <section className="relative flex min-h-[55vh] w-full items-end overflow-hidden sm:min-h-[60vh]">
+      <section className="relative flex min-h-[60vh] w-full items-end overflow-hidden sm:min-h-[65vh]">
         {/* Video background */}
         <video
           className="absolute inset-0 min-h-full min-w-full object-cover object-center"
@@ -101,45 +105,45 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
         />
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-navy/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/30 to-transparent" />
 
         {/* Content */}
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl items-end justify-between gap-10 px-6 pb-20 sm:px-10">
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-14 sm:flex-row sm:items-end sm:justify-between sm:px-6 sm:pb-20 lg:px-10">
           {/* Left: text */}
           <div className="max-w-2xl">
-            <p className="mt-5 mb-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
+            <p className="mb-4 mt-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
               <span className="block h-px w-7 bg-gold" />
               Bem-vindo ao portal
             </p>
 
-            <h1 className="font-serif text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-6xl">
+            <h1 className="font-serif text-3xl font-bold leading-[1.1] text-white sm:text-4xl lg:text-6xl">
               Fé, comunidade<br />
               e{" "}
               <em className="not-italic text-gold-light">transformação</em>
-              <br />
-              em Hebrom III
+              <br className="hidden sm:block" />
+              {" "}em Hebrom III
             </h1>
 
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60">
-              Acompanhe cultos, initiatives sociais e eventos em um portal moderno
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/60 sm:text-base">
+              Acompanhe cultos, iniciativas sociais e eventos em um portal moderno
               feito para toda a comunidade Hebrom III.
             </p>
           </div>
 
-          {/* Right: stats */}
-          <div className="hidden flex-col items-end gap-5 lg:flex">
+          {/* Right: stats — hidden on mobile, row on sm, column on lg */}
+          <div className="hidden sm:flex sm:flex-row sm:gap-6 lg:flex-col lg:items-end lg:gap-5">
             {[
               { num: "12+", label: "Anos de ministério" },
               { num: "500+", label: "Membros ativos" },
               { num: "48", label: "Eventos por ano" },
             ].map(({ num, label }, i) => (
               <div key={i} className="text-right">
-                <p className="font-serif text-3xl font-bold text-gold-light">{num}</p>
-                <p className="mt-0.5 text-[0.65rem] uppercase tracking-[0.18em] text-slate-400">
+                <p className="font-serif text-2xl font-bold text-gold-light lg:text-3xl">{num}</p>
+                <p className="mt-0.5 text-[0.6rem] uppercase tracking-[0.18em] text-slate-400">
                   {label}
                 </p>
                 {i < 2 && (
-                  <div className="ml-auto mt-5 h-px w-6 bg-gold/30" />
+                  <div className="ml-auto mt-4 hidden h-px w-6 bg-gold/30 lg:block" />
                 )}
               </div>
             ))}
@@ -148,15 +152,15 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
       </section>
 
       {/* ── CAROUSEL ── */}
-      <section className="border-t border-blue-400/10 bg-slate-950 px-6 pb-20 sm:px-10">
+      <section className="border-t border-blue-400/10 bg-slate-950 px-4 pb-16 sm:px-6 sm:pb-20 lg:px-10">
         {/* Header */}
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 pb-8 pt-14 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 pb-6 pt-10 sm:flex-row sm:items-end sm:justify-between sm:pb-8 sm:pt-14">
           <div>
             <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-sky-300">
               <span className="block h-px w-5 bg-sky-300" />
               Galeria
             </p>
-            <h2 className="font-serif text-3xl font-medium text-white">
+            <h2 className="font-serif text-2xl font-medium text-white sm:text-3xl">
               Momentos da comunidade
             </h2>
           </div>
@@ -167,7 +171,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
               disabled={current === 0}
               aria-label="Slide anterior"
               title="Slide anterior"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-sky-300 hover:bg-sky-300/10 disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-sky-300 hover:bg-sky-300/10 disabled:cursor-not-allowed disabled:opacity-30 sm:h-11 sm:w-11"
             >
               ←
             </button>
@@ -177,7 +181,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
               disabled={current >= slides.length - 1}
               aria-label="Próximo slide"
               title="Próximo slide"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-orange-300 hover:bg-orange-300/10 disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-orange-300 hover:bg-orange-300/10 disabled:cursor-not-allowed disabled:opacity-30 sm:h-11 sm:w-11"
             >
               →
             </button>
@@ -185,32 +189,32 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
         </div>
 
         {/* Highlights cards */}
-        <div className="mx-auto grid max-w-7xl gap-4 pb-8 md:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl gap-3 pb-6 grid-cols-2 sm:gap-4 sm:pb-8 lg:grid-cols-4">
           {HIGHLIGHTS.map(({ accent, icon, label, title, body }, index) => (
             <div
               key={index}
-              className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/95 p-5 shadow-2xl shadow-slate-950/40"
+              className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 p-4 shadow-2xl shadow-slate-950/40 sm:rounded-[28px] sm:p-5"
             >
-              <div className={`mb-5 h-1.5 rounded-full bg-gradient-to-r ${accent}`} />
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-lg text-white">
+              <div className={`mb-4 h-1.5 rounded-full bg-gradient-to-r ${accent}`} />
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-base text-white sm:h-12 sm:w-12 sm:rounded-2xl sm:text-lg">
                   {icon}
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">{label}</p>
-                  <h3 className="mt-1 text-lg font-semibold text-white">{title}</h3>
+                  <p className="text-[0.6rem] uppercase tracking-[0.2em] text-slate-400">{label}</p>
+                  <h3 className="mt-0.5 text-base font-semibold text-white sm:mt-1 sm:text-lg">{title}</h3>
                 </div>
               </div>
-              <p className="mt-4 text-sm leading-relaxed text-slate-300">{body}</p>
+              <p className="mt-3 text-xs leading-relaxed text-slate-300 sm:mt-4 sm:text-sm">{body}</p>
             </div>
           ))}
         </div>
 
         {/* Track */}
         <div className="mx-auto max-w-7xl overflow-hidden">
-          <div className="relative mb-8">
-            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-950/100 to-transparent" />
-            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-950/100 to-transparent" />
+          <div className="relative mb-6 sm:mb-8">
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-slate-950/100 to-transparent sm:w-24" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-slate-950/100 to-transparent sm:w-24" />
             <div
               className="overflow-hidden pb-4"
               onMouseEnter={() => (pauseRef.current = true)}
@@ -218,12 +222,16 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
             >
               <div
                 className="flex gap-6 transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                style={{ transform: `translateX(-${current * 364}px)` }}
+                style={{ transform: `translateX(-${current * STEP}px)` }}
               >
                 {slides.map((slide, i) => (
-                  <Link key={slide.id} href={slide.href || "/news"} className="min-w-[340px] flex-shrink-0">
+                  <Link
+                    key={slide.id}
+                    href={slide.href || "/news"}
+                    className="w-[calc(100vw-2rem)] max-w-[340px] flex-shrink-0 sm:min-w-[340px]"
+                  >
                     <div
-                      className={`relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out ${
+                      className={`relative overflow-hidden rounded-[24px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out sm:rounded-[32px] ${
                         current === i
                           ? "scale-105 border-sky-300/40"
                           : "scale-95 opacity-90"
@@ -233,23 +241,23 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
                       <img
                         src={slide.src}
                         alt={slide.title}
-                        className="h-[22rem] w-full object-cover object-center transition duration-500 ease-out hover:scale-105"
+                        className="h-64 w-full object-cover object-center transition duration-500 ease-out hover:scale-105 sm:h-[22rem]"
                         onError={(e) => {
                           (e.target as HTMLImageElement).style.display = "none";
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
-                      <div className="absolute inset-x-0 bottom-0 p-6">
+                      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
                         <span className="inline-flex rounded-full bg-slate-900/80 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-sky-200 shadow-lg shadow-slate-950/40">
                           {slide.tag}
                         </span>
-                        <h3 className="mt-4 text-2xl font-semibold leading-snug text-white">
+                        <h3 className="mt-3 text-xl font-semibold leading-snug text-white sm:mt-4 sm:text-2xl">
                           {slide.title}
                         </h3>
-                        <p className="mt-2 max-w-[24rem] text-sm leading-relaxed text-slate-200/90">
+                        <p className="mt-1.5 text-xs leading-relaxed text-slate-200/90 sm:mt-2 sm:text-sm">
                           {slide.desc}
                         </p>
-                        <div className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-white/70">
+                        <div className="mt-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-white/70 sm:mt-4">
                           <span className="inline-block h-px w-8 bg-sky-300/40" />
                           {slide.tag === "Evento" ? "Ver detalhes do evento" : "Ver notícias relacionadas"}
                         </div>
@@ -263,7 +271,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
         </div>
 
         {/* Dots */}
-        <div className="mx-auto mt-7 flex max-w-7xl justify-center gap-2">
+        <div className="mx-auto mt-5 flex max-w-7xl justify-center gap-2 sm:mt-7">
           {Array.from({ length: slides.length }).map((_, i) => (
             <button
               key={i}

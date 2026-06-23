@@ -3,13 +3,17 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="border-t border-gold/20 bg-[#060f1e] text-white" id="contact">
-      <div className="mx-auto max-w-7xl px-6 sm:px-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
 
         {/* Main grid */}
-        <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_1.5fr] lg:gap-16">
+        <div className="grid gap-10 py-12 sm:gap-12 sm:py-16
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-[1.8fr_1fr_1fr_1.5fr]
+          lg:gap-16">
 
           {/* Brand */}
-          <div>
+          <div className="sm:col-span-2 lg:col-span-1">
             <p className="font-serif text-2xl font-bold text-gold-light">Hebrom III</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
               Portal de notícias e comunidade da igreja Hebrom III. Fique
@@ -91,8 +95,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div>
+          {/* Newsletter — full width on sm, normal on lg */}
+          <div className="sm:col-span-2 lg:col-span-1">
             <p className="mb-5 text-[0.67rem] font-medium uppercase tracking-[0.22em] text-gold">
               Newsletter
             </p>
@@ -100,7 +104,7 @@ export default function Footer() {
               Receba alertas de eventos, cultos especiais e novidades
               diretamente no seu e-mail.
             </p>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2.5 sm:max-w-sm lg:max-w-none">
               <input
                 type="email"
                 placeholder="seu@email.com"
