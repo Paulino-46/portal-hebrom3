@@ -150,13 +150,13 @@ export default async function Home() {
       >
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:mb-12">
-            <div>
+            <div className="max-w-xl">
               <p className="mb-3 flex items-center gap-3 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-gold sm:text-xs">
                 <span className="block h-px w-5 bg-gold" />
                 Notícias
               </p>
-              <h2 className="text-2xl font-medium text-white sm:text-3xl lg:text-4xl">
-                Destaques recentes
+              <h2 className="text-3xl font-bold leading-snug text-white sm:text-4xl lg:text-5xl">
+                Destaques Recentes
               </h2>
             </div>
             <Link
@@ -174,7 +174,7 @@ export default async function Home() {
                 <img
                   src={
                     dynamicNews[0]?.src ||
-                    "/img/istockphoto-1144570336-1024x1024.jpg"
+                    "/img/placeholder-news.jpg"
                   }
                   alt={dynamicNews[0]?.title || "Notícia em destaque"}
                   className="h-56 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-64 lg:h-72"
@@ -259,7 +259,7 @@ export default async function Home() {
         className="bg-slate-950/95 px-4 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
       >
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
+          <div className="grid gap-10 md:grid-cols-2 md:gap-12 lg:items-start lg:gap-16">
 
             {/* Events list */}
             <div>
@@ -285,8 +285,7 @@ export default async function Home() {
                     <div className="flex-shrink-0">
                       <img
                         src={
-                          event.src ||
-                          "/img/istockphoto-1144570336-1024x1024.jpg"
+                          event.src || "/img/placeholder-event.jpg"
                         }
                         alt={event.title}
                         className="h-14 w-14 rounded-xl object-cover sm:h-16 sm:w-16"
