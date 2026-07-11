@@ -1,33 +1,32 @@
 'use client';
 
-import { BsPeople, BsCheckCircle, BsGraphUp, BsMap } from 'react-icons/bs';
+import { useState, useEffect } from 'react';
+import { BsNewspaper, BsCalendarEvent, BsGraphUp, BsPeople } from 'react-icons/bs';
 
 export default function DashboardContent() {
-  // Esta estrutura está pronta para ser substituída por um estado (useState) 
-  // que receba os dados do seu backend via useEffect/fetch.
-  const stats = [
+  const [stats, setStats] = useState([
     {
       id: 1,
-      label: 'Utilizadores Ativos',
-      value: '1,284',
-      icon: <BsPeople size={18} />,
+      label: 'Notícias Publicadas',
+      value: '...',
+      icon: <BsNewspaper size={18} />,
       color: 'text-blue-400',
       barColor: 'bg-blue-500',
       glow: 'shadow-blue-500/20',
     },
     {
       id: 2,
-      label: 'Projetos Concluídos',
-      value: '42',
-      icon: <BsCheckCircle size={18} />,
+      label: 'Eventos Agendados',
+      value: '...',
+      icon: <BsCalendarEvent size={18} />,
       color: 'text-emerald-400',
       barColor: 'bg-emerald-500',
       glow: 'shadow-emerald-500/20',
     },
     {
       id: 3,
-      label: 'Crescimento Mensal',
-      value: '+12.5%',
+      label: 'Utilizadores Ativos',
+      value: '1,284', // Exemplo estático
       icon: <BsGraphUp size={18} />,
       color: 'text-amber-400',
       barColor: 'bg-amber-500',
@@ -35,14 +34,44 @@ export default function DashboardContent() {
     },
     {
       id: 4,
-      label: 'Regiões Mapeadas',
-      value: '18',
-      icon: <BsMap size={18} />,
+      label: 'Crescimento Mensal',
+      value: '+12.5%', // Exemplo estático
+      icon: <BsPeople size={18} />,
       color: 'text-purple-400',
       barColor: 'bg-purple-500',
       glow: 'shadow-purple-500/20',
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [newsRes, eventsRes] = await Promise.all([
+          fetch('/api/news'),
+          fetch('/api/events'),
+        ]);
+
+        const newsData = await newsRes.json();
+        const eventsData = await eventsRes.json();
+
+        setStats((prevStats) =>
+          prevStats.map((stat) => {
+            if (stat.id === 1) {
+              return { ...stat, value: newsData.news?.length.toString() || '0' };
+            }
+            if (stat.id === 2) {
+              return { ...stat, value: eventsData.events?.length.toString() || '0' };
+            }
+            return stat;
+          })
+        );
+      } catch (error) {
+        console.error("Erro ao buscar dados para o dashboard:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <div className="px-4 sm:px-8 pb-8 pt-4 space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
