@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BsNewspaper, BsCalendarEvent, BsGraphUp, BsPeople } from 'react-icons/bs';
+import { BsNewspaper, BsCalendarEvent, BsPeople, BsGraphUp } from 'react-icons/bs';
 
 export default function DashboardContent() {
   const [stats, setStats] = useState([
@@ -25,18 +25,18 @@ export default function DashboardContent() {
     },
     {
       id: 3,
-      label: 'Utilizadores Ativos',
-      value: '1,284', // Exemplo estático
-      icon: <BsGraphUp size={18} />,
+      label: 'Utilizadores Ativos', // Agora dinâmico
+      value: '...',
+      icon: <BsPeople size={18} />,
       color: 'text-amber-400',
       barColor: 'bg-amber-500',
       glow: 'shadow-amber-500/20',
     },
     {
       id: 4,
-      label: 'Crescimento Mensal',
-      value: '+12.5%', // Exemplo estático
-      icon: <BsPeople size={18} />,
+      label: 'Crescimento Mensal', // Agora dinâmico
+      value: '...',
+      icon: <BsGraphUp size={18} />,
       color: 'text-purple-400',
       barColor: 'bg-purple-500',
       glow: 'shadow-purple-500/20',
@@ -46,13 +46,43 @@ export default function DashboardContent() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [newsRes, eventsRes] = await Promise.all([
+        const [newsRes, eventsRes, usersRes] = await Promise.all([
           fetch('/api/news'),
           fetch('/api/events'),
+          fetch('/api/users'), // Nova chamada para buscar utilizadores
         ]);
 
         const newsData = await newsRes.json();
         const eventsData = await eventsRes.json();
+        const usersData = await usersRes.json();
+
+        // Lógica para calcular o crescimento mensal
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+        const allContent = [
+          ...(newsData.news || []).map((item: any) => ({ date: new Date(item.createdAt) })),
+          ...(eventsData.events || []).map((item: any) => ({ date: new Date(item.date) })),
+        ];
+
+        const currentMonthCount = allContent.filter(item => 
+          item.date.getMonth() === currentMonth && item.date.getFullYear() === currentYear
+        ).length;
+
+        const lastMonthCount = allContent.filter(item => 
+          item.date.getMonth() === lastMonth && item.date.getFullYear() === lastMonthYear
+        ).length;
+
+        let growthPercentage = 0;
+        if (lastMonthCount > 0) {
+          growthPercentage = ((currentMonthCount - lastMonthCount) / lastMonthCount) * 100;
+        } else if (currentMonthCount > 0) {
+          growthPercentage = 100; // Se não havia nada e agora há, consideramos 100% de crescimento
+        }
 
         setStats((prevStats) =>
           prevStats.map((stat) => {
@@ -61,6 +91,12 @@ export default function DashboardContent() {
             }
             if (stat.id === 2) {
               return { ...stat, value: eventsData.events?.length.toString() || '0' };
+            }
+            if (stat.id === 3) {
+              return { ...stat, value: usersData.count?.toString() || '0' };
+            }
+            if (stat.id === 4) {
+              return { ...stat, value: `${growthPercentage >= 0 ? '+' : ''}${growthPercentage.toFixed(1)}%` };
             }
             return stat;
           })
