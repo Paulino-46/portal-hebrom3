@@ -92,7 +92,12 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
   return (
     <>
       {/* ── VIDEO HERO ── */}
-      <section className="relative flex min-h-[60vh] w-full items-end overflow-hidden sm:min-h-[65vh]">
+      <section
+        className="relative flex min-h-[60vh] w-full items-end overflow-hidden sm:min-h-[65vh]"
+        role="region"
+        aria-labelledby="hero-title"
+        id="hero"
+      >
         {/* Video background */}
         <video
           className="absolute inset-0 min-h-full min-w-full object-cover object-center"
@@ -116,7 +121,10 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
               Bem-vindo ao portal
             </p>
 
-            <h1 className="font-serif text-3xl font-bold leading-[1.1] text-white sm:text-4xl lg:text-6xl">
+            <h1
+              id="hero-title"
+              className="font-serif text-3xl font-bold leading-[1.1] text-white sm:text-4xl lg:text-6xl"
+            >
               Fé, comunidade<br />
               e{" "}
               <em className="not-italic text-gold-light">transformação</em>
@@ -152,15 +160,19 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
       </section>
 
       {/* ── CAROUSEL ── */}
-      <section className="border-t border-blue-400/10 bg-slate-950 px-4 pb-16 sm:px-6 sm:pb-20 lg:px-10">
+      <section
+        className="border-t border-blue-400/10 bg-slate-950 px-4 pb-16 sm:px-6 sm:pb-20 lg:px-10"
+        role="region"
+        aria-labelledby="carousel-title"
+      >
         {/* Header */}
         <div className="mx-auto flex max-w-7xl flex-col gap-4 pb-6 pt-10 sm:flex-row sm:items-end sm:justify-between sm:pb-8 sm:pt-14">
           <div>
             <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-sky-300">
               <span className="block h-px w-5 bg-sky-300" />
-              Galeria
+              Destaques
             </p>
-            <h2 className="font-serif text-2xl font-medium text-white sm:text-3xl">
+            <h2 id="carousel-title" className="text-3xl font-bold leading-snug text-white sm:text-4xl lg:text-5xl">
               Momentos da comunidade
             </h2>
           </div>
@@ -189,7 +201,7 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
         </div>
 
         {/* Highlights cards */}
-        <div className="mx-auto grid max-w-7xl gap-3 pb-6 grid-cols-2 sm:gap-4 sm:pb-8 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 pb-6 sm:gap-4 sm:pb-8 md:grid-cols-4">
           {HIGHLIGHTS.map(({ accent, icon, label, title, body }, index) => (
             <div
               key={index}
@@ -227,8 +239,8 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
                 {slides.map((slide, i) => (
                   <Link
                     key={slide.id}
-                    href={slide.href || "/news"}
-                    className="w-[calc(100vw-2rem)] max-w-[340px] flex-shrink-0 sm:min-w-[340px]"
+                    href={slide.href || "/news"} // Fallback to /news if href is not provided
+                    className="w-[calc(100vw-4rem)] max-w-[340px] flex-shrink-0 sm:w-[340px]"
                   >
                     <div
                       className={`relative overflow-hidden rounded-[24px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out sm:rounded-[32px] ${
