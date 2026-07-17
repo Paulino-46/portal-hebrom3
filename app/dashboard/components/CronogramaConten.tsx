@@ -1,135 +1,157 @@
 'use client';
 
-import { 
-  BsPinMap, 
-  BsSearch, 
-  BsLayers, 
-  BsPlusLg, 
-  BsDashLg, 
-  BsInfoCircle, 
-  BsBroadcastPin,
-  BsGeoAltFill
+import {
+  BsCalendar2Week,
+  BsSunrise,
+  BsSunset,
+  BsBook,
+  BsPeople,
+  BsMic,
+  BsHeart,
+  BsPinMap,
+  BsClock,
 } from 'react-icons/bs';
 
 export default function CronogramaContent() {
-  const activeMarkers = [
-    { id: 1, name: 'Luanda Central', status: 'Online', color: 'bg-emerald-500' },
-    { id: 2, name: 'Benguela Hub', status: 'Online', color: 'bg-emerald-500' },
-    { id: 3, name: 'Huambo Station', status: 'Manutenção', color: 'bg-amber-500' },
+  const weeklyHighlights = [
+    {
+      day: 'Sexta-feira',
+      title: 'Culto de Pôr do Sol',
+      time: '18:00',
+      icon: <BsSunset className="text-amber-400" size={24} />,
+      color: 'from-amber-500/20 to-slate-900/0',
+    },
+    {
+      day: 'Sábado',
+      title: 'Escola Sabatina & Culto Divino',
+      time: '09:00 - 12:00',
+      icon: <BsBook className="text-sky-400" size={24} />,
+      color: 'from-sky-500/20 to-slate-900/0',
+    },
+    {
+      day: 'Sábado',
+      title: 'Programa Jovem Adventista',
+      time: '16:30',
+      icon: <BsPeople className="text-emerald-400" size={24} />,
+      color: 'from-emerald-500/20 to-slate-900/0',
+    },
+  ];
+
+  const weeklySchedule = [
+    { day: 'Domingo', event: 'Ação Social', time: '10:00', details: 'Distribuição de alimentos' },
+    { day: 'Segunda', event: '---', time: '', details: '' },
+    { day: 'Terça', event: 'Reunião de Oração', time: '19:30', details: 'Estudo e oração em grupo' },
+    { day: 'Quarta', event: 'Culto Semanal', time: '19:30', details: 'Mensagem e louvor' },
+    { day: 'Quinta', event: 'Ensaio do Coral', time: '20:00', details: 'Preparação para o Sábado' },
+    { day: 'Sexta', event: 'Culto de Pôr do Sol', time: '18:00', details: 'Início do Sábado' },
+    { day: 'Sábado', event: 'Programa Completo', time: '09:00 - 18:00', details: 'Escola Sabatina, Culto e J.A.' },
+  ];
+
+  const specialEvents = [
+    {
+      title: 'Semana de Oração Jovem',
+      date: '14 a 21 de Julho',
+      description: 'Uma semana inteira dedicada à comunhão e ao crescimento espiritual dos jovens da nossa comunidade.',
+      speaker: 'Pr. João Almeida',
+    },
+    {
+      title: 'Congresso Distrital',
+      date: '27 de Julho',
+      description: 'Reunião de todas as igrejas do distrito para um dia de louvor, testemunhos e confraternização.',
+      speaker: 'Líderes da União',
+    },
   ];
 
   return (
-    <div className="p-4 sm:p-8 space-y-6 h-full flex flex-col animate-in fade-in zoom-in-95 duration-700">
-      {/* Header com Filtros e Pesquisa */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div className="p-4 sm:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-            <BsPinMap className="text-cyan-400 shrink-0" />
-            Análise Geográfica
+            <BsCalendar2Week className="text-blue-400 shrink-0" />
+            Cronograma de Atividades
           </h1>
-          <p className="text-slate-400 mt-1 text-xs sm:text-sm">Monitoramento em tempo real de infraestruturas e projetos sociais.</p>
-        </div>
-        
-        <div className="flex items-center gap-2 w-full lg:w-auto">
-          <div className="relative group flex-1 lg:flex-none">
-            <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Pesquisar região..." 
-              className="bg-slate-900/60 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 w-full lg:w-64 transition-all"
-            />
-          </div>
-          <button 
-            aria-label="Gerenciar camadas do mapa" 
-            title="Gerenciar camadas do mapa"
-            className="p-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all shadow-lg"
-          >
-            <BsLayers size={18} />
-          </button>
+          <p className="text-slate-400 mt-1 text-xs sm:text-sm">
+            Programação semanal e eventos especiais da comunidade.
+          </p>
         </div>
       </div>
 
-      {/* Map Viewport Simulation */}
-      <div className="flex-1 min-h-[500px] relative rounded-3xl border border-white/10 bg-slate-950/50 overflow-hidden shadow-2xl group">
-        {/* Background Grid & Noise para Profundidade */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#22d3ee 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-        
-        {/* Simulação Visual de Mapa Central */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-20 select-none">
-          <div className="w-[70%] h-[70%] border-2 border-dashed border-cyan-500/20 rounded-full animate-[spin_60s_linear_infinite]"></div>
-          <div className="absolute w-[40%] h-[40%] border border-dashed border-blue-500/20 rounded-full animate-[spin_40s_linear_infinite_reverse]"></div>
-          <p className="absolute text-slate-700 font-mono text-7xl font-black uppercase tracking-[2rem]">Geodata</p>
-        </div>
-
-        {/* Marcadores Simulados com Animações de Status */}
-        <div className="absolute top-1/4 left-1/3 group/marker cursor-pointer z-10">
-          <div className="relative">
-            <div className="absolute -inset-3 bg-cyan-500/20 rounded-full blur animate-ping"></div>
-            <BsGeoAltFill className="text-cyan-400 text-3xl drop-shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-transform group-hover/marker:scale-125" />
-            <div className="absolute left-full ml-3 top-0 bg-slate-900/90 border border-white/20 p-3 rounded-xl opacity-0 group-hover/marker:opacity-100 transition-all whitespace-nowrap backdrop-blur-md shadow-2xl translate-x-2 group-hover/marker:translate-x-0">
-              <p className="text-xs font-bold text-white">PROJETO ALFA - MATOLA</p>
-              <p className="text-[10px] text-cyan-400 uppercase font-bold mt-1">Impacto: 85% Concluído</p>
+      {/* Destaques da Semana */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {weeklyHighlights.map((item, index) => (
+          <div
+            key={index}
+            className={`relative group overflow-hidden bg-slate-900/60 border border-white/10 p-6 rounded-2xl backdrop-blur-xl transition-all hover:bg-slate-800/70 hover:border-white/20 shadow-lg`}
+          >
+            <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full bg-gradient-to-bl ${item.color} opacity-60 group-hover:opacity-100 transition-opacity blur-2xl`} />
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{item.day}</span>
+                {item.icon}
+              </div>
+              <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+              <p className="text-2xl font-black text-slate-300 group-hover:text-white transition-colors">{item.time}</p>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
 
-        <div className="absolute bottom-1/3 right-1/4 group/marker cursor-pointer z-10">
-          <div className="relative">
-            <div className="absolute -inset-3 bg-emerald-500/20 rounded-full blur animate-pulse"></div>
-            <BsBroadcastPin className="text-emerald-400 text-3xl transition-transform group-hover/marker:scale-125" />
-            <div className="absolute right-full mr-3 top-0 bg-slate-900/90 border border-white/20 p-3 rounded-xl opacity-0 group-hover/marker:opacity-100 transition-all whitespace-nowrap backdrop-blur-md shadow-2xl -translate-x-2 group-hover/marker:translate-x-0">
-              <p className="text-xs font-bold text-white">ANTENA SETORIAL L-24</p>
-              <p className="text-[10px] text-emerald-400 uppercase font-bold mt-1">Status: Ativo em Tempo Real</p>
-            </div>
-          </div>
+      {/* Agenda Semanal Detalhada */}
+      <div className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl">
+        <div className="p-6 border-b border-white/5">
+          <h4 className="text-white font-bold text-lg">Agenda da Semana</h4>
+          <p className="text-slate-400 text-sm mt-1">Horários das atividades regulares.</p>
         </div>
-
-        {/* Controles de Navegação (Overlay) */}
-        <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-20">
-          <button aria-label="Aumentar zoom" title="Aumentar zoom" className="p-3 bg-slate-900/80 border border-white/10 rounded-xl text-white hover:bg-slate-800 transition-all shadow-xl backdrop-blur-md hover:scale-105 active:scale-95">
-            <BsPlusLg />
-          </button>
-          <button aria-label="Diminuir zoom" title="Diminuir zoom" className="p-3 bg-slate-900/80 border border-white/10 rounded-xl text-white hover:bg-slate-800 transition-all shadow-xl backdrop-blur-md hover:scale-105 active:scale-95">
-            <BsDashLg />
-          </button>
-        </div>
-
-        {/* Painel Lateral de Legenda e Status (Desktop) */}
-        <div className="absolute top-6 left-6 w-64 hidden lg:block z-20">
-          <div className="bg-slate-900/80 border border-white/10 p-5 rounded-2xl backdrop-blur-md shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-white/5 pb-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status da Rede</span>
-              <div className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            </div>
-            <div className="space-y-3">
-              {activeMarkers.map((marker) => (
-                <div key={marker.id} className="flex items-center justify-between group/item">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-1.5 h-1.5 rounded-full ${marker.color} group-hover/item:scale-150 transition-transform`}></div>
-                    <span className="text-sm text-slate-300 group-hover/item:text-white transition-colors">{marker.name}</span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 font-medium">{marker.status}</span>
+        <div className="grid grid-cols-1 md:grid-cols-7">
+          {weeklySchedule.map((item, index) => (
+            <div key={index} className={`p-4 border-b md:border-b-0 md:border-r border-white/5 ${index === 6 ? 'md:border-r-0' : ''} ${item.event === '---' ? 'opacity-50' : ''}`}>
+              <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">{item.day}</p>
+              {item.event !== '---' ? (
+                <div className="mt-2">
+                  <p className="text-sm font-semibold text-white">{item.event}</p>
+                  <p className="text-xs text-blue-400 font-mono mt-1">{item.time}</p>
+                  <p className="text-[11px] text-slate-500 mt-2">{item.details}</p>
                 </div>
-              ))}
+              ) : (
+                <p className="text-sm text-slate-600 mt-4 italic">Sem atividades</p>
+              )}
             </div>
-            <button aria-label="Ver detalhes da camada" className="w-full flex items-center justify-center gap-2 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-semibold text-white transition-all">
-              <BsInfoCircle size={14} className="text-cyan-400" /> Detalhes da Camada
-            </button>
-          </div>
+          ))}
         </div>
+      </div>
 
-        {/* Barra de Rodapé do Mapa */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-slate-950/80 backdrop-blur-sm border-t border-white/5 flex items-center px-4 justify-between select-none">
-          <div className="flex gap-4 text-[10px] font-mono text-slate-500">
-            <span className="flex gap-1"><span className="text-slate-600">LAT:</span> -8.8383300</span>
-            <span className="flex gap-1"><span className="text-slate-600">LONG:</span> 13.2344400</span>
-          </div>
-          <div className="text-[10px] font-mono text-cyan-500/60 uppercase tracking-wider animate-pulse">
-            Live Stream Connected // App BiT Core v1.0
-          </div>
+      {/* Próximos Eventos Especiais */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-bold text-white tracking-tight">Próximos Eventos Especiais</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {specialEvents.map((event, index) => (
+            <div key={index} className="bg-slate-900/60 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 hover:border-blue-400/30 transition-colors duration-300 shadow-lg">
+              <div>
+                <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">{event.date}</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{event.title}</h3>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed flex-grow">{event.description}</p>
+              <div className="border-t border-white/10 pt-4 flex items-center gap-3">
+                <div className="p-2 bg-slate-800 rounded-full text-slate-400">
+                  <BsMic size={16} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Orador</p>
+                  <p className="text-sm font-semibold text-white">{event.speaker}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
+
+      {/* Legenda Rápida */}
+      <div className="text-center pt-4 border-t border-white/5">
+        <p className="text-xs text-slate-500 font-mono">
+          <BsSunrise className="inline -mt-1" /> Nascer do Sol e <BsSunset className="inline -mt-1" /> Pôr do Sol são baseados na sua localização.
+        </p>
       </div>
     </div>
   );
-  return null;
 }

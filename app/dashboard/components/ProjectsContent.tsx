@@ -1,190 +1,164 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { 
-  BsRobot, 
-  BsSend, 
-  BsMagic, 
-  BsCpu, 
-  BsLightbulb, 
-  BsLightningCharge,
-  BsTerminal
+import { useState } from 'react';
+import {
+  BsRocketTakeoff,
+  BsBuilding,
+  BsMegaphone,
+  BsTools,
+  BsFilter,
+  BsGraphUp,
+  BsCheck2Circle,
+  BsPeopleFill,
+  BsPersonWorkspace,
+  BsCashCoin,
+  BsBullseye,
 } from 'react-icons/bs';
 
-export default function AIQueryContent() {
-  const [query, setQuery] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
-    { 
-      role: 'ai', 
-      content: 'Olá! Sou o assistente BiT Core. Como posso ajudar na análise de dados hoje?',
-      timestamp: 'Sistema Ativo' 
-    }
-  ]);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+export default function ProjectsContent() {
+  const [filter, setFilter] = useState('Todos');
 
-  // Simula o efeito de "streaming" da resposta da IA
-  const simulateAIResponse = (userText: string) => {
-    setIsTyping(true);
-    
-    // Respostas pré-definidas para simulação
-    const mockResponse = `Com base na análise dos dados de ${userText}, identifiquei uma tendência de crescimento de 14% na inclusão digital na região sul. Recomendo focar a infraestrutura nos pontos de maior densidade populacional detectados via CDRView.`;
-    
-    let currentText = '';
-    const tokens = mockResponse.split(' ');
-    let i = 0;
-
-    const interval = setInterval(() => {
-      if (i < tokens.length) {
-        currentText += (i === 0 ? '' : ' ') + tokens[i];
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { role: 'ai', content: currentText + ' ▌', timestamp: 'Processando...' }
-        ]);
-        i++;
-      } else {
-        clearInterval(interval);
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { role: 'ai', content: mockResponse, timestamp: 'Gerado agora' }
-        ]);
-        setIsTyping(false);
-      }
-    }, 80);
-  };
-
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim() || isTyping) return;
-
-    const userMessage = { role: 'user', content: query, timestamp: 'Enviado' };
-    setMessages(prev => [...prev, userMessage, { role: 'ai', content: '', timestamp: 'Pensando...' }]);
-    
-    const currentQuery = query;
-    setQuery('');
-    simulateAIResponse(currentQuery);
-  };
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const suggestions = [
-    "Previsão de impacto para Luanda",
-    "Análise de churn por região",
-    "Resumo de KPIs do último mês"
+  const projects = [
+    {
+      category: 'Construção',
+      title: 'Construção do Novo Templo',
+      status: 'Em Andamento',
+      progress: 65,
+      leader: 'Eng. Manuel Francisco',
+      budget: 'AOA 25.000.000',
+      volunteers: 45,
+      impact: 'Capacidade para 500 membros',
+      icon: <BsBuilding />,
+      color: 'blue',
+    },
+    {
+      category: 'Evangelismo',
+      title: 'Missão Calebe 2026 - Huíla',
+      status: 'Planejamento',
+      progress: 20,
+      leader: 'Ancião João Baptista',
+      budget: 'AOA 5.000.000',
+      volunteers: 120,
+      impact: 'Estimativa de 2000 vidas alcançadas',
+      icon: <BsMegaphone />,
+      color: 'emerald',
+    },
+    {
+      category: 'Melhoramentos',
+      title: 'Renovação da Escola Sabatina',
+      status: 'Concluído',
+      progress: 100,
+      leader: 'Diaconisa Maria da Conceição',
+      budget: 'AOA 1.500.000',
+      volunteers: 25,
+      impact: 'Salas mais modernas e interativas',
+      icon: <BsTools />,
+      color: 'amber',
+    },
+    {
+      category: 'Construção',
+      title: 'Centro Comunitário Hebrom',
+      status: 'Em Andamento',
+      progress: 40,
+      leader: 'Eng. Manuel Francisco',
+      budget: 'AOA 12.000.000',
+      volunteers: 30,
+      impact: 'Apoio social e cursos profissionalizantes',
+      icon: <BsBuilding />,
+      color: 'blue',
+    },
+    {
+      category: 'Evangelismo',
+      title: 'Evangelismo Digital "Esperança Viva"',
+      status: 'Em Andamento',
+      progress: 80,
+      leader: 'Jovem A. Valente',
+      budget: 'AOA 800.000',
+      volunteers: 15,
+      impact: '+50.000 visualizações online',
+      icon: <BsMegaphone />,
+      color: 'emerald',
+    },
   ];
 
+  const filteredProjects = projects.filter(p => filter === 'Todos' || p.category === filter);
+
+  const stats = [
+    { label: 'Projetos em Andamento', value: projects.filter(p => p.status === 'Em Andamento').length, icon: <BsGraphUp />, color: 'cyan' },
+    { label: 'Projetos Concluídos', value: projects.filter(p => p.status === 'Concluído').length, icon: <BsCheck2Circle />, color: 'emerald' },
+    { label: 'Total de Voluntários', value: projects.reduce((acc, p) => acc + p.volunteers, 0), icon: <BsPeopleFill />, color: 'purple' },
+  ];
+
+  const filters = ['Todos', 'Construção', 'Evangelismo', 'Melhoramentos'];
+
   return (
-    <div className="pt-4 px-4 pb-0 sm:pt-8 sm:px-8 sm:pb-0 h-[calc(100vh-64px)] flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      
-      {/* Header Informativo */}
-      <div className="flex items-center justify-between bg-slate-900/40 border border-white/10 p-4 rounded-3xl backdrop-blur-xl">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-lg shadow-cyan-500/20">
-            <BsRobot size={24} className="animate-pulse" />
-          </div>
-          <div>
-            <h2 className="text-white font-bold tracking-tight">BiT AI Assistant</h2>
-            <p className="text-[10px] text-cyan-500/60 font-mono uppercase tracking-widest flex items-center gap-2">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500" /> Neural Engine v4.0.2
-            </p>
-          </div>
-        </div>
-        <div className="hidden md:flex gap-4">
-          <div className="text-right">
-            <p className="text-[10px] text-slate-500 uppercase font-bold">Latência</p>
-            <p className="text-xs text-emerald-400 font-mono">24ms</p>
-          </div>
-          <div className="text-right border-l border-white/10 pl-4">
-            <p className="text-[10px] text-slate-500 uppercase font-bold">Modelo</p>
-            <p className="text-xs text-blue-400 font-mono">GPT-4-BIT</p>
-          </div>
+    <div className="p-4 sm:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+            <BsRocketTakeoff className="text-blue-400 shrink-0" />
+            Nossos Projetos
+          </h1>
+          <p className="text-slate-400 mt-1 text-xs sm:text-sm">
+            Acompanhe o andamento das iniciativas que transformam nossa comunidade.
+          </p>
         </div>
       </div>
 
-      {/* Área de Chat */}
-      <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar 
-        [&::-webkit-scrollbar]:w-2 
-        [&::-webkit-scrollbar-track]:bg-transparent 
-        [&::-webkit-scrollbar-thumb]:bg-slate-950 
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [scrollbar-width:thin] 
-        [scrollbar-color:theme(colors.slate.950)_transparent]"
-      >
-        {messages.map((msg, idx) => (
-          <div 
-            key={idx} 
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}
-          >
-            <div className={`max-w-[85%] md:max-w-[70%] group relative`}>
-              <div className={`p-4 rounded-2xl border backdrop-blur-xl transition-all ${
-                msg.role === 'user' 
-                  ? 'bg-blue-600/20 border-blue-500/30 text-white rounded-tr-none' 
-                  : 'bg-slate-900/60 border-white/10 text-slate-200 rounded-tl-none'
-              }`}>
-                <p className={`text-sm leading-relaxed ${msg.role === 'ai' ? 'font-light' : 'font-medium'}`}>
-                  {msg.content}
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-tighter">
-                    {msg.timestamp}
-                  </span>
-                  {msg.role === 'ai' && (
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <BsMagic className="text-cyan-500 cursor-pointer hover:scale-110" size={12} title="Refinar" />
-                      <BsTerminal className="text-slate-500 cursor-pointer hover:scale-110" size={12} title="Ver Logs" />
-                    </div>
-                  )}
-                </div>
-              </div>
-              {msg.role === 'ai' && <div className="absolute -left-2 top-0 w-1 h-full bg-cyan-500/50 blur-sm rounded-full" />}
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {stats.map(stat => (
+          <div key={stat.label} className={`bg-slate-900/50 border border-white/10 p-5 rounded-2xl backdrop-blur-xl shadow-lg flex items-center gap-4`}>
+            <div className={`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-400`}>{stat.icon}</div>
+            <div>
+              <p className="text-2xl font-bold text-white">{stat.value}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wider">{stat.label}</p>
             </div>
           </div>
         ))}
-        <div ref={chatEndRef} />
       </div>
 
-      {/* Sugestões e Input */}
-      <div className="space-y-4 pb-4">
-        <div className="flex flex-wrap gap-2">
-          {suggestions.map((s, i) => (
-            <button 
-              key={i}
-              title={s}
-              onClick={() => { setQuery(s); }}
-              className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] text-slate-400 hover:bg-cyan-500/10 hover:text-cyan-400 hover:border-cyan-500/30 transition-all flex items-center gap-2"
-            >
-              <BsLightbulb size={10} /> {s}
-            </button>
-          ))}
-        </div>
+      {/* Filters */}
+      <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+        <BsFilter className="text-slate-400" />
+        {filters.map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${filter === f ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
 
-        <form onSubmit={handleSend} className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-400/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-opacity" />
-          <div className="relative flex items-center bg-slate-900 border border-white/20 rounded-2xl p-2 backdrop-blur-2xl">
-            <div className="pl-4 text-slate-500">
-              <BsCpu size={20} className={isTyping ? 'animate-spin' : ''} />
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProjects.map((p, i) => (
+          <div key={i} className="bg-slate-900/60 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 hover:border-blue-400/30 transition-colors duration-300 shadow-lg">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className={`text-xs font-bold uppercase tracking-widest text-${p.color}-400`}>{p.category}</span>
+                <h3 className="text-lg font-bold text-white mt-1">{p.title}</h3>
+              </div>
+              <div className={`p-2 bg-slate-800 rounded-full text-slate-400 text-${p.color}-400`}>{p.icon}</div>
             </div>
-            <input 
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={isTyping ? "Aguarde o processamento..." : "Pergunte algo sobre os dados (ex: 'Qual a região com mais projetos?')"}
-              disabled={isTyping}
-              className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm text-white placeholder:text-slate-600"
-            />
-            <button 
-              type="submit"
-              disabled={!query.trim() || isTyping}
-              aria-label="Enviar consulta"
-              title="Enviar consulta"
-              className="h-10 w-10 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-90"
-            >
-              <BsSend size={18} />
-            </button>
+            <div className="text-xs font-medium text-slate-300">
+              Status: <span className={`font-bold ${p.status === 'Concluído' ? 'text-emerald-400' : 'text-amber-400'}`}>{p.status}</span>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs text-slate-400 mb-1"><span>Progresso</span><span>{p.progress}%</span></div>
+              <div className="w-full bg-slate-800 rounded-full h-2"><div className={`bg-${p.color}-500 h-2 rounded-full`} style={{ width: `${p.progress}%` }}></div></div>
+            </div>
+            <div className="border-t border-white/10 pt-4 space-y-3 text-sm">
+              <p className="flex items-center gap-2 text-slate-300"><BsPersonWorkspace className="text-slate-500" /> <strong>Líder:</strong> {p.leader}</p>
+              <p className="flex items-center gap-2 text-slate-300"><BsCashCoin className="text-slate-500" /> <strong>Orçamento:</strong> {p.budget}</p>
+              <p className="flex items-center gap-2 text-slate-300"><BsPeopleFill className="text-slate-500" /> <strong>Voluntários:</strong> {p.volunteers}</p>
+              <p className="flex items-center gap-2 text-slate-300"><BsBullseye className="text-slate-500" /> <strong>Impacto:</strong> {p.impact}</p>
+            </div>
           </div>
-        </form>
+        ))}
       </div>
     </div>
   );

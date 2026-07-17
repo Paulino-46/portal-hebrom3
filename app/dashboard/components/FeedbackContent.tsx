@@ -1,187 +1,142 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { 
-  BsRobot, 
-  BsSend, 
-  BsMagic, 
-  BsCpu, 
-  BsLightbulb, 
-  BsLightningCharge,
-  BsTerminal
+import { useState } from 'react';
+import {
+  BsChatSquareQuote,
+  BsEnvelope,
+  BsPerson,
+  BsTag,
+  BsPencilSquare,
+  BsSend,
+  BsCheckCircleFill,
+  BsExclamationTriangleFill,
+  BsLightbulb,
+  BsBug,
+  BsQuestionCircle,
+  BsHeart,
 } from 'react-icons/bs';
 
 export default function FeedbackContent() {
-  const [query, setQuery] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
-    { 
-      role: 'ai', 
-      content: 'Olá! Sou o assistente BiT Core. Como posso ajudar na análise de dados hoje?',
-      timestamp: 'Sistema Ativo' 
-    }
-  ]);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    type: 'Sugestão',
+    subject: '',
+    message: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Simula o efeito de "streaming" da resposta da IA
-  const simulateAIResponse = (userText: string) => {
-    setIsTyping(true);
-    
-    // Respostas pré-definidas para simulação
-    const mockResponse = `Com base na análise dos dados de ${userText}, identifiquei uma tendência de crescimento de 14% na inclusão digital na região sul. Recomendo focar a infraestrutura nos pontos de maior densidade populacional detectados via CDRView.`;
-    
-    let currentText = '';
-    const tokens = mockResponse.split(' ');
-    let i = 0;
-
-    const interval = setInterval(() => {
-      if (i < tokens.length) {
-        currentText += (i === 0 ? '' : ' ') + tokens[i];
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { role: 'ai', content: currentText + ' ▌', timestamp: 'Processando...' }
-        ]);
-        i++;
-      } else {
-        clearInterval(interval);
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { role: 'ai', content: mockResponse, timestamp: 'Gerado agora' }
-        ]);
-        setIsTyping(false);
-      }
-    }, 80);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSend = (e: React.FormEvent) => {
+  const showToast = (type: 'success' | 'error', message: string) => {
+    setToast({ type, message });
+    setTimeout(() => {
+      setToast(null);
+    }, 5000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim() || isTyping) return;
+    if (submitting) return;
 
-    const userMessage = { role: 'user', content: query, timestamp: 'Enviado' };
-    setMessages(prev => [...prev, userMessage, { role: 'ai', content: '', timestamp: 'Pensando...' }]);
-    
-    const currentQuery = query;
-    setQuery('');
-    simulateAIResponse(currentQuery);
+    setSubmitting(true);
+    // Simulação de chamada à API
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    // Aqui iria a lógica para enviar os dados para uma API, por exemplo:
+    // const response = await fetch('/api/feedback', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(formData),
+    // });
+
+    // Simulando uma resposta de sucesso
+    const success = true;
+
+    if (success) {
+      showToast('success', 'O seu feedback foi enviado com sucesso. Agradecemos a sua contribuição!');
+      setFormData({ name: '', email: '', type: 'Sugestão', subject: '', message: '' });
+    } else {
+      showToast('error', 'Ocorreu um erro ao enviar o seu feedback. Por favor, tente novamente.');
+    }
+
+    setSubmitting(false);
   };
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const suggestions = [
-    "Previsão de impacto para Luanda",
-    "Análise de churn por região",
-    "Resumo de KPIs do último mês"
+  const feedbackTypes = [
+    { value: 'Sugestão', icon: <BsLightbulb /> },
+    { value: 'Reportar Erro', icon: <BsBug /> },
+    { value: 'Dúvida', icon: <BsQuestionCircle /> },
+    { value: 'Elogio', icon: <BsHeart /> },
   ];
 
   return (
-    <div className="pt-4 px-4 pb-0 sm:pt-8 sm:px-8 sm:pb-0 h-[calc(100vh-64px)] flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      
-      {/* Header Informativo */}
-      <div className="flex items-center justify-between bg-slate-900/40 border border-white/10 p-4 rounded-3xl backdrop-blur-xl">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-lg shadow-cyan-500/20">
-            <BsRobot size={24} className="animate-pulse" />
+    <div className="p-4 sm:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          className={`fixed top-20 right-8 z-50 flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-2xl animate-in slide-in-from-top-4 fade-in duration-300 ${
+            toast.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+          }`}
+        >
+          <span className="mt-0.5">
+            {toast.type === 'success' ? <BsCheckCircleFill /> : <BsExclamationTriangleFill />}
+          </span>
+          <p className="text-sm font-medium leading-snug">{toast.message}</p>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+            <BsChatSquareQuote className="text-blue-400 shrink-0" />
+            Partilhe o seu Feedback
+          </h1>
+          <p className="text-slate-400 mt-1 text-xs sm:text-sm">
+            A sua opinião é fundamental para melhorarmos o nosso portal.
+          </p>
+        </div>
+      </div>
+
+      {/* Formulário de Feedback */}
+      <div className="bg-slate-900/40 border border-white/10 rounded-3xl backdrop-blur-xl shadow-2xl max-w-3xl mx-auto">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="name" className="block text-xs font-bold text-slate-400 uppercase mb-2">Nome (Opcional)</label>
+              <div className="relative"><BsPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" /><input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className="w-full bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="O seu nome" /></div>
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-xs font-bold text-slate-400 uppercase mb-2">Email (Opcional)</label>
+              <div className="relative"><BsEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" /><input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="O seu email" /></div>
+            </div>
           </div>
+
           <div>
-            <h2 className="text-white font-bold tracking-tight">BiT AI Assistant</h2>
-            <p className="text-[10px] text-cyan-500/60 font-mono uppercase tracking-widest flex items-center gap-2">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500" /> Neural Engine v4.0.2
-            </p>
+            <label htmlFor="type" className="block text-xs font-bold text-slate-400 uppercase mb-2">Tipo de Feedback</label>
+            <div className="relative"><BsTag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" /><select id="type" name="type" required value={formData.type} onChange={handleChange} className="w-full appearance-none bg-slate-950 border border-white/10 rounded-xl pl-9 pr-8 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"><option disabled>Selecione um tipo...</option>{feedbackTypes.map(ft => (<option key={ft.value} value={ft.value}>{ft.value}</option>))}</select></div>
           </div>
-        </div>
-        <div className="hidden md:flex gap-4">
-          <div className="text-right">
-            <p className="text-[10px] text-slate-500 uppercase font-bold">Latência</p>
-            <p className="text-xs text-emerald-400 font-mono">24ms</p>
-          </div>
-          <div className="text-right border-l border-white/10 pl-4">
-            <p className="text-[10px] text-slate-500 uppercase font-bold">Modelo</p>
-            <p className="text-xs text-blue-400 font-mono">GPT-4-BIT</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Área de Chat */}
-      <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar 
-        [&::-webkit-scrollbar]:w-2 
-        [&::-webkit-scrollbar-track]:bg-transparent 
-        [&::-webkit-scrollbar-thumb]:bg-slate-950 
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [scrollbar-width:thin] 
-        [scrollbar-color:theme(colors.slate.950)_transparent]"
-      >
-        {messages.map((msg, idx) => (
-          <div 
-            key={idx} 
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2`}
-          >
-            <div className={`max-w-[85%] md:max-w-[70%] group relative`}>
-              <div className={`p-4 rounded-2xl border backdrop-blur-xl transition-all ${
-                msg.role === 'user' 
-                  ? 'bg-blue-600/20 border-blue-500/30 text-white rounded-tr-none' 
-                  : 'bg-slate-900/60 border-white/10 text-slate-200 rounded-tl-none'
-              }`}>
-                <p className={`text-sm leading-relaxed ${msg.role === 'ai' ? 'font-light' : 'font-medium'}`}>
-                  {msg.content}
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-tighter">
-                    {msg.timestamp}
-                  </span>
-                  {msg.role === 'ai' && (
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <BsMagic className="text-cyan-500 cursor-pointer hover:scale-110" size={12} title="Refinar" />
-                      <BsTerminal className="text-slate-500 cursor-pointer hover:scale-110" size={12} title="Ver Logs" />
-                    </div>
-                  )}
-                </div>
-              </div>
-              {msg.role === 'ai' && <div className="absolute -left-2 top-0 w-1 h-full bg-cyan-500/50 blur-sm rounded-full" />}
-            </div>
+          <div>
+            <label htmlFor="subject" className="block text-xs font-bold text-slate-400 uppercase mb-2">Assunto</label>
+            <div className="relative"><BsPencilSquare className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" /><input type="text" id="subject" name="subject" required value={formData.subject} onChange={handleChange} className="w-full bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Sobre o que é o seu feedback?" /></div>
           </div>
-        ))}
-        <div ref={chatEndRef} />
-      </div>
 
-      {/* Sugestões e Input */}
-      <div className="space-y-4 pb-4">
-        <div className="flex flex-wrap gap-2">
-          {suggestions.map((s, i) => (
-            <button 
-              key={i}
-              title={s}
-              onClick={() => { setQuery(s); }}
-              className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] text-slate-400 hover:bg-cyan-500/10 hover:text-cyan-400 hover:border-cyan-500/30 transition-all flex items-center gap-2"
-            >
-              <BsLightbulb size={10} /> {s}
-            </button>
-          ))}
-        </div>
+          <div>
+            <label htmlFor="message" className="block text-xs font-bold text-slate-400 uppercase mb-2">Mensagem</label>
+            <textarea id="message" name="message" required value={formData.message} onChange={handleChange} rows={5} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors resize-y" placeholder="Escreva aqui a sua mensagem detalhada..."></textarea>
+          </div>
 
-        <form onSubmit={handleSend} className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-400/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-opacity" />
-          <div className="relative flex items-center bg-slate-900 border border-white/20 rounded-2xl p-2 backdrop-blur-2xl">
-            <div className="pl-4 text-slate-500">
-              <BsCpu size={20} className={isTyping ? 'animate-spin' : ''} />
-            </div>
-            <input 
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={isTyping ? "Aguarde o processamento..." : "Pergunte algo sobre os dados (ex: 'Qual a região com mais projetos?')"}
-              disabled={isTyping}
-              className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm text-white placeholder:text-slate-600"
-            />
-            <button 
-              type="submit"
-              disabled={!query.trim() || isTyping}
-              aria-label="Enviar consulta"
-              title="Enviar consulta"
-              className="h-10 w-10 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-90"
-            >
-              <BsSend size={18} />
+          <div className="pt-4 border-t border-white/10 flex justify-end">
+            <button type="submit" disabled={submitting} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:cursor-not-allowed text-white rounded-xl text-sm font-bold transition-all active:scale-95 shadow-lg shadow-blue-600/20">
+              {submitting ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />A Enviar...</> : <><BsSend /> Enviar Feedback</>}
             </button>
           </div>
         </form>
