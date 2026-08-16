@@ -1,4 +1,4 @@
-import { getCommunityKnowledge, getBibleReferenceContext, type KnowledgeItem } from './knowledge';
+import { getCommunityKnowledge, getBibleReferenceContext, getTheologicalReferenceContext, type KnowledgeItem } from './knowledge';
 
 function normalizeText(value: string) {
   return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -56,7 +56,7 @@ export async function retrieveRelevantContext(question: string): Promise<string>
     ? top.map((item) => `- ${item.title}: ${item.summary}. ${item.content}`).join('\n')
     : 'Sem contexto específico no banco neste momento.';
 
-  return `${context}\n\nReferência bíblica geral: ${await getBibleReferenceContext(question)}`;
+  return `${context}\n\nReferência bíblica geral: ${await getBibleReferenceContext(question)}\n\nReferência teológica geral: ${getTheologicalReferenceContext(question)}`;
 }
 
 export type RetrievalResult = {

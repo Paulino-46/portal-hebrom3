@@ -9,6 +9,33 @@ export type KnowledgeItem = {
 };
 
 export async function getCommunityKnowledge(): Promise<KnowledgeItem[]> {
+  const hasDatabase = Boolean(process.env.DATABASE_URL);
+
+  if (!hasDatabase) {
+    return [
+      {
+        source: 'static',
+        title: 'Escopo autorizado',
+        summary: 'O agente responde apenas sobre assuntos ligados à igreja adventista e ao cristianismo.',
+        content: 'Respostas focadas em Bíblia, fé cristã, eventos e atividades da igreja, doutrina adventista e apoio espiritual da comunidade.',
+      },
+      {
+        source: 'static',
+        title: 'Fundamentos da Igreja Adventista',
+        summary: 'A Igreja Adventista ensina a Bíblia como autoridade, Jesus como Salvador e a preparação para a segunda vinda.',
+        content: 'A Igreja Adventista do Sétimo Dia valoriza a Bíblia como guia espiritual, a graça de Jesus Cristo como centro da mensagem, a adoração consciente, a missão evangelística, a saúde integral e a esperança na segunda vinda de Cristo.',
+        metadata: { kind: 'credo' },
+      },
+      {
+        source: 'static',
+        title: 'Crenças cristãs essenciais',
+        summary: 'Base bíblica para fé, oração, evangelismo, família e serviço comunitário.',
+        content: 'O cristianismo centraliza a fé em Deus Pai, em Jesus Cristo e no Espírito Santo. A Bíblia é a Palavra de Deus, a salvação é pela graça mediante a fé, e os crentes são chamados a viver em amor, justiça, serviço e testemunho.',
+        metadata: { kind: 'faith' },
+      },
+    ];
+  }
+
   try {
     const [news, events, cronograma] = await Promise.all([
       prisma.news.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
@@ -111,4 +138,47 @@ export async function getBibleReferenceContext(question: string): Promise<string
   }
 
   return 'A Bíblia é a base da fé cristã e a Igreja Adventista reconhece as Escrituras como guia para a vida espiritual, moral e comunitária.';
+}
+
+export function getTheologicalReferenceContext(question: string): string {
+  const normalized = question.toLowerCase();
+
+  const topicReferences: Array<{ matcher: RegExp; text: string }> = [
+    {
+      matcher: /(oração|oracao|oração e poder|clamação)/,
+      text: 'Para oração e intimidade com Deus, a análise considera Mateus 6:5-15, 1 Tessalonicenses 5:17 e a tradição sobre oração, renúncia e dependência de Deus. Obras clássicas de referência incluem A Doutrina Cristã e Teologia Sistemática.',
+    },
+    {
+      matcher: /(pecado|salvacao|salvação|graça|graca|justificacao|justificação)/,
+      text: 'Para pecado, graça e salvação, a leitura se apoia em Romanos 3:23-24, Efésios 2:8-10 e a tradição teológica que explica a graça de Cristo como centro da redenção.',
+    },
+    {
+      matcher: /(família|familia|casamento|relacionamento|amor)/,
+      text: 'Para família e amor, a teologia cristã considera Efésios 5:25-33, Colossenses 3:12-17 e os princípios da relação humana sob o cuidado de Deus, com base na tradição moral cristã.',
+    },
+    {
+      matcher: /(esperança|segunda vinda|segundo advento|fim dos tempos|escatologia)/,
+      text: 'Para esperança e segunda vinda, a resposta considera 1 Tessalonicenses 4:13-18, Apocalipse 21 e a tradição adventista sobre o retorno de Cristo e a esperança final.',
+    },
+    {
+      matcher: /(santificação|santificacao|vida cristã|moral|ética|etica)/,
+      text: 'Para santificação e ética cristã, a análise usa Romanos 12, 1 Coríntios 10:31 e a reflexão teológica sobre viver conforme a vontade de Deus em todo aspecto da vida.',
+    },
+    {
+      matcher: /(trindade|deus pai|jesus|espírito santo|espirito santo|cristologia)/,
+      text: 'Para Cristo, Trindade e espiritualidade, a base teológica é a revelação bíblica em João 1, Mateus 28:19 e a tradição cristã sobre a pessoa e a obra de Jesus.',
+    },
+    {
+      matcher: /(doutrina|teologia|ensino|sermão|estudo bíblico|estudo biblico)/,
+      text: 'A resposta se apoia na Bíblia e em obras clássicas de teologia cristã, como Teologia Sistemática, A Doutrina Cristã e as reflexões dos reformadores e dos teólogos cristãos sobre fé, graça e prática espiritual.',
+    },
+  ];
+
+  const chosen = topicReferences.find((item) => item.matcher.test(normalized));
+
+  if (chosen) {
+    return `Referência teológica: ${chosen.text}`;
+  }
+
+  return 'A resposta considera a Bíblia como autoridade, com apoio da tradição teológica cristã e de autores clássicos sobre doutrina, graça, santificação e espiritualidade, como Teologia Sistemática, A Doutrina Cristã e reflexões de teólogos reformadores e adventistas.';
 }

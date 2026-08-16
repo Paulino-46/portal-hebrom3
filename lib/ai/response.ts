@@ -23,7 +23,7 @@ function formatNaturalAnswer(
   const isNewsQuestion = /noticia|notícias|comunicado|atualidade|portal|acontece|informacao|informação/.test(normalizedQuestion.toLowerCase());
   const isHistoryQuestion = /historia|história|historico|histórico|trajetoria|origem|fundacao|fundação/.test(normalizedQuestion.toLowerCase());
   const isCommunityQuestion = /comunidade|hebron|hebrom|missao|missão|familia|família|servico|serviço/.test(normalizedQuestion.toLowerCase());
-  const isBibleQuestion = /versiculo|versículo|bíblia|biblia|estudo/.test(normalizedQuestion.toLowerCase());
+  const isBibleQuestion = /versiculo|versículo|bíblia|biblia|estudo|teologia|doutrina|salvacao|salvação|graca|graça|pecado|oração|oracao|romanos|epistola|epístola|contexto/.test(normalizedQuestion.toLowerCase());
 
   const lead = isEventQuestion
     ? `Claro! Pelo contexto da comunidade, ${top.title} está muito ligado a esse tema.`
@@ -34,7 +34,7 @@ function formatNaturalAnswer(
         : isCommunityQuestion
           ? `Claro! No contexto da comunidade Hebrom III, ${top.summary}`
           : isBibleQuestion
-            ? `Claro! A partir da perspectiva cristã e adventista, ${top.summary}`
+            ? `Claro! Com base na Escritura e na tradição teológica cristã, ${top.summary}`
             : `Claro! Com base na fé cristã e no contexto da Igreja Adventista, ${top.summary}`;
 
   const body = (top.content ?? '').length > 260
