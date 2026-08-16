@@ -45,3 +45,41 @@ model User {
 
   @@map("users")
 }
+
+model Cronograma {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  day         String    @db.VarChar(50)
+  time        String?   @db.VarChar(50)
+  details     String?   @db.Text
+  description String?   @db.Text
+  speaker     String?   @db.VarChar(255)
+  date        DateTime? @db.DateTime(0)
+  type        String    @default("weekly") @db.VarChar(50)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@map("cronograma")
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  title     String    @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  messages  Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id            String      @id @default(cuid())
+  conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String     @map("conversation_id")
+  role          String      @db.VarChar(20)
+  content       String      @db.LongText
+  sources       String?     @db.LongText
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@map("messages")
+}

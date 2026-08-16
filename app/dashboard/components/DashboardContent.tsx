@@ -87,17 +87,22 @@ export default function DashboardContent() {
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']; // Azul, Verde, Laranja, Roxo, Rosa
   // Lista de versículos populares para buscar aleatoriamente
   const verses = [
-    'JHN.3.16',      // João 3:16 (Abreviação correta é JHN)
-    'ROM.8.28',      // Romanos 8:28
-    'PSA.23.1',      // Salmos 23:1
-    '1JN.4.7',       // 1 João 4:7
-    'PHP.4.13',      // Filipenses 4:13
-    'PRV.3.5',       // Provérbios 3:5
-    'MAT.6.33',      // Mateus 6:33
-    '1CO.13.4',      // 1 Coríntios 13:4
-    'PSA.119.105',   // Salmos 119:105
-    'JER.29.11',     // Jeremias 29:11
+    'JHN.3.16',
+    'ROM.8.28',
+    'PSA.23.1',
+    '1JN.4.7',
+    'PHP.4.13',
+    'PRO.3.5',
+    'MAT.6.33',
+    '1CO.13.4',
+    'PSA.119.105',
+    'JER.29.11',
   ];
+
+  const fallbackVerse: Verse = {
+    reference: 'Provérbios 3:5',
+    text: 'Confia no Senhor de todo o teu coração e não te estribes no teu próprio entendimento.',
+  };
 
   // Buscar versículo aleatório
   const fetchVerse = async () => {
@@ -105,47 +110,40 @@ export default function DashboardContent() {
       setLoadingVerse(true);
       const randomVerse = verses[Math.floor(Math.random() * verses.length)];
       console.log('🔍 Buscando versículo:', randomVerse);
-      
-      const response = await fetch(`/api/vercel?passage=${randomVerse}`);
+
+      const response = await fetch(`/api/vercel?passage=${encodeURIComponent(randomVerse)}`);
 
       console.log('📊 Status da resposta:', response.status);
 
       if (!response.ok) {
-        let errorDetails: any = `Request failed with status ${response.status}`;
-        try {
-          // Tenta clonar a resposta para poder ler o corpo duas vezes se necessário
-          const errorData = await response.clone().json();
-          errorDetails = errorData;
-        } catch (e) {
-          // Se o corpo não for JSON, lê como texto
-          errorDetails = await response.text();
-        }
-        console.error('❌ Erro na resposta da API:', response.statusText, errorDetails);
-        console.error('📋 Detalhes do erro:', errorDetails);
+        const errorText = await response.text();
+        console.error('❌ Erro na resposta da API:', response.statusText, errorText);
+        setVerse(fallbackVerse);
         setLoadingVerse(false);
         return;
       }
 
       const data = await response.json();
-      console.log('✅ Versículo recebido:', data.data.reference);
+      const verseData = data?.data ?? data;
 
-      // A estrutura correta é data.data com content e reference
-      if (data.data) {
-        const verseText = data.data.content || 'Versículo não disponível';
-        const verseRef = data.data.reference || randomVerse;
-        
+      if (verseData?.content && verseData?.reference) {
+        const verseText = verseData.content || 'Versículo não disponível';
+        const verseRef = verseData.reference || randomVerse;
+
         console.log('🎉 Versículo em português carregado:', verseRef);
-        
+
         setVerse({
           reference: verseRef,
           text: verseText.trim(),
         });
       } else {
-        console.warn('⚠️ Estrutura data.data não encontrada');
+        console.warn('⚠️ Estrutura da resposta da Bíblia não foi reconhecida. Usando versículo padrão.');
+        setVerse(fallbackVerse);
       }
       setLoadingVerse(false);
     } catch (error) {
       console.error('💥 Erro ao buscar versículo da Bíblia:', error);
+      setVerse(fallbackVerse);
       setLoadingVerse(false);
     }
   };

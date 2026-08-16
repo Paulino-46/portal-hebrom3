@@ -1,0 +1,80 @@
+import { getCommunityKnowledge, getBibleReferenceContext, type KnowledgeItem } from './knowledge';
+
+function normalizeText(value: string) {
+  return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+export async function retrieveRelevantContext(question: string): Promise<string> {
+  const knowledge = await getCommunityKnowledge();
+  const normalizedQuestion = normalizeText(question);
+
+  const scored = knowledge
+    .map((item) => {
+      const haystack = normalizeText(`${item.title} ${item.summary} ${item.content}`);
+      let score = 0;
+
+      for (const word of normalizedQuestion.split(/\s+/)) {
+        if (!word || word.length < 3) continue;
+        if (haystack.includes(word)) score += 2;
+      }
+
+      if (item.metadata?.kind === 'event' && /eventos|culto|cronograma|agenda/.test(normalizedQuestion)) {
+        score += 3;
+      }
+
+      if (item.metadata?.kind === 'news' && /noticia|noticias|comunicado|atualidade/.test(normalizedQuestion)) {
+        score += 3;
+      }
+
+      if (item.metadata?.kind === 'credo' || item.metadata?.kind === 'faith') {
+        if (/doutrina|cristianismo|fe|igreja|adventista|biblia/.test(normalizedQuestion)) {
+          score += 4;
+        }
+      }
+
+      return { item, score };
+    })
+    .filter((result) => result.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  const top = scored.slice(0, 4).map((entry) => entry.item);
+  const context = top.length
+    ? top.map((item) => `- ${item.title}: ${item.summary}. ${item.content}`).join('\n')
+    : 'Sem contexto específico no banco neste momento.';
+
+  return `${context}\n\nReferência bíblica geral: ${await getBibleReferenceContext(question)}`;
+}
+
+export type RetrievalResult = {
+  source: KnowledgeItem['source'];
+  title: string;
+  summary: string;
+  content: string;
+};
+
+export async function retrieveStructuredContext(question: string): Promise<RetrievalResult[]> {
+  const knowledge = await getCommunityKnowledge();
+  const normalizedQuestion = normalizeText(question);
+
+  return knowledge
+    .map((item) => {
+      const haystack = normalizeText(`${item.title} ${item.summary} ${item.content}`);
+      let score = 0;
+
+      for (const word of normalizedQuestion.split(/\s+/)) {
+        if (!word || word.length < 3) continue;
+        if (haystack.includes(word)) score += 2;
+      }
+
+      return { item, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map(({ item }) => ({
+      source: item.source,
+      title: item.title,
+      summary: item.summary,
+      content: item.content,
+    }));
+}
