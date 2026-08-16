@@ -19,17 +19,23 @@ function formatNaturalAnswer(
     return 'Claro! Posso ajudar com temas da fé cristã, da Igreja Adventista, cultos, eventos, notícias e estudos bíblicos. Me diga o assunto que você quer saber e eu te respondo com atenção ao contexto da igreja e da Bíblia.';
   }
 
-  const isEventQuestion = /evento|culto|cronograma|agenda|programa/.test(normalizedQuestion.toLowerCase());
-  const isNewsQuestion = /noticia|notícias|comunicado|atualidade|portal/.test(normalizedQuestion.toLowerCase());
+  const isEventQuestion = /evento|culto|cronograma|agenda|programa|atividade|atividades/.test(normalizedQuestion.toLowerCase());
+  const isNewsQuestion = /noticia|notícias|comunicado|atualidade|portal|acontece|informacao|informação/.test(normalizedQuestion.toLowerCase());
+  const isHistoryQuestion = /historia|história|historico|histórico|trajetoria|origem|fundacao|fundação/.test(normalizedQuestion.toLowerCase());
+  const isCommunityQuestion = /comunidade|hebron|hebrom|missao|missão|familia|família|servico|serviço/.test(normalizedQuestion.toLowerCase());
   const isBibleQuestion = /versiculo|versículo|bíblia|biblia|estudo/.test(normalizedQuestion.toLowerCase());
 
   const lead = isEventQuestion
     ? `Claro! Pelo contexto da comunidade, ${top.title} está muito ligado a esse tema.`
     : isNewsQuestion
       ? `Claro! A informação mais relevante sobre isso é: ${top.summary}`
-      : isBibleQuestion
-        ? `Claro! A partir da perspectiva cristã e adventista, ${top.summary}`
-        : `Claro! Com base na fé cristã e no contexto da Igreja Adventista, ${top.summary}`;
+      : isHistoryQuestion
+        ? `Claro! Sobre a história e a trajetória da comunidade, ${top.summary}`
+        : isCommunityQuestion
+          ? `Claro! No contexto da comunidade Hebrom III, ${top.summary}`
+          : isBibleQuestion
+            ? `Claro! A partir da perspectiva cristã e adventista, ${top.summary}`
+            : `Claro! Com base na fé cristã e no contexto da Igreja Adventista, ${top.summary}`;
 
   const body = (top.content ?? '').length > 260
     ? `${(top.content ?? '').slice(0, 260).trim()}...`

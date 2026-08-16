@@ -18,16 +18,30 @@ export async function retrieveRelevantContext(question: string): Promise<string>
         if (haystack.includes(word)) score += 2;
       }
 
-      if (item.metadata?.kind === 'event' && /eventos|culto|cronograma|agenda/.test(normalizedQuestion)) {
-        score += 3;
+      const kind = item.metadata?.kind;
+
+      if (kind === 'event' && /(eventos|culto|cronograma|agenda|atividade|atividades|programacao|programação)/.test(normalizedQuestion)) {
+        score += 5;
       }
 
-      if (item.metadata?.kind === 'news' && /noticia|noticias|comunicado|atualidade/.test(normalizedQuestion)) {
-        score += 3;
+      if (kind === 'news' && /(noticia|noticias|comunicado|atualidade|portal|informacao|informação)/.test(normalizedQuestion)) {
+        score += 5;
       }
 
-      if (item.metadata?.kind === 'credo' || item.metadata?.kind === 'faith') {
-        if (/doutrina|cristianismo|fe|igreja|adventista|biblia/.test(normalizedQuestion)) {
+      if (kind === 'schedule' && /(cronograma|agenda|programacao|programação|evento|culto|atividade|atividades)/.test(normalizedQuestion)) {
+        score += 6;
+      }
+
+      if (kind === 'history' && /(historia|historico|história|trajetoria|tradicao|tradição|origem|fundacao|fundação)/.test(normalizedQuestion)) {
+        score += 6;
+      }
+
+      if (kind === 'community' && /(comunidade|hebron|hebrom|missao|missão|servico|serviço|familia|familiar)/.test(normalizedQuestion)) {
+        score += 5;
+      }
+
+      if (kind === 'credo' || kind === 'faith') {
+        if (/doutrina|cristianismo|fe|igreja|adventista|biblia|jesus|salvacao|salvação/.test(normalizedQuestion)) {
           score += 4;
         }
       }
@@ -66,11 +80,19 @@ export async function retrieveStructuredContext(question: string): Promise<Retri
         if (haystack.includes(word)) score += 2;
       }
 
+      const kind = item.metadata?.kind;
+      if (kind === 'event' && /(eventos|culto|cronograma|agenda|atividade|atividades|programacao|programação)/.test(normalizedQuestion)) score += 5;
+      if (kind === 'news' && /(noticia|noticias|comunicado|atualidade|portal|informacao|informação)/.test(normalizedQuestion)) score += 5;
+      if (kind === 'schedule' && /(cronograma|agenda|programacao|programação|evento|culto|atividade|atividades)/.test(normalizedQuestion)) score += 6;
+      if (kind === 'history' && /(historia|historico|história|trajetoria|tradicao|tradição|origem|fundacao|fundação)/.test(normalizedQuestion)) score += 6;
+      if (kind === 'community' && /(comunidade|hebron|hebrom|missao|missão|servico|serviço|familia|familiar)/.test(normalizedQuestion)) score += 5;
+      if ((kind === 'credo' || kind === 'faith') && /(doutrina|cristianismo|fe|igreja|adventista|biblia|jesus|salvacao|salvação)/.test(normalizedQuestion)) score += 4;
+
       return { item, score };
     })
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 4)
+    .slice(0, 5)
     .map(({ item }) => ({
       source: item.source,
       title: item.title,

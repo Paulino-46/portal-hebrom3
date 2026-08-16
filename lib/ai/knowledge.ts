@@ -56,6 +56,27 @@ export async function getCommunityKnowledge(): Promise<KnowledgeItem[]> {
         content: 'O cristianismo centraliza a fé em Deus Pai, em Jesus Cristo e no Espírito Santo. A Bíblia é a Palavra de Deus, a salvação é pela graça mediante a fé, e os crentes são chamados a viver em amor, justiça, serviço e testemunho.',
         metadata: { kind: 'faith' },
       },
+      {
+        source: 'static',
+        title: 'História da Igreja Adventista',
+        summary: 'A Igreja Adventista nasceu no século XIX e se desenvolveu com foco em fé, educação, saúde e missão.',
+        content: 'A Igreja Adventista do Sétimo Dia nasceu em um movimento espiritual do século XIX, marcado pela busca de uma vida íntegra, pela guarda do sábado, pela saúde e pelo serviço. Sua herança inspirou educação, ação social e missão global, sendo uma tradição de fé com forte vínculo com a Bíblia e com a esperança da segunda vinda de Cristo.',
+        metadata: { kind: 'history' },
+      },
+      {
+        source: 'static',
+        title: 'História de Hebrom III',
+        summary: 'Hebrom III é uma comunidade local que cresceu com culto, estudos bíblicos e ações de serviço em favor das famílias.',
+        content: 'Hebrom III nasceu do desejo de construir um espaço de adoração e apoio mútuo. Com cultos dedicados, encontros familiares, estudos bíblicos e projetos sociais, a comunidade se fortaleceu como ponto de referência para quem busca fé, esperança e comunhão. Hoje, a igreja investe em formação espiritual, cuidado com as famílias e presença ativa na região.',
+        metadata: { kind: 'community' },
+      },
+      {
+        source: 'static',
+        title: 'Eventos e cronograma da comunidade',
+        summary: 'A comunidade organizada com cultos, estudos, eventos e atividades do calendário local.',
+        content: 'A vida da comunidade é organizada por cultos semanais, estudos bíblicos, encontros familiares, eventos especiais e ações de serviço. O cronograma ajuda membros e visitantes a conhecer as atividades, manter a rotina espiritual e participar da missão local da igreja.',
+        metadata: { kind: 'schedule' },
+      },
     ];
   } catch (error) {
     console.error('Erro ao carregar conhecimento do agente:', error);
