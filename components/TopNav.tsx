@@ -36,7 +36,7 @@ export default function TopNav() {
             {/* Logo */}
             <Link href="/" className="group flex items-center gap-3" onClick={closeMobile}>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold font-black text-navy shadow-[0_0_20px_rgba(212,175,55,0.3)] transition group-hover:scale-110 sm:h-10 sm:w-10">
-                H3
+              DH
               </div>
               <div className="flex flex-col leading-none">
                 <span className="text-base font-bold tracking-tighter text-white sm:text-lg">HEBROM</span>
