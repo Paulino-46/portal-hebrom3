@@ -69,7 +69,7 @@ export default function TopNav() {
                   <div className="absolute right-0 mt-4 w-72 origin-top-right overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="mb-2 border-b border-white/5 px-5 py-4">
                       <h4 className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold">Área de Acesso</h4>
-                      <p className="mt-1 text-[11px] text-slate-500">Bem-vindo à comunidade Hebrom III</p>
+                      <p className="mt-1 text-[11px] text-slate-500">Bem-vindo à comunidade do Distritu de Hebrom</p>
                     </div>
                     <div className="space-y-1">
                       <Link href="/login-user" onClick={() => setIsOpen(false)}
@@ -99,7 +99,7 @@ export default function TopNav() {
                     </div>
                     <div className="mt-4 rounded-[1.75rem] bg-slate-950/50 p-4">
                       <p className="text-center text-[9px] uppercase leading-relaxed tracking-[0.15em] text-slate-500">
-                        Distrito de Hebrom III
+                        Distrito de Hebrom 
                       </p>
                     </div>
                   </div>

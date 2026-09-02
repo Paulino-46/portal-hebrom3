@@ -129,12 +129,12 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
               e{" "}
               <em className="not-italic text-gold-light">transformação</em>
               <br className="hidden sm:block" />
-              {" "}em Hebrom III
+              {" "}no Distrito de Hebrom
             </h1>
 
             <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/60 sm:text-base">
               Acompanhe cultos, iniciativas sociais e eventos em um portal moderno
-              feito para toda a comunidade Hebrom III.
+              feito para toda a comunidade do Distritu de Hebrom.
             </p>
           </div>
 
