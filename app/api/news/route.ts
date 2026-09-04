@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { getAllNews, getPrismaClient } from "../../../services/news";
 import { uploadBlob } from "@/lib/blob";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   try {
     const url        = new URL(request.url);
@@ -13,7 +16,10 @@ export async function GET(request: Request) {
       ? await (await import("../../../services/news")).getLatestNews(limit)
       : await getAllNews();
 
-    return NextResponse.json({ news });
+    return NextResponse.json(
+      { news },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
+    );
   } catch (error) {
     console.error("Erro ao buscar notícias:", error);
     return NextResponse.json(

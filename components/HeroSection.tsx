@@ -54,6 +54,7 @@ const HIGHLIGHTS = [
 const CARD_WIDTH = 340;
 const CARD_GAP = 24;
 const STEP = CARD_WIDTH + CARD_GAP;
+const REFRESH_INTERVAL = 60_000;
 
 export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
   const initialSlides = items.length ? items : SLIDES;
@@ -77,6 +78,70 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
       setCurrent((prev) => Math.min(prev, items.length - 1));
     }
   }, [items]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const refreshSlides = async () => {
+      try {
+        const [newsResponse, eventsResponse] = await Promise.all([
+          fetch("/api/news?limit=6", { cache: "no-store" }),
+          fetch("/api/events", { cache: "no-store" }),
+        ]);
+
+        if (!newsResponse.ok || !eventsResponse.ok) return;
+
+        const [{ news }, { events }] = await Promise.all([
+          newsResponse.json(),
+          eventsResponse.json(),
+        ]);
+
+        const dynamicNews: Slide[] = (news ?? []).map((item: any) => ({
+          id: `db-news-${item.id || item._id}`,
+          src: item.image || "/img/istockphoto-1144570336-1024x1024.jpg",
+          tag: "Notícia",
+          title: item.title,
+          desc: item.author || "Equipe Hebrom",
+          summary: item.summary,
+          date: item.createdAt,
+          href: "/news",
+        }));
+
+        const dynamicEvents: Slide[] = (events ?? []).map((item: any) => ({
+          id: `db-event-${item.id || item._id}`,
+          src: item.image || "/img/istockphoto-1144570336-1024x1024.jpg",
+          tag: "Evento",
+          title: item.title,
+          desc: item.location || "",
+          summary: item.description,
+          date: item.date,
+          href: "/events",
+        }));
+
+        const nextSlides = dynamicNews.length
+          ? [...dynamicNews, ...dynamicEvents]
+          : [
+              ...SLIDES.map((slide) => ({ ...slide, id: `static-${slide.id}` })),
+              ...dynamicEvents,
+            ];
+
+        if (!cancelled && nextSlides.length) {
+          setSlides(nextSlides);
+          setCurrent((prev) => Math.min(prev, nextSlides.length - 1));
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar destaques:", error);
+      }
+    };
+
+    refreshSlides();
+    const interval = window.setInterval(refreshSlides, REFRESH_INTERVAL);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const interval = window.setInterval(() => {

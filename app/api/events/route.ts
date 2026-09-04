@@ -4,10 +4,16 @@ import { getLatestEvents } from "../../../services/events";
 import prisma from "../../../repositories/prisma";
 import { uploadBlob } from "@/lib/blob";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const events = await getLatestEvents();
-    return NextResponse.json({ events });
+    return NextResponse.json(
+      { events },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
+    );
   } catch (error) {
     console.error("Erro ao buscar eventos:", error);
     return NextResponse.json(

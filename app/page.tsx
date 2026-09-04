@@ -6,6 +6,9 @@ import { getLatestNews } from "../services/news";
 import { getLatestEvents } from "../services/events";
 import { SLIDES } from "../lib/sliderData";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function Home() {
   const newsFromDb = await getLatestNews();
   const eventsFromDb = await getLatestEvents();
