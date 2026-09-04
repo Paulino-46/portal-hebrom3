@@ -166,7 +166,7 @@ export default async function Home() {
           </div>
 
           {/* Featured news */}
-          <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr] lg:gap-6">
+          <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:gap-6">
             <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer sm:rounded-[2rem]">
               <div className="relative overflow-hidden bg-slate-900/60">
                 <img
@@ -175,22 +175,22 @@ export default async function Home() {
                     "/img/placeholder-news.jpg"
                   }
                   alt={dynamicNews[0]?.title || "Notícia em destaque"}
-                  className="h-56 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-64 lg:h-72"
+                  className="h-48 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-56 lg:h-60"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/10 to-transparent" />
-                <div className="absolute left-5 bottom-5 right-5 sm:left-6 sm:bottom-6 sm:right-6">
+                <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5">
                   <span className="inline-flex items-center rounded-full bg-sky-500/15 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-sky-200">
                     {dynamicNews[0]?.tag || "Notícia"}
                   </span>
-                  <h3 className="mt-3 text-xl font-semibold leading-tight text-white sm:mt-4 sm:text-2xl lg:text-3xl xl:text-4xl">
+                  <h3 className="mt-2 text-lg font-semibold leading-tight text-white sm:mt-3 sm:text-xl lg:text-2xl xl:text-3xl">
                     {dynamicNews[0]?.title ||
                       "Veja as últimas notícias da comunidade"}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-200 line-clamp-3 sm:line-clamp-none sm:mt-4 sm:max-w-2xl sm:text-base">
+                  <p className="mt-2 text-xs leading-relaxed text-slate-200 line-clamp-2 sm:mt-3 sm:max-w-2xl sm:text-sm">
                     {dynamicNews[0]?.summary ||
                       "As principais notícias em destaque para você acompanhar o que acontece na Hebrom III."}
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-slate-300 sm:mt-6 sm:gap-3 sm:text-xs">
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-slate-300 sm:mt-4 sm:gap-3 sm:text-xs">
                     <span>{dynamicNews[0]?.desc || "Equipe Hebrom"}</span>
                     <span className="inline-flex h-1.5 w-1.5 rounded-full bg-slate-400" />
                     <span>
@@ -207,13 +207,13 @@ export default async function Home() {
             </article>
 
             {/* Secondary news cards */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:gap-5">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 lg:gap-4">
               {dynamicNews.slice(1, 4).map((item, idx) => (
                 <article
                   key={`news-card-${idx}`}
                   className="group overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-900/95 shadow-lg shadow-slate-950/20 transition hover:-translate-y-1 hover:border-sky-300/30 cursor-pointer sm:rounded-[1.75rem]"
                 >
-                  <div className="relative h-36 overflow-hidden bg-slate-800 sm:h-40 lg:h-44">
+                  <div className="relative h-28 overflow-hidden bg-slate-800 sm:h-32 lg:h-36">
                     <img
                       src={item.src}
                       alt={item.title}
@@ -221,17 +221,17 @@ export default async function Home() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
                   </div>
-                  <div className="p-4 sm:p-5 lg:p-6">
+                  <div className="p-3 sm:p-4 lg:p-5">
                     <span className="mb-2 inline-flex rounded-full bg-slate-700/70 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-slate-200 sm:mb-3">
                       {item.tag}
                     </span>
-                    <h3 className="text-sm font-semibold leading-snug text-white sm:text-base lg:text-lg">
+                    <h3 className="text-sm font-semibold leading-snug text-white sm:text-base">
                       {item.title}
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2 sm:mt-3 sm:text-sm">
+                    <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2 sm:text-sm">
                       {item.summary}
                     </p>
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-700/80 pt-3 text-[0.65rem] text-slate-400 sm:text-xs">
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-700/80 pt-2.5 text-[0.65rem] text-slate-400 sm:text-xs">
                       <span className="truncate pr-2">{item.desc || "Equipe Hebrom"}</span>
                       <span className="flex-shrink-0">
                         {item.date
