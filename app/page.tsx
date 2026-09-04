@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Footer from "../components/Footer";
 import HeroSection from "../components/HeroSection";
+import NewsletterForm from "../components/NewsletterForm";
 import TopNav from "../components/TopNav";
 import { getLatestNews } from "../services/news";
 import { getLatestEvents } from "../services/events";
-import { SLIDES } from "../lib/sliderData";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -35,12 +35,7 @@ export default async function Home() {
     href: "/events",
   }));
 
-  const carouselNews =
-    dynamicNews.length > 0
-      ? dynamicNews
-      : SLIDES.map((s) => ({ ...s, id: `static-${s.id}` }));
-
-  const carouselItems = [...carouselNews, ...dynamicEvents];
+  const carouselItems = [...dynamicNews, ...dynamicEvents];
 
   return (
     <main className="bg-gradient-to-br from-sky-950 via-slate-950 to-orange-950 text-white">
@@ -329,24 +324,7 @@ export default async function Home() {
                 Receba alertas de cultos especiais, eventos e novidades
                 diretamente no seu e-mail.
               </p>
-              <div className="flex flex-col gap-3">
-                <input
-                  type="text"
-                  placeholder="Seu nome"
-                  className="rounded-lg bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold"
-                />
-                <input
-                  type="email"
-                  placeholder="Seu e-mail"
-                  className="rounded-lg bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold"
-                />
-                <button
-                  type="button"
-                  className="mt-1 rounded-xl bg-gradient-to-r from-gold to-amber-500 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95 sm:py-4"
-                >
-                  ASSINAR Newsletter
-                </button>
-              </div>
+              <NewsletterForm />
             </div>
           </div>
         </div>

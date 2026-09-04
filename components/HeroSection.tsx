@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { SLIDES } from "../lib/sliderData";
 
 type Slide = {
   id: string;
@@ -56,8 +55,8 @@ const CARD_GAP = 24;
 const STEP = CARD_WIDTH + CARD_GAP;
 const REFRESH_INTERVAL = 60_000;
 
-export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
-  const initialSlides = items.length ? items : SLIDES;
+export default function HeroSection({ items = [] }: HeroSectionProps) {
+  const initialSlides = items;
   const pauseRef = useRef(false);
   const slideCountRef = useRef(initialSlides.length);
   const [current, setCurrent] = useState(0);
@@ -73,10 +72,8 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
   }, [slides.length]);
 
   useEffect(() => {
-    if (items.length) {
-      setSlides(items);
-      setCurrent((prev) => Math.min(prev, items.length - 1));
-    }
+    setSlides(items);
+    setCurrent((prev) => Math.min(prev, Math.max(0, items.length - 1)));
   }, [items]);
 
   useEffect(() => {
@@ -118,16 +115,11 @@ export default function HeroSection({ items = SLIDES }: HeroSectionProps) {
           href: "/events",
         }));
 
-        const nextSlides = dynamicNews.length
-          ? [...dynamicNews, ...dynamicEvents]
-          : [
-              ...SLIDES.map((slide) => ({ ...slide, id: `static-${slide.id}` })),
-              ...dynamicEvents,
-            ];
+        const nextSlides = [...dynamicNews, ...dynamicEvents];
 
-        if (!cancelled && nextSlides.length) {
+        if (!cancelled) {
           setSlides(nextSlides);
-          setCurrent((prev) => Math.min(prev, nextSlides.length - 1));
+          setCurrent((prev) => Math.min(prev, Math.max(0, nextSlides.length - 1)));
         }
       } catch (error) {
         console.error("Erro ao atualizar destaques:", error);

@@ -1,3 +1,5 @@
+import NewsletterForm from "./NewsletterForm";
+
 import Link from "next/link";
 
 export default function Footer() {
@@ -104,18 +106,8 @@ export default function Footer() {
               Receba alertas de eventos, cultos especiais e novidades
               diretamente no seu e-mail.
             </p>
-            <div className="flex flex-col gap-2.5 sm:max-w-sm lg:max-w-none">
-              <input
-                type="email"
-                placeholder="seu@email.com"
-                className="rounded bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold"
-              />
-              <button
-                type="button"
-                className="rounded-xl bg-gradient-to-r from-gold to-amber-500 py-3 text-xs font-bold uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95"
-              >
-                Assinar newsletter
-              </button>
+            <div className="sm:max-w-sm lg:max-w-none">
+              <NewsletterForm compact />
             </div>
           </div>
         </div>

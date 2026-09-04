@@ -46,6 +46,14 @@ model User {
   @@map("users")
 }
 
+model NewsletterSubscriber {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique @db.VarChar(255)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("newsletter_subscribers")
+}
+
 model Cronograma {
   id          Int       @id @default(autoincrement())
   title       String    @db.VarChar(255)
