@@ -47,7 +47,7 @@ export default async function Home() {
       {/* ── ABOUT ── */}
       <section
         id="about"
-        className="bg-slate-950/95 text-white px-4 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-28"
+        className="bg-slate-950/95 px-4 py-14 text-white sm:px-8 sm:py-20 lg:px-10 lg:py-28"
       >
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 sm:mb-16 max-w-3xl">
@@ -55,7 +55,7 @@ export default async function Home() {
               <span className="block h-px w-5 bg-gold" />
               Sobre o portal
             </p>
-            <h2 className="text-3xl font-bold leading-snug text-white sm:text-4xl lg:text-5xl">
+            <h2 className="text-[2rem] font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
               O portal da comunidade do Distrito de Hebrom
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-slate-400 sm:text-base">
@@ -144,7 +144,7 @@ export default async function Home() {
       {/* ── NEWS ── */}
       <section
         id="news"
-        className="border-t border-sky-400/10 bg-slate-950/95 px-4 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
+        className="border-t border-sky-400/10 bg-slate-950/95 px-4 py-14 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
       >
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:mb-12">
@@ -153,7 +153,7 @@ export default async function Home() {
                 <span className="block h-px w-5 bg-gold" />
                 Notícias
               </p>
-              <h2 className="text-3xl font-bold leading-snug text-white sm:text-4xl lg:text-5xl">
+              <h2 className="text-[2rem] font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                 Destaques Recentes
               </h2>
             </div>
@@ -231,7 +231,7 @@ export default async function Home() {
                     <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2 sm:mt-3 sm:text-sm">
                       {item.summary}
                     </p>
-                    <div className="mt-4 flex items-center justify-between border-t border-slate-700/80 pt-3 text-[0.65rem] text-slate-400 sm:text-xs">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-700/80 pt-3 text-[0.65rem] text-slate-400 sm:text-xs">
                       <span className="truncate pr-2">{item.desc || "Equipe Hebrom"}</span>
                       <span className="flex-shrink-0">
                         {item.date
@@ -254,7 +254,7 @@ export default async function Home() {
       {/* ── EVENTS ── */}
       <section
         id="events"
-        className="bg-slate-950/95 px-4 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
+        className="bg-slate-950/95 px-4 py-14 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
       >
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 md:grid-cols-2 md:gap-12 lg:items-start lg:gap-16">
@@ -265,7 +265,7 @@ export default async function Home() {
                 <span className="block h-px w-5 bg-gold" />
                 Agenda
               </p>
-              <h2 className="mb-3 text-3xl font-bold leading-snug text-white sm:text-4xl">
+              <h2 className="mb-3 text-[2rem] font-bold leading-tight text-white sm:text-4xl">
                 Próximos eventos
               </h2>
               <p className="mb-8 max-w-sm text-sm leading-relaxed text-slate-400 sm:mb-10">

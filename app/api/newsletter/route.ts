@@ -16,6 +16,27 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        {
+          error:
+            "A newsletter está temporariamente indisponível. Tente novamente em alguns minutos.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const existingSubscriber = await prisma.newsletterSubscriber.findUnique({
+      where: { email },
+    });
+
+    if (existingSubscriber) {
+      return NextResponse.json(
+        { error: "Este e-mail já está inscrito na newsletter." },
+        { status: 409 }
+      );
+    }
+
     await prisma.newsletterSubscriber.create({ data: { email } });
 
     return NextResponse.json(
@@ -23,15 +44,25 @@ export async function POST(request: Request) {
       { status: 201, headers: { "Cache-Control": "no-store" } }
     );
   } catch (error: unknown) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2002"
-    ) {
+    const prismaErrorCode =
+      error && typeof error === "object" && "code" in error ? String(error.code) : "";
+
+    if (prismaErrorCode === "P2002") {
       return NextResponse.json(
         { error: "Este e-mail já está inscrito na newsletter." },
         { status: 409 }
+      );
+    }
+
+    if (
+      ["P1001", "P1012", "P2021", "P2022", "P2023"].includes(prismaErrorCode)
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "A newsletter está temporariamente indisponível. Tente novamente em alguns minutos.",
+        },
+        { status: 503 }
       );
     }
 

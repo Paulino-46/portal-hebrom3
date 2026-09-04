@@ -17,7 +17,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <p className="font-serif text-2xl font-bold text-gold-light">Distritu de Hebrom</p>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
+              <p className="mt-4 max-w-xs break-words text-sm leading-relaxed text-slate-400">
               Portal de notícias e comunidade do Distritu de Hebrom. Fique
               conectado com nossa família de fé.
             </p>
@@ -87,8 +87,8 @@ export default function Footer() {
               Contato
             </p>
             <ul className="flex flex-col gap-3 text-sm text-slate-400">
-              <li>paulinogoncaalves2022@gmail.com</li>
-              <li>+244 953 087 821/+244 924 259 557</li>
+              <li className="break-words">paulinogoncaalves2022@gmail.com</li>
+              <li className="break-words">+244 953 087 821/+244 924 259 557</li>
               <li className="leading-relaxed">
                 Fubu<br />
                 Bairro Fubu<br />

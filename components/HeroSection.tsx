@@ -61,6 +61,18 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
   const slideCountRef = useRef(initialSlides.length);
   const [current, setCurrent] = useState(0);
   const [slides, setSlides] = useState<Slide[]>(initialSlides);
+  const [carouselStep, setCarouselStep] = useState(STEP);
+
+  useEffect(() => {
+    const updateCarouselStep = () => {
+      const cardWidth = Math.min(CARD_WIDTH, Math.max(0, window.innerWidth - 64));
+      setCarouselStep(cardWidth + CARD_GAP);
+    };
+
+    updateCarouselStep();
+    window.addEventListener("resize", updateCarouselStep);
+    return () => window.removeEventListener("resize", updateCarouselStep);
+  }, []);
 
   const selectSlide = (index: number) => {
     const sanitized = Math.max(0, Math.min(index, slides.length - 1));
@@ -150,7 +162,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
     <>
       {/* ── VIDEO HERO ── */}
       <section
-        className="relative flex min-h-[60vh] w-full items-end overflow-hidden sm:min-h-[65vh]"
+        className="relative flex min-h-[34rem] w-full items-end overflow-hidden pt-16 sm:min-h-[65vh] sm:pt-20"
         role="region"
         aria-labelledby="hero-title"
         id="hero"
@@ -170,7 +182,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/30 to-transparent" />
 
         {/* Content */}
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-14 sm:flex-row sm:items-end sm:justify-between sm:px-6 sm:pb-20 lg:px-10">
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-10 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:px-6 sm:pb-20 lg:px-10">
           {/* Left: text */}
           <div className="max-w-2xl">
             <p className="mb-4 mt-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-gold">
@@ -180,7 +192,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
 
             <h1
               id="hero-title"
-              className="font-serif text-3xl font-bold leading-[1.1] text-white sm:text-4xl lg:text-6xl"
+              className="font-serif text-[2rem] font-bold leading-[1.08] text-white sm:text-4xl lg:text-6xl"
             >
               Fé, comunidade<br />
               e{" "}
@@ -189,7 +201,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
               {" "}no Distrito de Hebrom
             </h1>
 
-            <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/60 sm:text-base">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/70 sm:mt-5 sm:text-base">
               Acompanhe cultos, iniciativas sociais e eventos em um portal moderno
               feito para toda a comunidade do Distritu de Hebrom.
             </p>
@@ -291,7 +303,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
             >
               <div
                 className="flex gap-6 transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                style={{ transform: `translateX(-${current * STEP}px)` }}
+                style={{ transform: `translateX(-${current * carouselStep}px)` }}
               >
                 {slides.map((slide, i) => (
                   <Link
