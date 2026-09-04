@@ -294,8 +294,6 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
         {/* Track */}
         <div className="mx-auto max-w-7xl overflow-hidden">
           <div className="relative mb-6 sm:mb-8">
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-slate-950/100 to-transparent sm:w-24" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-slate-950/100 to-transparent sm:w-24" />
             <div
               className="overflow-hidden pb-4"
               onMouseEnter={() => (pauseRef.current = true)}
@@ -315,7 +313,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
                       className={`relative overflow-hidden rounded-[24px] border border-white/10 bg-slate-950 shadow-2xl shadow-slate-950/30 transition duration-500 ease-out sm:rounded-[32px] ${
                         current === i
                           ? "scale-105 border-sky-300/40"
-                          : "scale-95 opacity-90"
+                          : "scale-95"
                       }`}
                       onClick={() => selectSlide(i)}
                     >
