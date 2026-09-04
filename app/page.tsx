@@ -166,6 +166,11 @@ export default async function Home() {
           </div>
 
           {/* Featured news */}
+          {dynamicNews.length === 0 ? (
+            <p className="rounded-2xl border border-white/10 bg-slate-900/80 p-6 text-sm text-slate-400">
+              Nenhuma notícia publicada no momento.
+            </p>
+          ) : (
           <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:gap-6">
             <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer sm:rounded-[2rem]">
               <div className="relative overflow-hidden bg-slate-900/60">
@@ -248,6 +253,7 @@ export default async function Home() {
               ))}
             </div>
           </div>
+          )}
         </div>
       </section>
 
