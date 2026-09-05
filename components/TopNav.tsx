@@ -34,8 +34,8 @@ export default function TopNav() {
           <div className="flex h-16 items-center justify-between sm:h-20">
 
             {/* Logo */}
-            <Link href="/" className="group flex items-center gap-3" onClick={closeMobile}>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold font-black text-navy shadow-[0_0_20px_rgba(212,175,55,0.3)] transition group-hover:scale-110 sm:h-10 sm:w-10">
+            <Link href="/" className="group flex min-w-0 shrink-0 items-center gap-3" onClick={closeMobile}>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold font-black text-navy shadow-[0_0_20px_rgba(212,175,55,0.3)] transition group-hover:scale-110 sm:h-10 sm:w-10">
               DH
               </div>
               <div className="flex flex-col leading-none">
@@ -112,7 +112,9 @@ export default function TopNav() {
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
-              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-xl border border-white/10 transition hover:border-gold/40 md:hidden"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation"
+              className="flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-white/10 transition hover:border-gold/40 md:hidden"
             >
               <span className={`block h-0.5 w-5 rounded-full bg-white transition-all duration-300 ${mobileOpen ? 'translate-y-2 rotate-45' : ''}`} />
               <span className={`block h-0.5 w-5 rounded-full bg-white transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`} />
@@ -124,7 +126,7 @@ export default function TopNav() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[99] flex flex-col md:hidden">
+        <div id="mobile-navigation" className="fixed inset-0 z-[110] flex flex-col md:hidden">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={closeMobile} />
 
