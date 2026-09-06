@@ -47,10 +47,10 @@ export default async function Home() {
       {/* ── ABOUT ── */}
       <section
         id="about"
-        className="bg-slate-950/95 px-4 py-14 text-white sm:px-8 sm:py-20 lg:px-10 lg:py-28"
+        className="bg-slate-950/95 px-4 py-8 text-white sm:px-8 sm:py-12 lg:px-10 lg:py-16"
       >
         <div className="mx-auto max-w-7xl">
-          <div className="mb-10 sm:mb-16 max-w-3xl">
+          <div className="mb-6 max-w-3xl sm:mb-10">
             <p className="mb-4 flex items-center gap-3 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-gold sm:text-xs">
               <span className="block h-px w-5 bg-gold" />
               Sobre o portal

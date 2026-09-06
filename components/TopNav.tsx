@@ -45,7 +45,7 @@ export default function TopNav() {
             </Link>
 
             {/* Desktop nav */}
-            <div className="hidden items-center gap-8 lg:flex lg:gap-10">
+            <div className="hidden items-center gap-5 md:flex lg:gap-10">
               <Link href="/#about" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 transition hover:text-white">Sobre</Link>
               <Link href="/news"   className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 transition hover:text-white">Notícias</Link>
               <Link href="/events" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 transition hover:text-white">Eventos</Link>
@@ -114,7 +114,7 @@ export default function TopNav() {
               aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
               aria-expanded={mobileOpen}
               aria-controls="mobile-navigation"
-              className="flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-white/10 transition hover:border-gold/40 lg:hidden"
+              className="flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-white/10 transition hover:border-gold/40 md:hidden"
             >
               <span className={`block h-0.5 w-5 rounded-full bg-white transition-all duration-300 ${mobileOpen ? 'translate-y-2 rotate-45' : ''}`} />
               <span className={`block h-0.5 w-5 rounded-full bg-white transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`} />
@@ -126,7 +126,7 @@ export default function TopNav() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div id="mobile-navigation" className="fixed inset-0 z-[110] flex flex-col lg:hidden">
+        <div id="mobile-navigation" className="fixed inset-0 z-[110] flex flex-col md:hidden">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={closeMobile} />
 

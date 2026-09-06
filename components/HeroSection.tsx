@@ -230,12 +230,12 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
 
       {/* ── CAROUSEL ── */}
       <section
-        className="border-t border-blue-400/10 bg-slate-950 px-4 pb-16 sm:px-6 sm:pb-20 lg:px-10"
+        className="border-t border-blue-400/10 bg-slate-950 px-4 pb-10 sm:px-6 sm:pb-12 lg:px-10"
         role="region"
         aria-labelledby="carousel-title"
       >
         {/* Header */}
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 pb-6 pt-10 sm:flex-row sm:items-end sm:justify-between sm:pb-8 sm:pt-14">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 pb-4 pt-6 sm:flex-row sm:items-end sm:justify-between sm:pb-5 sm:pt-8">
           <div>
             <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-sky-300">
               <span className="block h-px w-5 bg-sky-300" />
@@ -270,7 +270,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
         </div>
 
         {/* Highlights cards */}
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 pb-6 sm:gap-4 sm:pb-8 md:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 pb-4 sm:gap-4 sm:pb-5 md:grid-cols-4">
           {HIGHLIGHTS.map(({ accent, icon, label, title, body }, index) => (
             <div
               key={index}
@@ -293,7 +293,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
 
         {/* Track */}
         <div className="mx-auto max-w-7xl overflow-hidden">
-          <div className="relative mb-6 sm:mb-8">
+          <div className="relative mb-3 sm:mb-4">
             <div
               className="overflow-hidden pb-4"
               onMouseEnter={() => (pauseRef.current = true)}
@@ -350,7 +350,7 @@ export default function HeroSection({ items = [] }: HeroSectionProps) {
         </div>
 
         {/* Dots */}
-        <div className="mx-auto mt-5 flex max-w-7xl justify-center gap-2 sm:mt-7">
+        <div className="mx-auto mt-3 flex max-w-7xl justify-center gap-2 sm:mt-4">
           {Array.from({ length: slides.length }).map((_, i) => (
             <button
               key={i}
