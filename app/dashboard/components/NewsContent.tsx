@@ -102,9 +102,10 @@ interface ConfirmDialogProps {
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
+  confirmDisabled?: boolean;
 }
 
-function ConfirmDialog({ open, title, message, onConfirm, onCancel }: ConfirmDialogProps) {
+function ConfirmDialog({ open, title, message, onConfirm, onCancel, confirmDisabled = false }: ConfirmDialogProps) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -127,7 +128,8 @@ function ConfirmDialog({ open, title, message, onConfirm, onCancel }: ConfirmDia
           <button
             type="button"
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition-all"
+            disabled={confirmDisabled}
+            className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Eliminar
           </button>
@@ -143,6 +145,7 @@ export default function NewsContent({ news: newsProp }: NewsContentProps) {
   const [news, setNews]       = useState<NewsItem[]>(Array.isArray(newsProp) ? newsProp : []);
   const [loading, setLoading] = useState(!newsProp);
   const [toasts, setToasts]   = useState<Toast[]>([]);
+  const [user, setUser]       = useState<{ profile?: string; role?: string } | null>(null);
   const toastCounter          = useRef(0);
 
   // Filtros
@@ -199,6 +202,19 @@ export default function NewsContent({ news: newsProp }: NewsContentProps) {
   }, [addToast]);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch {
+          setUser(null);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (newsProp && newsProp.length > 0) {
       setNews(newsProp);
       setLoading(false);
@@ -206,6 +222,8 @@ export default function NewsContent({ news: newsProp }: NewsContentProps) {
     }
     loadNews();
   }, [newsProp, loadNews]);
+
+  const isAdmin = user?.profile === "admin" || user?.role === "admin";
 
   // ── Modal helpers ──────────────────────────────────────────────────────────
 
@@ -249,12 +267,16 @@ export default function NewsContent({ news: newsProp }: NewsContentProps) {
   // ── Delete ─────────────────────────────────────────────────────────────────
 
   function handleDeleteRequest(id: string, title: string) {
+    if (!isAdmin) {
+      addToast("error", "Permissão negada", "Apenas o administrador pode eliminar notícias.");
+      return;
+    }
     setPendingDelete({ id, title });
     setConfirmOpen(true);
   }
 
   async function handleDeleteConfirm() {
-    if (!pendingDelete) return;
+    if (!pendingDelete || !isAdmin) return;
     setConfirmOpen(false);
     try {
       const response = await fetch(`/api/news/${pendingDelete.id}`, { method: "DELETE" });
@@ -364,6 +386,7 @@ export default function NewsContent({ news: newsProp }: NewsContentProps) {
         message={`Tem certeza que deseja eliminar "${pendingDelete?.title}"? Esta acção não pode ser desfeita.`}
         onConfirm={handleDeleteConfirm}
         onCancel={() => { setConfirmOpen(false); setPendingDelete(null); }}
+        confirmDisabled={!isAdmin}
       />
 
       <div className="p-4 sm:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -464,7 +487,14 @@ export default function NewsContent({ news: newsProp }: NewsContentProps) {
                         <button type="button" onClick={() => handleEditOpen(item)} aria-label={`Editar notícia: ${item.title}`} className="p-2 text-slate-400 hover:text-sky-400 hover:bg-sky-400/10 rounded-lg transition-all inline-flex items-center justify-center">
                           <BsPencilSquare size={16} />
                         </button>
-                        <button type="button" onClick={() => handleDeleteRequest(item.id, item.title)} aria-label={`Eliminar notícia: ${item.title}`} className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all inline-flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteRequest(item.id, item.title)}
+                          disabled={!isAdmin}
+                          aria-label={isAdmin ? `Eliminar notícia: ${item.title}` : `Apenas o administrador pode eliminar notícias`}
+                          title={isAdmin ? `Eliminar notícia: ${item.title}` : "Apenas o administrador pode eliminar notícias"}
+                          className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all inline-flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                        >
                           <BsTrash size={16} />
                         </button>
                       </div>

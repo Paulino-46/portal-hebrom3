@@ -76,10 +76,20 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const cookies = request.headers.get("cookie") || "";
+    const profile = cookies.match(/(?:^|;\s*)portal_profile=([^;]+)/)?.[1];
+
+    if (profile !== "admin") {
+      return NextResponse.json(
+        { error: "Apenas o administrador pode excluir notícias." },
+        { status: 403 }
+      );
+    }
+
     const { id } = await params;
     const newsId = Number(id);
     if (Number.isNaN(newsId)) {

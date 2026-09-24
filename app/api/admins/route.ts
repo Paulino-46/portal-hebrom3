@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "../../../repositories/prisma";
+import { notifyAdminOfPendingEditor, sendEditorApprovalEmail } from "../../../lib/email";
 
 export async function GET() {
   try {
@@ -9,6 +10,9 @@ export async function GET() {
         id: true,
         name: true,
         email: true,
+        profile: true,
+        isApproved: true,
+        approvedAt: true,
         createdAt: true,
       },
       orderBy: {
@@ -16,7 +20,9 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json({ admins });
+    const pendingEditors = admins.filter((admin) => admin.profile === "editor" && !admin.isApproved);
+
+    return NextResponse.json({ admins, pendingEditors });
   } catch (error) {
     console.error("Erro ao listar administradores:", error);
     return NextResponse.json({ ok: false, message: "Erro ao listar administradores." }, { status: 500 });
@@ -32,10 +38,30 @@ export async function POST(request: Request) {
       );
     }
 
+    const cookies = request.headers.get("cookie") || "";
+    const sessionRole = cookies.match(/(?:^|;\s*)portal_role=([^;]+)/)?.[1];
+    const sessionProfile = cookies.match(/(?:^|;\s*)portal_profile=([^;]+)/)?.[1];
+    const adminCount = await prisma.admin.count({
+      where: { profile: "admin" },
+    });
+
     const body = await request.json();
     const name = String(body.name || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
+    const profile = body.profile === "admin" ? "admin" : "editor";
+    const isApproved = profile === "admin";
+
+    if (
+      profile === "admin" &&
+      adminCount > 0 &&
+      (sessionRole !== "admin" || sessionProfile !== "admin")
+    ) {
+      return NextResponse.json(
+        { ok: false, message: "Apenas um administrador pode criar outro administrador." },
+        { status: 403 }
+      );
+    }
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -69,16 +95,46 @@ export async function POST(request: Request) {
         name,
         email,
         password: hashedPassword,
+        profile,
+        isApproved,
+        approvedAt: isApproved ? new Date() : null,
       },
       select: {
         id: true,
         name: true,
         email: true,
+        profile: true,
+        isApproved: true,
+        approvedAt: true,
         createdAt: true,
       },
     });
 
-    return NextResponse.json({ ok: true, admin });
+    if (profile === "editor") {
+      const adminUsers = await prisma.admin.findMany({
+        where: { profile: "admin" },
+        select: { email: true, name: true },
+      });
+
+      for (const adminUser of adminUsers) {
+        await notifyAdminOfPendingEditor({
+          adminName: adminUser.name,
+          adminEmail: adminUser.email,
+          editorName: name,
+          editorEmail: email,
+          editorId: admin.id,
+        });
+      }
+    }
+
+    return NextResponse.json({
+      ok: true,
+      admin,
+      message:
+        profile === "editor"
+          ? "Cadastro enviado para aprovação do administrador. Você receberá um e-mail após a confirmação."
+          : "Administrador cadastrado com sucesso.",
+    });
   } catch (error: any) {
     console.error("Erro ao criar administrador:", error);
 

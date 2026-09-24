@@ -21,6 +21,7 @@ async function ensureDefaultAdmin() {
       name: "Administrador",
       email: DEFAULT_ADMIN_EMAIL,
       password: hashedPassword,
+      profile: "admin",
     },
   });
 }
@@ -65,6 +66,13 @@ export async function POST(request: Request) {
           );
         }
 
+        if (foundAdmin.profile === "editor" && !foundAdmin.isApproved) {
+          return NextResponse.json(
+            { ok: false, message: "Seu cadastro de editor está pendente de aprovação do administrador." },
+            { status: 403 }
+          );
+        }
+
         const response = NextResponse.json({
           ok: true,
           redirect: "/dashboard",
@@ -73,10 +81,18 @@ export async function POST(request: Request) {
             name: foundAdmin.name,
             email: foundAdmin.email,
             role: "admin",
+            profile: foundAdmin.profile,
           },
         });
 
         response.cookies.set("portal_role", "admin", {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60 * 8,
+        });
+        response.cookies.set("portal_profile", foundAdmin.profile, {
           httpOnly: true,
           sameSite: "lax",
           path: "/",
@@ -96,6 +112,13 @@ export async function POST(request: Request) {
         );
       }
 
+      if (admin.profile === "editor" && !admin.isApproved) {
+        return NextResponse.json(
+          { ok: false, message: "Seu cadastro de editor está pendente de aprovação do administrador." },
+          { status: 403 }
+        );
+      }
+
       const response = NextResponse.json({
         ok: true,
         redirect: "/dashboard",
@@ -104,10 +127,18 @@ export async function POST(request: Request) {
           name: admin.name,
           email: admin.email,
           role: "admin",
+          profile: admin.profile,
         },
       });
 
       response.cookies.set("portal_role", "admin", {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 8,
+      });
+      response.cookies.set("portal_profile", admin.profile, {
         httpOnly: true,
         sameSite: "lax",
         path: "/",

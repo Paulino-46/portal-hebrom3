@@ -37,6 +37,13 @@ interface User {
   church: string;
 }
 
+interface PendingEditor {
+  id: number;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
 export default function DashboardContent() {
   const [stats, setStats] = useState([
     {
@@ -84,6 +91,9 @@ export default function DashboardContent() {
   const [activityData, setActivityData] = useState<{ name: string; value: number }[]>([]);
   const [dailyNewsData, setDailyNewsData] = useState<{ date: string; count: number }[]>([]);
   const [weeklyActivityData, setWeeklyActivityData] = useState<{ name: string; value: number }[]>([]);
+  const [pendingEditors, setPendingEditors] = useState<PendingEditor[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [approvingEditorId, setApprovingEditorId] = useState<number | null>(null);
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']; // Azul, Verde, Laranja, Roxo, Rosa
   // Lista de versículos populares para buscar aleatoriamente
   const verses = [
@@ -152,10 +162,16 @@ export default function DashboardContent() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [newsRes, eventsRes, usersRes] = await Promise.all([
+        const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+        const currentUser = storedUser ? JSON.parse(storedUser) : null;
+        const currentUserIsAdmin = currentUser?.profile === 'admin';
+        setIsAdmin(currentUserIsAdmin);
+
+        const [newsRes, eventsRes, usersRes, adminsRes] = await Promise.all([
           fetch('/api/news'),
           fetch('/api/events'),
           fetch('/api/users/all'), // Correção do endpoint da API
+          currentUserIsAdmin ? fetch('/api/admins') : Promise.resolve(null),
         ]);
 
         const parseJsonSafely = async (response: Response) => {
@@ -174,6 +190,8 @@ export default function DashboardContent() {
         const newsData = await parseJsonSafely(newsRes);
         const eventsData = await parseJsonSafely(eventsRes);
         const usersData = await parseJsonSafely(usersRes);
+        const adminsData = adminsRes ? await parseJsonSafely(adminsRes) : null;
+        setPendingEditors(Array.isArray(adminsData?.pendingEditors) ? adminsData.pendingEditors : []);
 
         const newsItems = Array.isArray(newsData?.news) ? newsData.news : [];
         const eventItems: any[] = Array.isArray(eventsData?.events) ? eventsData.events : [];
@@ -323,8 +341,61 @@ export default function DashboardContent() {
     fetchVerse();
   }, []);
 
+  async function approveEditor(editorId: number) {
+    setApprovingEditorId(editorId);
+
+    try {
+      const response = await fetch(`/api/admins/${editorId}/approve`, { method: 'PUT' });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || 'Não foi possível confirmar o editor.');
+      }
+
+      setPendingEditors((editors) => editors.filter((editor) => editor.id !== editorId));
+    } catch (error) {
+      console.error('Erro ao confirmar editor:', error);
+      window.alert(error instanceof Error ? error.message : 'Não foi possível confirmar o editor.');
+    } finally {
+      setApprovingEditorId(null);
+    }
+  }
+
   return (
     <div className="px-4 sm:px-8 pb-8 pt-4 space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {isAdmin && pendingEditors.length > 0 ? (
+        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 shadow-lg shadow-amber-950/20">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-white">Editores aguardando aprovação</h2>
+              <p className="mt-1 text-sm text-amber-100/70">Confirme o cadastro para liberar o acesso ao painel.</p>
+            </div>
+            <span className="w-fit rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200">
+              {pendingEditors.length} pendente{pendingEditors.length === 1 ? '' : 's'}
+            </span>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {pendingEditors.map((editor) => (
+              <div key={editor.id} className="flex flex-col gap-3 rounded-xl border border-white/10 bg-slate-950/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-semibold text-white">{editor.name}</p>
+                  <p className="text-sm text-slate-300">{editor.email}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => approveEditor(editor.id)}
+                  disabled={approvingEditorId === editor.id}
+                  className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {approvingEditorId === editor.id ? 'Confirmando...' : 'Confirmar editor'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {/* Grid de Cards (Equivalente a col-3 em layout de 12 colunas) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {stats.map((stat) => (

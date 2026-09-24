@@ -9,8 +9,13 @@ export function middleware(request: NextRequest) {
   }
 
   const role = request.cookies.get("portal_role")?.value;
+  const profile = request.cookies.get("portal_profile")?.value;
 
   if (role === "admin") {
+    if (pathname.startsWith("/dashboard/admin") && profile !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
     return NextResponse.next();
   }
 

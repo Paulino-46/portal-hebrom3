@@ -19,12 +19,24 @@ import {
   BsShop,
 } from 'react-icons/bs'
 
+const editorAllowedPaths = new Set([
+  '/dashboard',
+  '/dashboard/cronograma',
+  '/dashboard/news',
+  '/dashboard/events',
+  '/dashboard/projects',
+  '/dashboard/vitrine',
+  '/dashboard/vetrine',
+])
+
 export default function Sidebar() {
   const pathname = usePathname() || ''
   const [isOpen, setIsOpen] = useState(false) // Inicialmente fechado no mobile
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [user, setUser] = useState<{ name: string, role: string } | null>(null)
+  const [user, setUser] = useState<{ name: string, role: string, profile?: string } | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+  const userProfile = user?.profile || user?.role || 'admin'
+  const isEditor = userProfile === 'editor'
 
   // Fecha o menu ao clicar fora dele
   useEffect(() => {
@@ -100,7 +112,7 @@ export default function Sidebar() {
       href: '/dashboard/vitrine',
       icon: <BsShop size={16} />,
     },
-  ]
+  ].filter((item) => !isEditor || editorAllowedPaths.has(item.href))
   const isActive = (href: string) => pathname === href
 
   return (
@@ -215,7 +227,7 @@ export default function Sidebar() {
               </div>
               <div className="text-left flex-1 min-w-0">
                 <p className="text-xs font-bold text-white truncate leading-tight">{user?.name || 'Usuário'}</p>
-                <p className="text-[10px] text-slate-500 font-medium truncate uppercase tracking-wider leading-none mt-1">{user?.role || 'Administrador'}</p>
+                <p className="text-[10px] text-slate-500 font-medium truncate uppercase tracking-wider leading-none mt-1">{user?.profile || user?.role || 'Administrador'}</p>
               </div>
               <BsThreeDotsVertical
                 className={`text-slate-500 group-hover:text-slate-300 transition-all duration-300 ${isUserMenuOpen ? 'rotate-90 text-white' : ''}`}

@@ -63,7 +63,7 @@ export default async function Home() {
               notícias, divulgar eventos e lembrar a história da Igreja Adventista
               do Sétimo Dia. Fé, serviço e informação juntos numa experiência
               acolhedora para toda a igreja.
-            </p>
+            </p> 
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

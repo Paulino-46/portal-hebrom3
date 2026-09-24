@@ -10,13 +10,14 @@ export default function RegisterAdminPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    profile: "editor",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -40,6 +41,7 @@ export default function RegisterAdminPage() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          profile: formData.profile,
         }),
       });
 
@@ -47,6 +49,12 @@ export default function RegisterAdminPage() {
 
       if (!res.ok) {
         throw new Error(data?.message || "Erro ao cadastrar administrador.");
+      }
+
+      if (formData.profile === "editor") {
+        setError(null);
+        router.push("/login-admin?success=registered&pending=editor");
+        return;
       }
 
       router.push("/login-admin?success=registered");
@@ -119,6 +127,19 @@ export default function RegisterAdminPage() {
                   {showPassword ? "🙈" : "👁️"}
                 </button>
               </div>
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">Perfil de acesso</span>
+              <select
+                name="profile"
+                value={formData.profile}
+                onChange={handleChange}
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option value="editor">Editor - acesso operacional</option>
+                <option value="admin">Administrador - acesso completo</option>
+              </select>
             </label>
 
             <label className="block">

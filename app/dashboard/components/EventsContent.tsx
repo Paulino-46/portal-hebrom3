@@ -38,6 +38,7 @@ export default function EventsDashboardContent() {
   const [editingEvent, setEditingEvent] = useState<Evento | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [user, setUser] = useState<{ profile?: string; role?: string } | null>(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -78,8 +79,20 @@ export default function EventsDashboardContent() {
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch {
+          setUser(null);
+        }
+      }
+    }
     fetchEvents();
   }, []);
+
+  const isAdmin = user?.profile === 'admin' || user?.role === 'admin';
 
   const resetImageState = () => {
     setImageFile(null);
@@ -173,6 +186,10 @@ export default function EventsDashboardContent() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!isAdmin) {
+      showToast('error', 'Apenas o administrador pode excluir eventos.');
+      return;
+    }
     if (!confirm('Tem certeza que deseja excluir este evento?')) return;
     try {
       const res = await fetch(`/api/events/${id}`, { method: 'DELETE' });
@@ -339,9 +356,10 @@ export default function EventsDashboardContent() {
                           <button
                             type="button"
                             onClick={() => handleDelete(event.id)}
-                            title="Excluir Evento"
-                            aria-label={`Excluir ${event.title}`}
-                            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-all"
+                            disabled={!isAdmin}
+                            title={isAdmin ? 'Excluir Evento' : 'Apenas o administrador pode excluir eventos'}
+                            aria-label={isAdmin ? `Excluir ${event.title}` : 'Apenas o administrador pode excluir eventos'}
+                            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
                           >
                             <BsTrash size={14} />
                           </button>

@@ -16,7 +16,11 @@ export default function LoginAdminPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const isPendingEditor = params.get("pending") === "editor";
       setSuccessRegistered(params.get("success") === "registered");
+      if (isPendingEditor) {
+        setError("Cadastro enviado para aprovação do administrador. Após a confirmação, você receberá um e-mail de ativação.");
+      }
     }
   }, []);
 
@@ -35,6 +39,7 @@ export default function LoginAdminPage() {
     setLoading(false);
 
     if (response.ok && result.ok) {
+      localStorage.setItem("user", JSON.stringify(result.user));
       router.push(result.redirect);
       return;
     }
