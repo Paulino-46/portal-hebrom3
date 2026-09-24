@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginAdminPage() {
@@ -10,7 +10,15 @@ export default function LoginAdminPage() {
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [successRegistered, setSuccessRegistered] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setSuccessRegistered(params.get("success") === "registered");
+    }
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -80,6 +88,12 @@ export default function LoginAdminPage() {
               </div>
             </label>
 
+            {successRegistered ? (
+              <p className="text-sm text-emerald-400" role="status" aria-live="polite">
+                Cadastro realizado com sucesso. Faça login para continuar.
+              </p>
+            ) : null}
+
             {error ? <p className="text-sm text-red-400" role="alert" aria-live="assertive">{error}</p> : null}
 
             <div className="flex items-center justify-between">
@@ -108,7 +122,9 @@ export default function LoginAdminPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-500">Ainda não tem acesso? <a href="/request-access" className="text-blue-400 hover:underline">Solicitar acesso</a></div>
+          <div className="mt-6 text-center text-sm text-slate-500">
+            Ainda não tem acesso? <a href="/register-admin" className="text-blue-400 hover:underline">Cadastrar administrador</a>
+          </div>
         </div>
       </div>
     </main>

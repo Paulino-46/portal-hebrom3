@@ -1,7 +1,22 @@
-import prisma from "../repositories/prisma";
+export async function getPrismaClient() {
+  if (!process.env.DATABASE_URL) return null;
+
+  try {
+    const module = await import("../repositories/prisma");
+    return module.default;
+  } catch (error) {
+    console.error("Falha ao importar Prisma em eventos:", error);
+    return null;
+  }
+}
 
 export async function getLatestEvents() {
   try {
+    const prisma = await getPrismaClient();
+    if (!prisma) {
+      return [];
+    }
+
     const events = await prisma.event.findMany({
       orderBy: { date: "asc" },
     });
@@ -19,9 +34,8 @@ export async function getLatestEvents() {
       image: item.image,
     }));
   } catch (error) {
-    // Check if error is a Prisma error (table does not exist)
-    if (error && typeof error === 'object' && 'code' in error) {
-      console.warn("Erro ao buscar eventos do banco. Usando dados de exemplo.", (error as any).code);
+    if (error && typeof error === "object" && "code" in error) {
+      console.warn("Erro ao buscar eventos do banco. Usando lista vazia.", (error as any).code);
       return [];
     }
     console.error("Erro ao buscar eventos:", error);
