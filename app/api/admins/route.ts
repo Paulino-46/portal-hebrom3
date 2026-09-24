@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "../../../repositories/prisma";
-import { notifyAdminOfPendingEditor, sendEditorApprovalEmail } from "../../../lib/email";
+import { notifyAdminOfPendingEditor } from "../../../lib/email";
 
 export async function GET() {
   try {
@@ -146,15 +146,19 @@ export async function POST(request: Request) {
           ? "Cadastro enviado para aprovação do administrador. Você receberá um e-mail após a confirmação."
           : "Administrador cadastrado com sucesso.",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erro ao criar administrador:", error);
 
+    const errorMessage = error instanceof Error ? error.message : "";
+    const errorCode = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+    const errorName = typeof error === "object" && error && "name" in error ? String(error.name) : "";
+
     const isDbConnectionError =
-      error?.name === "PrismaClientInitializationError" ||
-      error?.code === "P1001" ||
-      error?.code === "P1017" ||
+      errorName === "PrismaClientInitializationError" ||
+      errorCode === "P1001" ||
+      errorCode === "P1017" ||
       /Can't reach database server|ECONNREFUSED|ENOTFOUND|Connection refused/i.test(
-        String(error?.message || "")
+        errorMessage
       );
 
     return NextResponse.json(
