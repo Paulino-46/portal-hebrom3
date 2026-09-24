@@ -49,16 +49,27 @@ export async function POST(request: Request) {
     const name = String(body.name || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
-    const profile = body.profile === "admin" ? "admin" : "editor";
+    const requestedProfile = body.profile === "admin" ? "admin" : "editor";
+    const profile = adminCount === 0 ? "admin" : requestedProfile;
     const isApproved = profile === "admin";
 
+    if (adminCount === 0 && requestedProfile !== "admin") {
+      return NextResponse.json(
+        { ok: false, message: "O primeiro cadastro deve ser de administrador." },
+        { status: 400 }
+      );
+    }
+
     if (
-      profile === "admin" &&
       adminCount > 0 &&
+      profile === "admin" &&
       (sessionRole !== "admin" || sessionProfile !== "admin")
     ) {
       return NextResponse.json(
-        { ok: false, message: "Apenas um administrador pode criar outro administrador." },
+        {
+          ok: false,
+          message: "O primeiro administrador pode se cadastrar livremente. Depois disso, apenas um administrador autenticado pode criar outro.",
+        },
         { status: 403 }
       );
     }

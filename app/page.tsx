@@ -56,13 +56,14 @@ export default async function Home() {
               Sobre o portal
             </p>
             <h2 className="text-[2rem] font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
-              O portal da comunidade do Distrito de Hebrom
+              O Portal da comunidade do Distrito de Hebrom
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-slate-400 sm:text-base">
-              Um espaço pensado para fortalecer a união entre membros, partilhar
-              notícias, divulgar eventos e lembrar a história da Igreja Adventista
-              do Sétimo Dia. Fé, serviço e informação juntos numa experiência
-              acolhedora para toda a igreja.
+              Um espaço pensado para fortalecer a união entre os membros, promover a comunhão com Deus, partilhar notícias, divulgar eventos e preservar a história da Igreja Adventista do Sétimo Dia. Aqui, fé, serviço, conhecimento e esperança caminham juntos, criando uma experiência acolhedora e edificante para toda a igreja.
+
+Inspirado nos princípios e valores da Igreja Adventista, este espaço procura incentivar o estudo da Palavra de Deus, a oração, o discipulado, a educação cristã, o cuidado com a saúde, o espírito de serviço e o compromisso com a missão de levar o evangelho a todas as pessoas. É também um lugar para reconhecer o trabalho dos membros, valorizar as iniciativas da igreja, fortalecer a comunhão entre gerações e manter viva a memória daqueles que contribuíram para a sua história.
+
+Mais do que um espaço de informação, queremos construir uma comunidade digital que reflita a nossa identidade, fortaleça os laços de fraternidade e mantenha viva a esperança na breve volta de Jesus Cristo.
             </p> 
           </div>
 

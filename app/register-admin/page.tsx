@@ -10,7 +10,7 @@ export default function RegisterAdminPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    profile: "editor",
+    profile: "admin",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +137,6 @@ export default function RegisterAdminPage() {
                 onChange={handleChange}
                 className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               >
-                <option value="editor">Editor - acesso operacional</option>
                 <option value="admin">Administrador - acesso completo</option>
               </select>
             </label>

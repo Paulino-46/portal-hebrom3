@@ -2,30 +2,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "../../../../repositories/prisma";
 
-const DEFAULT_ADMIN_EMAIL = "admin@hebrom3.com";
-const DEFAULT_ADMIN_PASSWORD = "admin123";
-
-async function ensureDefaultAdmin() {
-  const existingAdmin = await prisma.admin.findUnique({
-    where: { email: DEFAULT_ADMIN_EMAIL },
-  });
-
-  if (existingAdmin) {
-    return existingAdmin;
-  }
-
-  const hashedPassword = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 10);
-
-  return prisma.admin.create({
-    data: {
-      name: "Administrador",
-      email: DEFAULT_ADMIN_EMAIL,
-      password: hashedPassword,
-      profile: "admin",
-    },
-  });
-}
-
 export async function POST(request: Request) {
   const query = new URL(request.url).searchParams;
   const role = query.get("role") === "admin" ? "admin" : "user";
@@ -45,62 +21,21 @@ export async function POST(request: Request) {
     const isAdminLogin = role === "admin";
 
     if (isAdminLogin) {
-      const admin = await ensureDefaultAdmin();
+      const admin = await prisma.admin.findUnique({ where: { email } });
 
-      if (admin.email.toLowerCase() !== email.toLowerCase()) {
-        const foundAdmin = await prisma.admin.findUnique({ where: { email } });
+      if (!admin) {
+        const totalAdmins = await prisma.admin.count();
 
-        if (!foundAdmin) {
-          return NextResponse.json(
-            { ok: false, message: "Credenciais de administrador inválidas." },
-            { status: 401 }
-          );
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, foundAdmin.password);
-
-        if (!isPasswordValid) {
-          return NextResponse.json(
-            { ok: false, message: "Credenciais de administrador inválidas." },
-            { status: 401 }
-          );
-        }
-
-        if (foundAdmin.profile === "editor" && !foundAdmin.isApproved) {
-          return NextResponse.json(
-            { ok: false, message: "Seu cadastro de editor está pendente de aprovação do administrador." },
-            { status: 403 }
-          );
-        }
-
-        const response = NextResponse.json({
-          ok: true,
-          redirect: "/dashboard",
-          user: {
-            id: foundAdmin.id,
-            name: foundAdmin.name,
-            email: foundAdmin.email,
-            role: "admin",
-            profile: foundAdmin.profile,
+        return NextResponse.json(
+          {
+            ok: false,
+            message:
+              totalAdmins === 0
+                ? "Nenhum administrador cadastrado ainda. Cadastre o primeiro administrador antes de entrar."
+                : "Credenciais de administrador inválidas.",
           },
-        });
-
-        response.cookies.set("portal_role", "admin", {
-          httpOnly: true,
-          sameSite: "lax",
-          path: "/",
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 8,
-        });
-        response.cookies.set("portal_profile", foundAdmin.profile, {
-          httpOnly: true,
-          sameSite: "lax",
-          path: "/",
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 8,
-        });
-
-        return response;
+          { status: totalAdmins === 0 ? 404 : 401 }
+        );
       }
 
       const isPasswordValid = await bcrypt.compare(password, admin.password);
