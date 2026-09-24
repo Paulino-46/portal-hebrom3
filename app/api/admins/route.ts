@@ -25,6 +25,13 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { ok: false, message: "Banco de dados não configurado. Verifique a variável DATABASE_URL." },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const name = String(body.name || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
@@ -72,8 +79,25 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true, admin });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao criar administrador:", error);
-    return NextResponse.json({ ok: false, message: "Erro ao criar administrador." }, { status: 500 });
+
+    const isDbConnectionError =
+      error?.name === "PrismaClientInitializationError" ||
+      error?.code === "P1001" ||
+      error?.code === "P1017" ||
+      /Can't reach database server|ECONNREFUSED|ENOTFOUND|Connection refused/i.test(
+        String(error?.message || "")
+      );
+
+    return NextResponse.json(
+      {
+        ok: false,
+        message: isDbConnectionError
+          ? "Não foi possível conectar ao banco de dados. Verifique a conexão e tente novamente."
+          : "Erro ao criar administrador.",
+      },
+      { status: isDbConnectionError ? 503 : 500 }
+    );
   }
 }
