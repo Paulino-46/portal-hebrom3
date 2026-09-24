@@ -17,7 +17,7 @@ export default function LoginUserPage() {
     setLoading(true);
     setError("");
 
-    const response = await fetch("/api/auth/login?role=true", {
+    const response = await fetch("/api/auth/login?role=user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
