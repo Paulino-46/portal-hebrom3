@@ -50,13 +50,13 @@ export default function TopNav() {
               <Link href="/news"   className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 transition hover:text-white">Notícias</Link>
               <Link href="/events" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 transition hover:text-white">Eventos</Link>
 
-              {/* Entrar dropdown */}
+              {/* Acesso de cadastro */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="flex items-center gap-3 rounded-full bg-gold px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/10 transition-all hover:shadow-gold/20 hover:brightness-110 active:scale-95"
                 >
-                  Entrar
+                  Registrar
                   <svg
                     className={`h-3 w-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                     viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"
@@ -69,21 +69,9 @@ export default function TopNav() {
                   <div className="absolute right-0 mt-4 w-72 origin-top-right overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="mb-2 border-b border-white/5 px-5 py-4">
                       <h4 className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold">Área de Acesso</h4>
-                      <p className="mt-1 text-[11px] text-slate-500">Bem-vindo à comunidade do Distritu de Hebrom</p>
+                      <p className="mt-1 text-[11px] text-slate-500">Bem-vindo à comunidade do Distrito de Hebrom</p>
                     </div>
                     <div className="space-y-1">
-                      <Link href="/login-user" onClick={() => setIsOpen(false)}
-                        className="group flex items-center gap-4 rounded-[1.5rem] px-5 py-4 transition hover:bg-gold hover:text-navy">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 transition group-hover:bg-navy/10 group-hover:text-navy">
-                          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                          </svg>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold">Login</span>
-                          <span className="text-[10px] opacity-60">Acesse sua conta</span>
-                        </div>
-                      </Link>
                       <Link href="/register" onClick={() => setIsOpen(false)}
                         className="group flex items-center gap-4 rounded-[1.5rem] px-5 py-4 transition hover:bg-white/5">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 transition group-hover:bg-slate-700">
@@ -99,7 +87,7 @@ export default function TopNav() {
                     </div>
                     <div className="mt-4 rounded-[1.75rem] bg-slate-950/50 p-4">
                       <p className="text-center text-[9px] uppercase leading-relaxed tracking-[0.15em] text-slate-500">
-                        Distrito de Hebrom 
+                        Distrito de Hebrom
                       </p>
                     </div>
                   </div>
@@ -164,24 +152,14 @@ export default function TopNav() {
             <div className="mt-auto border-t border-white/10 p-4">
               <p className="mb-3 px-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">Área de Acesso</p>
               <div className="space-y-1">
-                <Link href="/login-user" onClick={closeMobile}
+                <Link href="/register" onClick={closeMobile}
                   className="flex items-center gap-4 rounded-2xl bg-gold px-5 py-4 transition active:scale-95">
                   <svg className="h-5 w-5 text-navy" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                  <div>
-                    <p className="text-sm font-bold text-navy">Login</p>
-                    <p className="text-[10px] text-navy/70">Acesse sua conta</p>
-                  </div>
-                </Link>
-                <Link href="/register" onClick={closeMobile}
-                  className="flex items-center gap-4 rounded-2xl px-5 py-4 transition hover:bg-white/5">
-                  <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                   <div>
-                    <p className="text-sm font-bold text-white">Registar</p>
-                    <p className="text-[10px] text-slate-500">Crie seu perfil</p>
+                    <p className="text-sm font-bold text-navy">Registar</p>
+                    <p className="text-[10px] text-navy/70">Crie seu perfil</p>
                   </div>
                 </Link>
               </div>

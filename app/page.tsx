@@ -80,10 +80,10 @@ export default async function Home() {
               },
               {
                 icon: "🏛️",
-                title: "História de Hebrom III",
-                body: "Nossa igreja evoluiu no calor da união, do culto e do serviço social, transformando vidas com amor e presença constante.",
+                title: "História do Distrito de Hebrom",
+                body: "Nosso Distrito evoluiu no calor da união, do culto e do serviço social, transformando vidas com amor e presença constante.",
                 points: [
-                  "Hebrom III nasceu do desejo de servir e acolher cada família da região.",
+                  "O Distrito de Hebrom nasceu do desejo de servir e acolher cada família da região.",
                   "Cultos, estudos bíblicos e ações sociais marcaram nosso crescimento.",
                 ],
                 accent: "from-red-500/25 via-rose-500/15 to-slate-950/0",
