@@ -91,10 +91,11 @@ export default async function Home() {
               {
                 icon: "🌟",
                 title: "Missão, Valor e Visão",
-                body: "Servir com amor e respeito, valorizar a família e anunciar a esperança, com foco em ação social e transformação espiritual.",
+                body: "A Igreja Adventista proclama a esperança do evangelho e serve a comunidade por meio da Bíblia, da família, da saúde, da educação e do cuidado humanitário.",
                 points: [
-                  "Missão: levar a palavra e o cuidado cristão a todos que precisam.",
-                  "Valor: fé, família, compaixão e integridade em cada atividade.",
+                  "Missão: anunciar a esperança e atender ao próximo com serviço, educação e comunicação.",
+                  "Valores: identidade bíblica, cuidado integral, liberdade religiosa e compromisso com a comunidade.",
+                  "Visão: proclamar esperança ao mundo com uma atuação que fortalece a fé e transforma vidas.",
                 ],
                 accent: "from-yellow-300/30 via-orange-400/20 to-orange-950/0",
               },
