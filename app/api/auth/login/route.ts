@@ -104,6 +104,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!user.isApproved) {
+      return NextResponse.json(
+        { ok: false, message: "Seu cadastro está pendente de aprovação do administrador." },
+        { status: 403 }
+      );
+    }
+
     const response = NextResponse.json({
       ok: true,
       redirect: "/",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginUserPage() {
@@ -10,7 +10,16 @@ export default function LoginUserPage() {
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [successRegistered, setSuccessRegistered] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setSuccessRegistered(params.get("success") === "registered");
+    if (params.get("pending") === "user") {
+      setError("Cadastro enviado para aprovação do administrador. Você receberá um e-mail após a confirmação.");
+    }
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -89,6 +98,12 @@ export default function LoginUserPage() {
                 </button>
               </div>
             </label>
+
+            {successRegistered && !error ? (
+              <p className="text-sm text-emerald-400" role="status" aria-live="polite">
+                Cadastro realizado. Aguarde a aprovação do administrador para entrar.
+              </p>
+            ) : null}
 
             {error ? <p className="text-sm text-red-400" role="alert" aria-live="assertive">{error}</p> : null}
 

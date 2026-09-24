@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "../../../repositories/prisma";
-import { notifyAdminOfPendingEditor } from "../../../lib/email";
+import { notifyAdminOfPendingEditor, notifyAdminOfPendingUser } from "../../../lib/email";
 
 export async function GET() {
   try {
@@ -47,19 +47,32 @@ export async function POST(request: Request) {
     const name = String(body.name || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
+    const church = String(body.church || "").trim();
     const requestedProfile = body.profile === "admin" ? "admin" : "editor";
+    const requestedAccountType = body.accountType === "user" ? "user" : "admin";
     const profile = adminCount === 0 ? "admin" : requestedProfile;
     const isApproved = profile === "admin";
+    const isCreatingUser = requestedAccountType === "user";
 
-    if (adminCount === 0 && requestedProfile !== "admin") {
+    if (adminCount === 0 && (requestedProfile !== "admin" || isCreatingUser)) {
       return NextResponse.json(
         { ok: false, message: "O primeiro cadastro deve ser de administrador." },
         { status: 400 }
       );
     }
 
+    const canCreateUser = sessionRole === "admin" && (sessionProfile === "admin" || sessionProfile === "editor");
+
+    if (isCreatingUser && !canCreateUser) {
+      return NextResponse.json(
+        { ok: false, message: "Apenas um administrador ou editor autenticado pode cadastrar um usuário." },
+        { status: 403 }
+      );
+    }
+
     if (
       adminCount > 0 &&
+      !isCreatingUser &&
       profile === "admin" &&
       (sessionRole !== "admin" || sessionProfile !== "admin")
     ) {
@@ -86,18 +99,63 @@ export async function POST(request: Request) {
       );
     }
 
+    if (isCreatingUser && !church) {
+      return NextResponse.json(
+        { ok: false, message: "A igreja é obrigatória para o cadastro do usuário." },
+        { status: 400 }
+      );
+    }
+
     const existingAdmin = await prisma.admin.findUnique({
       where: { email },
     });
 
-    if (existingAdmin) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingAdmin || existingUser) {
       return NextResponse.json(
-        { ok: false, message: "Já existe um administrador cadastrado com este e-mail." },
+        { ok: false, message: "Já existe um cadastro com este e-mail." },
         { status: 409 }
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    if (isCreatingUser) {
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          church,
+          password: hashedPassword,
+          isApproved: false,
+        },
+        select: { id: true, name: true, email: true, church: true, isApproved: true, createdAt: true },
+      });
+
+      const adminUsers = await prisma.admin.findMany({
+        where: { profile: "admin", isApproved: true },
+        select: { email: true, name: true },
+      });
+
+      for (const adminUser of adminUsers) {
+        await notifyAdminOfPendingUser({
+          adminName: adminUser.name,
+          adminEmail: adminUser.email,
+          userName: name,
+          userEmail: email,
+          userId: user.id,
+        });
+      }
+
+      return NextResponse.json({
+        ok: true,
+        user,
+        message: "Cadastro de usuário enviado para aprovação do administrador.",
+      });
+    }
 
     const admin = await prisma.admin.create({
       data: {

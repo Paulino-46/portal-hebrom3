@@ -12,6 +12,7 @@ export async function GET(request: Request) {
         name: true,
         email: true,
         church: true,
+        isApproved: true,
         createdAt: true,
       },
       orderBy: {
@@ -23,7 +24,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ count: users.length });
     }
 
-    return NextResponse.json({ users });
+    return NextResponse.json({
+      users,
+      pendingUsers: users.filter((user) => !user.isApproved),
+    });
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     return NextResponse.json({ count: 0 }, { status: 500 });

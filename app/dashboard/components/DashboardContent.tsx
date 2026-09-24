@@ -44,6 +44,14 @@ interface PendingEditor {
   createdAt: string;
 }
 
+interface PendingUser {
+  id: number;
+  name: string;
+  email: string;
+  church: string;
+  createdAt: string;
+}
+
 export default function DashboardContent() {
   const [stats, setStats] = useState([
     {
@@ -92,8 +100,10 @@ export default function DashboardContent() {
   const [dailyNewsData, setDailyNewsData] = useState<{ date: string; count: number }[]>([]);
   const [weeklyActivityData, setWeeklyActivityData] = useState<{ name: string; value: number }[]>([]);
   const [pendingEditors, setPendingEditors] = useState<PendingEditor[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [approvingEditorId, setApprovingEditorId] = useState<number | null>(null);
+  const [approvingUserId, setApprovingUserId] = useState<number | null>(null);
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']; // Azul, Verde, Laranja, Roxo, Rosa
   // Lista de versículos populares para buscar aleatoriamente
   const verses = [
@@ -192,6 +202,7 @@ export default function DashboardContent() {
         const usersData = await parseJsonSafely(usersRes);
         const adminsData = adminsRes ? await parseJsonSafely(adminsRes) : null;
         setPendingEditors(Array.isArray(adminsData?.pendingEditors) ? adminsData.pendingEditors : []);
+        setPendingUsers(Array.isArray(usersData?.pendingUsers) ? usersData.pendingUsers : []);
 
         const newsItems = Array.isArray(newsData?.news) ? newsData.news : [];
         const eventItems: any[] = Array.isArray(eventsData?.events) ? eventsData.events : [];
@@ -361,6 +372,26 @@ export default function DashboardContent() {
     }
   }
 
+  async function approveUser(userId: number) {
+    setApprovingUserId(userId);
+
+    try {
+      const response = await fetch(`/api/users/${userId}/approve`, { method: 'PUT' });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || 'Não foi possível aprovar o usuário.');
+      }
+
+      setPendingUsers((users) => users.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error('Erro ao aprovar usuário:', error);
+      window.alert(error instanceof Error ? error.message : 'Não foi possível aprovar o usuário.');
+    } finally {
+      setApprovingUserId(null);
+    }
+  }
+
   return (
     <div className="px-4 sm:px-8 pb-8 pt-4 space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {isAdmin && pendingEditors.length > 0 ? (
@@ -389,6 +420,39 @@ export default function DashboardContent() {
                   className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {approvingEditorId === editor.id ? 'Confirmando...' : 'Confirmar editor'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {isAdmin && pendingUsers.length > 0 ? (
+        <section className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-5 shadow-lg shadow-sky-950/20">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-white">Usuários aguardando aprovação</h2>
+              <p className="mt-1 text-sm text-sky-100/70">Aprove os cadastros enviados pelos editores.</p>
+            </div>
+            <span className="w-fit rounded-full bg-sky-400/20 px-3 py-1 text-xs font-semibold text-sky-200">
+              {pendingUsers.length} pendente{pendingUsers.length === 1 ? '' : 's'}
+            </span>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {pendingUsers.map((user) => (
+              <div key={user.id} className="flex flex-col gap-3 rounded-xl border border-white/10 bg-slate-950/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-semibold text-white">{user.name}</p>
+                  <p className="text-sm text-slate-300">{user.email} · {user.church}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => approveUser(user.id)}
+                  disabled={approvingUserId === user.id}
+                  className="rounded-lg bg-sky-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {approvingUserId === user.id ? 'Aprovando...' : 'Aprovar usuário'}
                 </button>
               </div>
             ))}

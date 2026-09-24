@@ -40,6 +40,8 @@ export async function POST(request: Request) {
         email,
         church, // Coluna obrigatória identificada no reset do banco
         password: hashedPassword,
+        isApproved: true,
+        approvedAt: new Date(),
       },
     });
 

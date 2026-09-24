@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 export default function RegisterAdminPage() {
   const [formData, setFormData] = useState({
     name: "",
+    church: "",
     email: "",
     password: "",
     confirmPassword: "",
     profile: "admin",
+    accountType: "admin",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +44,8 @@ export default function RegisterAdminPage() {
           email: formData.email,
           password: formData.password,
           profile: formData.profile,
+          accountType: formData.accountType,
+          church: formData.church,
         }),
       });
 
@@ -51,9 +55,9 @@ export default function RegisterAdminPage() {
         throw new Error(data?.message || "Erro ao cadastrar administrador.");
       }
 
-      if (formData.profile === "editor") {
+      if (formData.accountType !== "admin") {
         setError(null);
-        router.push("/login-admin?success=registered&pending=editor");
+        router.push(`/login-${formData.accountType === "user" ? "user" : "admin"}?success=registered&pending=${formData.accountType}`);
         return;
       }
 
@@ -72,13 +76,34 @@ export default function RegisterAdminPage() {
           <div className="mb-6 flex items-center gap-3">
             <div className="h-12 w-12 flex items-center justify-center rounded-lg bg-blue-500 text-white font-bold">H3</div>
             <div>
-              <h1 className="text-2xl font-semibold text-white">Cadastro de administrador</h1>
-              <p className="text-sm text-slate-400">Crie uma conta para acessar o painel administrativo.</p>
+              <h1 className="text-2xl font-semibold text-white">Novo cadastro</h1>
+              <p className="text-sm text-slate-400">Crie uma conta administrativa ou solicite acesso de usuário.</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error ? <p className="text-sm text-red-400" role="alert">{error}</p> : null}
+
+            <label className="block">
+              <span className="text-sm font-medium text-slate-200">Tipo de cadastro</span>
+              <select
+                name="accountType"
+                value={formData.accountType}
+                onChange={(event) => {
+                  const accountType = event.target.value;
+                  setFormData((prev) => ({
+                    ...prev,
+                    accountType,
+                    profile: accountType === "editor" ? "editor" : "admin",
+                  }));
+                }}
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option value="admin">Administrador</option>
+                <option value="editor">Editor</option>
+                <option value="user">Usuário</option>
+              </select>
+            </label>
 
             <label className="block">
               <span className="text-sm font-medium text-slate-200">Nome</span>
@@ -92,6 +117,24 @@ export default function RegisterAdminPage() {
                 required
               />
             </label>
+
+            {formData.accountType === "user" ? (
+              <label className="block">
+                <span className="text-sm font-medium text-slate-200">Igreja</span>
+                <select
+                  name="church"
+                  value={formData.church}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  required
+                >
+                  <option value="">Selecione a igreja</option>
+                  <option value="Igreja de Hebrom Central">Igreja de Hebrom Central</option>
+                  <option value="Igreja de Hebrom II">Igreja de Hebrom II</option>
+                  <option value="Igreja de Hebrom III">Igreja de Hebrom III</option>
+                </select>
+              </label>
+            ) : null}
 
             <label className="block">
               <span className="text-sm font-medium text-slate-200">E-mail</span>
@@ -130,15 +173,15 @@ export default function RegisterAdminPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-slate-200">Perfil de acesso</span>
-              <select
-                name="profile"
-                value={formData.profile}
-                onChange={handleChange}
-                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="admin">Administrador - acesso completo</option>
-              </select>
+              <span className="text-sm font-medium text-slate-200">Permissão</span>
+              <p className="mt-2 rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-300">
+                {formData.accountType === "user"
+                  ? "Acesso de usuário após aprovação do administrador."
+                  : formData.accountType === "editor"
+                    ? "Acesso de editor após aprovação do administrador."
+                    : "Acesso administrativo imediato."
+                }
+              </p>
             </label>
 
             <label className="block">
@@ -159,7 +202,7 @@ export default function RegisterAdminPage() {
               disabled={loading}
               className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 via-orange-500 to-red-500 px-4 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {loading ? "Cadastrando..." : "Cadastrar administrador"}
+              {loading ? "Cadastrando..." : "Enviar cadastro"}
             </button>
           </form>
 
