@@ -36,6 +36,7 @@ export default async function Home() {
   }));
 
   const carouselItems = [...dynamicNews, ...dynamicEvents];
+  const featuredNews = newsFromDb.slice(0, 3);
 
   return (
     <main className="bg-gradient-to-br from-sky-950 via-slate-950 to-orange-950 text-white">
@@ -61,10 +62,10 @@ export default async function Home() {
             <p className="mt-5 text-sm leading-relaxed text-slate-400 sm:text-base">
               Um espaço pensado para fortalecer a união entre os membros, promover a comunhão com Deus, partilhar notícias, divulgar eventos e preservar a história da Igreja Adventista do Sétimo Dia. Aqui, fé, serviço, conhecimento e esperança caminham juntos, criando uma experiência acolhedora e edificante para toda a igreja.
 
-Inspirado nos princípios e valores da Igreja Adventista, este espaço procura incentivar o estudo da Palavra de Deus, a oração, o discipulado, a educação cristã, o cuidado com a saúde, o espírito de serviço e o compromisso com a missão de levar o evangelho a todas as pessoas. É também um lugar para reconhecer o trabalho dos membros, valorizar as iniciativas da igreja, fortalecer a comunhão entre gerações e manter viva a memória daqueles que contribuíram para a sua história.
+              Inspirado nos princípios e valores da Igreja Adventista, este espaço procura incentivar o estudo da Palavra de Deus, a oração, o discipulado, a educação cristã, o cuidado com a saúde, o espírito de serviço e o compromisso com a missão de levar o evangelho a todas as pessoas. É também um lugar para reconhecer o trabalho dos membros, valorizar as iniciativas da igreja, fortalecer a comunhão entre gerações e manter viva a memória daqueles que contribuíram para a sua história.
 
-Mais do que um espaço de informação, queremos construir uma comunidade digital que reflita a nossa identidade, fortaleça os laços de fraternidade e mantenha viva a esperança na breve volta de Jesus Cristo.
-            </p> 
+              Mais do que um espaço de informação, queremos construir uma comunidade digital que reflita a nossa identidade, fortaleça os laços de fraternidade e mantenha viva a esperança na breve volta de Jesus Cristo.
+            </p>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -167,94 +168,59 @@ Mais do que um espaço de informação, queremos construir uma comunidade digita
             </Link>
           </div>
 
-          {/* Featured news */}
-          {dynamicNews.length === 0 ? (
+          {featuredNews.length === 0 ? (
             <p className="rounded-2xl border border-white/10 bg-slate-900/80 p-6 text-sm text-slate-400">
               Nenhuma notícia publicada no momento.
             </p>
           ) : (
-          <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:gap-6">
-            <article className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-blue-950/90 shadow-2xl shadow-slate-950/30 transition hover:-translate-y-1 hover:border-blue-400/40 cursor-pointer sm:rounded-[2rem]">
-              <div className="relative overflow-hidden bg-slate-900/60">
-                <img
-                  src={
-                    dynamicNews[0]?.src ||
-                    "/img/placeholder-news.jpg"
-                  }
-                  alt={dynamicNews[0]?.title || "Notícia em destaque"}
-                  className="h-48 w-full object-cover transition duration-700 group-hover:scale-105 sm:h-56 lg:h-60"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/10 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5">
-                  <span className="inline-flex items-center rounded-full bg-sky-500/15 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-sky-200">
-                    {dynamicNews[0]?.tag || "Notícia"}
-                  </span>
-                  <h3 className="mt-2 text-lg font-semibold leading-tight text-white sm:mt-3 sm:text-xl lg:text-2xl xl:text-3xl">
-                    {dynamicNews[0]?.title ||
-                      "Veja as últimas notícias da comunidade"}
-                  </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-200 line-clamp-2 sm:mt-3 sm:max-w-2xl sm:text-sm">
-                    {dynamicNews[0]?.summary ||
-                      "As principais notícias em destaque para você acompanhar o que acontece na Hebrom III."}
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[0.6rem] uppercase tracking-[0.16em] text-slate-300 sm:mt-4 sm:gap-3 sm:text-xs">
-                    <span>{dynamicNews[0]?.desc || "Equipe Hebrom"}</span>
-                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-slate-400" />
-                    <span>
-                      {dynamicNews[0]?.date
-                        ? new Date(dynamicNews[0].date).toLocaleDateString(
-                            "pt-BR",
-                            { day: "2-digit", month: "short", year: "numeric" }
-                          )
-                        : "Data não disponível"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            {/* Secondary news cards */}
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 lg:gap-4">
-              {dynamicNews.slice(1, 4).map((item, idx) => (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {featuredNews.map((item) => (
                 <article
-                  key={`news-card-${idx}`}
-                  className="group overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-900/95 shadow-lg shadow-slate-950/20 transition hover:-translate-y-1 hover:border-sky-300/30 cursor-pointer sm:rounded-[1.75rem]"
+                  key={item.id}
+                  className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/95 shadow-2xl shadow-slate-950/20 transition duration-300 hover:-translate-y-1 hover:border-sky-400/40"
                 >
-                  <div className="relative h-28 overflow-hidden bg-slate-800 sm:h-32 lg:h-36">
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                  <div className="relative h-72 overflow-hidden bg-slate-800 sm:h-80">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-slate-800 text-sm font-medium uppercase tracking-[0.2em] text-slate-300">
+                        Sem imagem
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent" />
                   </div>
-                  <div className="p-3 sm:p-4 lg:p-5">
-                    <span className="mb-2 inline-flex rounded-full bg-slate-700/70 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-slate-200 sm:mb-3">
-                      {item.tag}
+
+                  <div className="p-5 sm:p-6">
+                    <span className="inline-flex items-center rounded-full bg-sky-500/10 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.18em] text-sky-200">
+                      Notícia
                     </span>
-                    <h3 className="text-sm font-semibold leading-snug text-white sm:text-base">
+
+                    <h3 className="mt-3 text-xl font-semibold leading-snug text-white sm:text-2xl">
                       {item.title}
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2 sm:text-sm">
-                      {item.summary}
+
+                    <p className="mt-3 text-sm leading-relaxed text-slate-300 line-clamp-3">
+                      {item.summary || "Confira esta notícia e acompanhe os destaques do portal."}
                     </p>
-                    <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-700/80 pt-2.5 text-[0.65rem] text-slate-400 sm:text-xs">
-                      <span className="truncate pr-2">{item.desc || "Equipe Hebrom"}</span>
-                      <span className="flex-shrink-0">
-                        {item.date
-                          ? new Date(item.date).toLocaleDateString("pt-BR", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : ""}
+
+                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-[0.68rem] uppercase tracking-[0.14em] text-slate-400">
+                      <span className="truncate">{item.author || "Equipe Hebrom"}</span>
+                      <span>
+                        {new Date(item.createdAt).toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
                       </span>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
-          </div>
           )}
         </div>
       </section>

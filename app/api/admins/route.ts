@@ -41,9 +41,7 @@ export async function POST(request: Request) {
     const cookies = request.headers.get("cookie") || "";
     const sessionRole = cookies.match(/(?:^|;\s*)portal_role=([^;]+)/)?.[1];
     const sessionProfile = cookies.match(/(?:^|;\s*)portal_profile=([^;]+)/)?.[1];
-    const adminCount = await prisma.admin.count({
-      where: { profile: "admin" },
-    });
+    const adminCount = await prisma.admin.count();
 
     const body = await request.json();
     const name = String(body.name || "").trim();
