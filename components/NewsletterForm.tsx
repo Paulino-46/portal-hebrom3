@@ -40,7 +40,7 @@ export default function NewsletterForm({ compact = false }: NewsletterFormProps)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
+    <form onSubmit={handleSubmit} className="flex w-full max-w-full flex-col gap-3" noValidate>
       <input
         type="email"
         required
@@ -49,12 +49,12 @@ export default function NewsletterForm({ compact = false }: NewsletterFormProps)
         placeholder="seu@email.com"
         aria-label="Seu e-mail"
         disabled={status === "loading"}
-        className={`${compact ? "" : "rounded-lg"} rounded bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold disabled:cursor-wait disabled:opacity-60`}
+        className={`${compact ? "" : "rounded-lg"} w-full rounded bg-white/5 border border-gold/20 px-4 py-3 text-sm text-white outline-none placeholder-slate-500 transition focus:border-gold disabled:cursor-wait disabled:opacity-60`}
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded-xl bg-gradient-to-r from-gold to-amber-500 py-3 text-xs font-bold uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95 disabled:cursor-wait disabled:opacity-60"
+        className="w-full rounded-xl bg-gradient-to-r from-gold to-amber-500 py-3 text-xs font-bold uppercase tracking-[0.2em] text-navy shadow-lg shadow-gold/20 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95 disabled:cursor-wait disabled:opacity-60"
       >
         {status === "loading" ? "A enviar..." : "Assinar newsletter"}
       </button>

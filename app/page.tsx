@@ -263,10 +263,10 @@ export default async function Home() {
         className="bg-slate-950/95 px-4 py-14 sm:px-8 sm:py-20 lg:px-10 lg:py-24"
       >
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 md:grid-cols-2 md:gap-12 lg:items-start lg:gap-16">
+          <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:items-start lg:gap-16">
 
             {/* Events list */}
-            <div>
+            <div className="w-full max-w-full min-w-0">
               <p className="mb-4 flex items-center gap-3 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-gold sm:mb-5 sm:text-xs">
                 <span className="block h-px w-5 bg-gold" />
                 Agenda
@@ -279,12 +279,12 @@ export default async function Home() {
                 ações da comunidade Hebrom III.
               </p>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex w-full max-w-full flex-col gap-3">
                 {dynamicEvents.slice(0, 3).map((event: any) => (
                   <Link
                     href={event.href}
                     key={event.id}
-                    className="flex gap-4 rounded-2xl border border-white/10 bg-slate-900/95 p-4 transition hover:border-sky-300/30 hover:translate-x-1 cursor-pointer sm:gap-5 sm:rounded-3xl sm:p-5"
+                    className="flex w-full max-w-full gap-3 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 p-4 transition hover:border-sky-300/30 hover:translate-x-1 cursor-pointer sm:gap-5 sm:rounded-3xl sm:p-5"
                   >
                     <div className="flex-shrink-0">
                       <img
@@ -295,14 +295,14 @@ export default async function Home() {
                         className="h-14 w-14 rounded-xl object-cover sm:h-16 sm:w-16"
                       />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="mb-1 text-sm font-semibold text-white truncate">
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <h3 className="mb-1 max-w-full text-sm font-semibold text-white break-words sm:text-base">
                         {event.title}
                       </h3>
-                      <p className="mb-2 text-xs leading-relaxed text-slate-400 line-clamp-2">
+                      <p className="mb-2 max-w-full text-xs leading-relaxed text-slate-400 break-words line-clamp-2 sm:text-sm">
                         {event.summary}
                       </p>
-                      <p className="text-[0.62rem] font-medium uppercase tracking-[0.12em] text-gold truncate sm:text-[0.65rem]">
+                      <p className="max-w-full text-[0.62rem] font-medium uppercase tracking-[0.12em] text-gold break-words sm:text-[0.65rem]">
                         📍 {event.desc}
                       </p>
                     </div>
@@ -311,7 +311,7 @@ export default async function Home() {
 
                 <Link
                   href="/events"
-                  className="mt-3 text-center text-xs font-medium uppercase tracking-widest text-gold hover:text-gold-light transition-colors sm:mt-4"
+                  className="mt-3 block text-center text-xs font-medium uppercase tracking-widest text-gold transition-colors hover:text-gold-light sm:mt-4"
                 >
                   Ver toda a agenda →
                 </Link>
@@ -319,7 +319,7 @@ export default async function Home() {
             </div>
 
             {/* Newsletter box */}
-            <div className="rounded-2xl bg-blue-950/95 p-6 text-white sm:rounded-3xl sm:p-8 lg:sticky lg:top-24">
+            <div className="w-full max-w-full rounded-2xl bg-blue-950/95 p-6 text-white sm:rounded-3xl sm:p-8 lg:sticky lg:top-24">
               <p className="mb-3 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-gold sm:mb-4">
                 Newsletter
               </p>
